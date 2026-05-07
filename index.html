@@ -1,13 +1,53 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pakan-ikan-app</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pakan Ikan - Dewi</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center; border-top: 6px solid #38bdf8; width: 300px; }
+        h1 { font-size: 20px; color: #38bdf8; margin-bottom: 25px; }
+        .data-box { background: #334155; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .label { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .value { font-size: 32px; font-weight: bold; color: #22c55e; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Pakan Ikan Pintar</h1>
+        
+        <div class="data-box">
+            <div class="label">Jadwal Pakan</div>
+            <div id="jadwal-val" class="value">--:--</div>
+        </div>
+
+        <div class="data-box">
+            <div class="label">Durasi (Detik)</div>
+            <div id="durasi-val" class="value">0</div>
+        </div>
+
+        <p style="font-size: 10px; color: #64748b;">Status Alat: <span style="color: #22c55e;">Connected</span></p>
+    </div>
+
+    <script>
+        // MASUKKAN URL FIREBASE KAMU DI SINI
+        const firebaseConfig = {
+            databaseURL: "https://pakan-ikan-pintar-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Ambil data dari Firebase secara otomatis
+        db.ref('/').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('jadwal-val').innerText = data.Jadwal || "7";
+                document.getElementById('durasi-val').innerText = data.durasi_detik || "8";
+            }
+        });
+    </script>
+</body>
 </html>
