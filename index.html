@@ -1,24 +1,106 @@
-<div class="input-group">
-    <label>Waktu Pakan Pagi (Jam : Menit)</label>
-    <div style="display: flex; gap: 10px;">
-        <input type="number" id="jam-pagi" placeholder="Jam (0-23)">
-        <input type="number" id="menit-pagi" placeholder="Menit (0-59)">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santi Smart Dashboard</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0f172a; color: white; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .card { background: #1e293b; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; border-top: 6px solid #38bdf8; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        h1 { font-size: 22px; color: #38bdf8; margin-bottom: 5px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; display: block; font-weight: bold; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: #38bdf8; font-weight: bold; box-sizing: border-box; font-size: 16px; }
+        .btn-update { background: #22c55e; color: #0f172a; border: none; width: 100%; padding: 15px; font-weight: bold; border-radius: 12px; cursor: pointer; margin-top: 10px; font-size: 16px; transition: 0.3s; }
+        .btn-update:hover { background: #16a34a; }
+        .flex-row { display: flex; gap: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Pakan Ikan Pintar</h1>
+        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Santi Smart System v3.0</p>
+        
+        <div class="input-group">
+            <label>Rentang Tanggal (Mulai - Selesai)</label>
+            <div class="flex-row">
+                <input type="number" id="tgl-start" placeholder="Tgl 1">
+                <input type="number" id="tgl-end" placeholder="Tgl 31">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Jadwal Pagi (Jam : Menit)</label>
+            <div class="flex-row">
+                <input type="number" id="jam-pagi" placeholder="Jam">
+                <input type="number" id="menit-pagi" placeholder="Menit">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Jadwal Sore (Jam : Menit)</label>
+            <div class="flex-row">
+                <input type="number" id="jam-sore" placeholder="Jam">
+                <input type="number" id="menit-sore" placeholder="Menit">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Durasi Pakan (Detik)</label>
+            <input type="number" id="durasi" placeholder="Contoh: 8">
+        </div>
+
+        <button class="btn-update" onclick="updateJadwal()">UPDATE & AKTIFKAN ALAT</button>
     </div>
-</div>
 
-<button class="btn-update" onclick="updateJadwal()">UPDATE JADWAL</button>
+    <script>
+        // Konfigurasi Firebase kamu
+        const firebaseConfig = { 
+            databaseURL: "https://pakan-ikan-pintar-default-rtdb.firebaseio.com/" 
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-<script>
-// Di dalam fungsi updateJadwal(), tambahkan variabel menit:
-function updateJadwal() {
-    const j1 = document.getElementById('jam-pagi').value;
-    const m1 = document.getElementById('menit-pagi').value;
-    const dur = document.getElementById('durasi').value;
+        // Ambil data lama dari Firebase agar muncul di kotak input saat web dibuka
+        db.ref('/').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('tgl-start').value = data.start_date || "";
+                document.getElementById('tgl-end').value = data.end_date || "";
+                document.getElementById('jam-pagi').value = data.jam_pagi || 0;
+                document.getElementById('menit-pagi').value = data.menit_pagi || 0;
+                document.getElementById('jam-sore').value = data.jam_sore || 0;
+                document.getElementById('menit-sore').value = data.menit_sore || 0;
+                document.getElementById('durasi').value = data.durasi_detik || 0;
+            }
+        });
 
-    db.ref('/').update({
-        jam_pagi: parseInt(j1),
-        menit_pagi: parseInt(m1),
-        durasi_detik: parseInt(dur)
-    }).then(() => alert("Jadwal Diperbarui!"));
-}
-</script>
+        // Fungsi untuk mengirim data baru ke Firebase
+        function updateJadwal() {
+            const start = document.getElementById('tgl-start').value;
+            const end = document.getElementById('tgl-end').value;
+            const jp = document.getElementById('jam-pagi').value;
+            const mp = document.getElementById('menit-pagi').value;
+            const js = document.getElementById('jam-sore').value;
+            const ms = document.getElementById('menit-sore').value;
+            const dur = document.getElementById('durasi').value;
+
+            db.ref('/').update({
+                start_date: parseInt(start),
+                end_date: parseInt(end),
+                jam_pagi: parseInt(jp),
+                menit_pagi: parseInt(mp),
+                jam_sore: parseInt(js),
+                menit_sore: parseInt(ms),
+                durasi_detik: parseInt(dur)
+            }).then(() => {
+                alert("Berhasil! Jadwal pakan telah diperbarui.");
+            }).catch((error) => {
+                alert("Gagal update: " + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
