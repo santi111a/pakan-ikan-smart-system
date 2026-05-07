@@ -3,51 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pakan Ikan - Dewi</title>
+    <title>Santi Smart Scheduler</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #1e293b; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center; border-top: 6px solid #38bdf8; width: 300px; }
-        h1 { font-size: 20px; color: #38bdf8; margin-bottom: 25px; }
-        .data-box { background: #334155; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        .label { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-        .value { font-size: 32px; font-weight: bold; color: #22c55e; margin-top: 5px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0f172a; color: white; padding: 20px; display: flex; justify-content: center; }
+        .card { background: #1e293b; padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; border-top: 6px solid #38bdf8; }
+        h1 { font-size: 18px; color: #38bdf8; text-align: center; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 10px; border-radius: 8px; border: none; background: #334155; color: white; box-sizing: border-box; }
+        .btn-update { background: #22c55e; color: #0f172a; border: none; width: 100%; padding: 12px; font-weight: bold; border-radius: 10px; cursor: pointer; margin-top: 10px; }
+        .notif { background: #ef4444; color: white; padding: 10px; border-radius: 8px; font-size: 12px; margin-top: 15px; display: none; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>Pakan Ikan Pintar</h1>
+        <h1>⚙️ Atur Jadwal Pakan</h1>
         
-        <div class="data-box">
-            <div class="label">Jadwal Pakan</div>
-            <div id="jadwal-val" class="value">--:--</div>
+        <div id="upgrade-notif" class="notif">⚠️ Masa jadwal habis! Harap upgrade/atur ulang jadwal.</div>
+
+        <div class="input-group">
+            <label>Rentang Tanggal (Mulai - Selesai)</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="number" id="tgl-start" placeholder="Tgl 1">
+                <input type="number" id="tgl-end" placeholder="Tgl 10">
+            </div>
         </div>
 
-        <div class="data-box">
-            <div class="label">Durasi (Detik)</div>
-            <div id="durasi-val" class="value">0</div>
+        <div class="input-group">
+            <label>Jam Makan (Pagi & Sore)</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="number" id="jam-1" placeholder="Jam 7">
+                <input type="number" id="jam-2" placeholder="Jam 17">
+            </div>
         </div>
 
-        <p style="font-size: 10px; color: #64748b;">Status Alat: <span style="color: #22c55e;">Connected</span></p>
+        <div class="input-group">
+            <label>Durasi Pakan (Detik)</label>
+            <input type="number" id="durasi" placeholder="8">
+        </div>
+
+        <button class="btn-update" onclick="updateJadwal()">UPDATE DATA PAKAN</button>
     </div>
 
     <script>
-        // MASUKKAN URL FIREBASE KAMU DI SINI
-        const firebaseConfig = {
-            databaseURL: "https://pakan-ikan-pintar-default-rtdb.firebaseio.com/"
-        };
+        const firebaseConfig = { databaseURL: "https://pakan-ikan-pintar-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Ambil data dari Firebase secara otomatis
+        // Cek jika sudah lewat tanggal 10 untuk Notifikasi
         db.ref('/').on('value', (snapshot) => {
             const data = snapshot.val();
-            if (data) {
-                document.getElementById('jadwal-val').innerText = data.Jadwal || "7";
-                document.getElementById('durasi-val').innerText = data.durasi_detik || "8";
+            const tglSekarang = new Date().getDate();
+            if (tglSekarang > data.end_date) {
+                document.getElementById('upgrade-notif').style.display = 'block';
+            } else {
+                document.getElementById('upgrade-notif').style.display = 'none';
             }
         });
+
+        function updateJadwal() {
+            const start = document.getElementById('tgl-start').value;
+            const end = document.getElementById('tgl-end').value;
+            const j1 = document.getElementById('jam-1').value;
+            const j2 = document.getElementById('jam-2').value;
+            const dur = document.getElementById('durasi').value;
+
+            db.ref('/').update({
+                start_date: parseInt(start),
+                end_date: parseInt(end),
+                jam_pagi: parseInt(j1),
+                jam_sore: parseInt(j2),
+                durasi_detik: parseInt(dur)
+            }).then(() => alert("Jadwal Berhasil Diperbarui!"));
+        }
     </script>
 </body>
 </html>
