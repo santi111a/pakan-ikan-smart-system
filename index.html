@@ -7,21 +7,24 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #0f172a; color: white; display: flex; justify-content: center; padding: 20px; margin: 0; }
-        .card { background: #1e293b; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; border-top: 6px solid #38bdf8; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        h1 { font-size: 22px; color: #38bdf8; margin-bottom: 5px; }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; display: block; font-weight: bold; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: #38bdf8; font-weight: bold; box-sizing: border-box; font-size: 16px; }
-        .btn-update { background: #22c55e; color: #0f172a; border: none; width: 100%; padding: 15px; font-weight: bold; border-radius: 12px; cursor: pointer; margin-top: 10px; font-size: 16px; transition: 0.3s; }
-        .btn-update:hover { background: #16a34a; }
-        .flex-row { display: flex; gap: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0f172a; color: white; display: flex; justify-content: center; padding: 20px; margin: 0; min-height: 100vh; align-items: center; }
+        .card { background: #1e293b; padding: 30px; border-radius: 30px; width: 100%; max-width: 380px; border-top: 6px solid #38bdf8; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        h1 { font-size: 24px; color: #38bdf8; margin-bottom: 5px; font-weight: 700; }
+        p.subtitle { font-size: 13px; color: #94a3b8; margin-bottom: 25px; letter-spacing: 1px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; display: block; font-weight: 600; letter-spacing: 0.5px; }
+        input { width: 100%; padding: 15px; border-radius: 12px; border: none; background: #0f172a; color: #38bdf8; font-weight: bold; box-sizing: border-box; font-size: 16px; text-align: center; }
+        input::placeholder { color: #334155; }
+        .flex-row { display: flex; gap: 12px; align-items: center; }
+        .divider { color: #38bdf8; font-weight: bold; font-size: 20px; }
+        .btn-update { background: #22c55e; color: #0f172a; border: none; width: 100%; padding: 18px; font-weight: 800; border-radius: 15px; cursor: pointer; margin-top: 15px; font-size: 16px; text-transform: uppercase; transition: 0.3s; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
+        .btn-update:active { transform: scale(0.96); }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>Pakan Ikan Pintar</h1>
-        <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Santi Smart System v3.0</p>
+        <p class="subtitle">Santi Smart System v3.0</p>
         
         <div class="input-group">
             <label>Rentang Tanggal (Mulai - Selesai)</label>
@@ -34,36 +37,35 @@
         <div class="input-group">
             <label>Jadwal Pagi (Jam : Menit)</label>
             <div class="flex-row">
-                <input type="number" id="jam-pagi" placeholder="Jam">
-                <input type="number" id="menit-pagi" placeholder="Menit">
+                <input type="number" id="jam-pagi" placeholder="07">
+                <span class="divider">:</span>
+                <input type="number" id="menit-pagi" placeholder="15">
             </div>
         </div>
 
         <div class="input-group">
             <label>Jadwal Sore (Jam : Menit)</label>
             <div class="flex-row">
-                <input type="number" id="jam-sore" placeholder="Jam">
-                <input type="number" id="menit-sore" placeholder="Menit">
+                <input type="number" id="jam-sore" placeholder="17">
+                <span class="divider">:</span>
+                <input type="number" id="menit-sore" placeholder="30">
             </div>
         </div>
 
         <div class="input-group">
             <label>Durasi Pakan (Detik)</label>
-            <input type="number" id="durasi" placeholder="Contoh: 8">
+            <input type="number" id="durasi" placeholder="8">
         </div>
 
-        <button class="btn-update" onclick="updateJadwal()">UPDATE & AKTIFKAN ALAT</button>
+        <button class="btn-update" onclick="updateJadwal()">Update Data & Aktifkan</button>
     </div>
 
     <script>
-        // Konfigurasi Firebase kamu
-        const firebaseConfig = { 
-            databaseURL: "https://pakan-ikan-pintar-default-rtdb.firebaseio.com/" 
-        };
+        const firebaseConfig = { databaseURL: "https://pakan-ikan-pintar-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Ambil data lama dari Firebase agar muncul di kotak input saat web dibuka
+        // Ambil data otomatis saat web dibuka
         db.ref('/').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -77,29 +79,20 @@
             }
         });
 
-        // Fungsi untuk mengirim data baru ke Firebase
         function updateJadwal() {
-            const start = document.getElementById('tgl-start').value;
-            const end = document.getElementById('tgl-end').value;
-            const jp = document.getElementById('jam-pagi').value;
-            const mp = document.getElementById('menit-pagi').value;
-            const js = document.getElementById('jam-sore').value;
-            const ms = document.getElementById('menit-sore').value;
-            const dur = document.getElementById('durasi').value;
+            const dataUpdate = {
+                start_date: parseInt(document.getElementById('tgl-start').value),
+                end_date: parseInt(document.getElementById('tgl-end').value),
+                jam_pagi: parseInt(document.getElementById('jam-pagi').value),
+                menit_pagi: parseInt(document.getElementById('menit-pagi').value),
+                jam_sore: parseInt(document.getElementById('jam-sore').value),
+                menit_sore: parseInt(document.getElementById('menit-sore').value),
+                durasi_detik: parseInt(document.getElementById('durasi').value)
+            };
 
-            db.ref('/').update({
-                start_date: parseInt(start),
-                end_date: parseInt(end),
-                jam_pagi: parseInt(jp),
-                menit_pagi: parseInt(mp),
-                jam_sore: parseInt(js),
-                menit_sore: parseInt(ms),
-                durasi_detik: parseInt(dur)
-            }).then(() => {
-                alert("Berhasil! Jadwal pakan telah diperbarui.");
-            }).catch((error) => {
-                alert("Gagal update: " + error.message);
-            });
+            db.ref('/').update(dataUpdate).then(() => {
+                alert("🚀 Berhasil! Jadwal telah sinkron ke alat.");
+            }).catch((e) => alert("Gagal: " + e.message));
         }
     </script>
 </body>
