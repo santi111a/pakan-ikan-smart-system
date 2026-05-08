@@ -12,10 +12,10 @@ function App() {
     jam_sore: 0,
     menit_sore: 0,
     durasi_detik: 0,
-    kipas_on: false // Asumsi variabel untuk status kipas
+    kipas_on: false 
   });
 
-  // Sinkronisasi Data Realtime dari Firebase
+  // Ambil data real-time dari Firebase
   useEffect(() => {
     const dbRef = ref(db, '/'); 
     onValue(dbRef, (snapshot) => {
@@ -25,7 +25,7 @@ function App() {
     });
   }, []);
 
-  // Fungsi untuk update data ke Firebase
+  // Fungsi untuk mengirim perubahan data ke Firebase
   const handleUpdate = () => {
     const dbRef = ref(db, '/');
     const dataToUpdate = {
@@ -46,7 +46,7 @@ function App() {
     });
   };
 
-  // Komponen Sidebar
+  // Komponen Sidebar Navigasi
   const Sidebar = () => (
     <div style={{ width: '300px', background: '#0f172a', padding: '25px', borderRight: '1px solid #38bdf8', height: '100vh', position: 'sticky', top: 0 }}>
       <h2 style={{ color: '#38bdf8', textAlign: 'center', marginBottom: '30px', fontSize: '22px' }}>Sistem Cerdas Santi</h2>
@@ -61,57 +61,68 @@ function App() {
   );
 
   return (
-    <div style={{ display: 'flex', backgroundColor: '#0b1120', color: '#f8fafc', minHeight: '100vh', fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif" }}>
+    <div style={{ display: 'flex', backgroundColor: '#0b1120', color: '#f8fafc', minHeight: '100vh', fontFamily: 'Arial' }}>
       <Sidebar />
       
       <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
         
-        {/* HALAMAN BERANDA */}
+        {/* === HALAMAN BERANDA === */}
         {halaman === 'beranda' && (
-          <div>
-            <h1 style={{ color: '#38bdf8', marginBottom: '10px', fontSize: '32px' }}>Dashboard Utama</h1>
-            <p style={{ color: '#64748b', marginBottom: '40px' }}>Selamat datang di kendali Sistem Cerdas Santi.</p>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <h1 style={{ color: '#38bdf8', marginBottom: '10px', fontSize: '36px' }}>Selamat Datang</h1>
+            <p style={{ color: '#94a3b8', fontSize: '18px', marginBottom: '40px', lineHeight: '1.6' }}>
+              Sistem Cerdas Santi adalah solusi manajemen kolam pintar berbasis IoT untuk pemantauan dan perawatan ekosistem air Anda secara otomatis dan real-time.
+            </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '25px' }}>
+            {/* Dashboard Status Cepat */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '40px' }}>
               <div style={cardStyle}>
-                <div style={iconCircle}>🕒</div>
-                <h4 style={cardLabel}>JADWAL PAKAN</h4>
-                <h2 style={cardValue}>{data.jam_sore}:00</h2>
-                <div style={cardFooter}>Durasi: {data.durasi_detik} detik</div>
+                <h4 style={cardLabel}>JADWAL PAKAN SORE</h4>
+                <h2 style={cardValue}>{data.jam_sore || '0'}:00</h2>
+                <p style={{ color: '#64748b', fontSize: '12px' }}>Durasi: {data.durasi_detik} dtk</p>
               </div>
-
               <div style={cardStyle}>
-                <div style={iconCircle}>⚙️</div>
-                <h4 style={cardLabel}>STATUS KIPAS</h4>
+                <h4 style={cardLabel}>KONTROL KIPAS</h4>
                 <h2 style={{ ...cardValue, color: data.kipas_on ? '#22c55e' : '#ef4444' }}>
-                  {data.kipas_on ? 'AKTIF' : 'NONAKTIF'}
+                  {data.kipas_on ? 'AKTIF' : 'MATI'}
                 </h2>
-                <div style={cardFooter}>Otomatisasi Sistem</div>
+                <p style={{ color: '#64748b', fontSize: '12px' }}>Otomatisasi Suhu</p>
               </div>
-
               <div style={cardStyle}>
-                <div style={iconCircle}>💧</div>
-                <h4 style={cardLabel}>KONDISI AIR</h4>
-                <h2 style={cardValue}>NORMAL</h2>
-                <div style={cardFooter}>Update: Real-time</div>
+                <h4 style={cardLabel}>HIDROPONIK</h4>
+                <h2 style={cardValue}>STABIL</h2>
+                <p style={{ color: '#64748b', fontSize: '12px' }}>Sirkulasi Normal</p>
               </div>
             </div>
 
-            <div style={infoBox}>
-              <h4 style={{ margin: '0 0 10px 0', color: '#38bdf8' }}>💡 Tips Sistem</h4>
-              <p style={{ margin: 0, fontSize: '14px', lineHeight: '1.6', color: '#94a3b8' }}>
-                Pastikan rentang tanggal pakan diatur dengan benar agar alat bekerja sesuai durasi peliharaan. 
-                Anda dapat mengubah pengaturan ini di menu <b>Pakan Pintar</b>.
-              </p>
+            <hr style={{ border: '0.5px solid #1e293b', marginBottom: '40px' }} />
+
+            {/* Panduan Pengguna */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+              <div style={guideBox}>
+                <h3 style={{ color: '#38bdf8', marginTop: 0 }}>📖 Pengertian Sistem</h3>
+                <p style={guideText}>
+                  Aplikasi ini mengintegrasikan perangkat keras kolam Anda dengan database Cloud. 
+                  Anda dapat mengatur pemberi pakan otomatis dan memantau sensor dari mana saja secara jarak jauh.
+                </p>
+              </div>
+              <div style={guideBox}>
+                <h3 style={{ color: '#38bdf8', marginTop: 0 }}>🚀 Panduan Navigasi</h3>
+                <ul style={{ ...guideText, paddingLeft: '20px' }}>
+                  <li><b>Pakan Pintar:</b> Pengaturan waktu dan durasi pakan ikan.</li>
+                  <li><b>Log Jurnal:</b> Melihat riwayat data sensor harian.</li>
+                  <li><b>Otomatisasi:</b> Sistem bekerja otomatis sesuai input yang Anda berikan.</li>
+                </ul>
+              </div>
             </div>
           </div>
         )}
 
-        {/* HALAMAN PAKAN PINTAR */}
+        {/* === HALAMAN PAKAN PINTAR === */}
         {halaman === 'pakan' && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div style={formContainer}>
-              <h2 style={{ color: '#38bdf8', textAlign: 'center', fontSize: '26px', marginBottom: '5px' }}>Pakan Ikan Pintar</h2>
+              <h2 style={{ color: '#38bdf8', textAlign: 'center', fontSize: '26px', marginBottom: '5px' }}>Pengaturan Pakan</h2>
               <p style={{ color: '#64748b', textAlign: 'center', marginBottom: '30px', fontSize: '14px' }}>Konfigurasi Penjadwalan Alat</p>
 
               <div style={{ textAlign: 'left' }}>
@@ -144,11 +155,11 @@ function App() {
           </div>
         )}
 
-        {/* HALAMAN LAINNYA */}
+        {/* === HALAMAN LAIN (LOG/AIR/HIDROPONIK) === */}
         {halaman !== 'beranda' && halaman !== 'pakan' && (
           <div style={{ textAlign: 'center', marginTop: '100px' }}>
             <h1 style={{ fontSize: '40px', color: '#38bdf8' }}>Halaman {halaman.toUpperCase()}</h1>
-            <p style={{ color: '#64748b' }}>Data Log sedang disinkronkan dari database...</p>
+            <p style={{ color: '#64748b' }}>Fitur ini sedang dalam sinkronisasi dengan database sensor.</p>
           </div>
         )}
 
@@ -157,8 +168,7 @@ function App() {
   );
 }
 
-// --- STYLING OBJECTS ---
-
+// --- CSS STYLES ---
 const btnStyle = (aktif) => ({
   background: aktif ? 'linear-gradient(90deg, #38bdf8, #0ea5e9)' : '#1e293b',
   color: aktif ? '#0f172a' : '#94a3b8',
@@ -169,83 +179,20 @@ const btnStyle = (aktif) => ({
   textAlign: 'left',
   fontWeight: 'bold',
   fontSize: '15px',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  boxShadow: aktif ? '0 4px 12px rgba(56, 189, 248, 0.3)' : 'none'
+  transition: 'all 0.3s'
 });
 
-const cardStyle = {
-  background: '#1e293b',
-  padding: '30px',
-  borderRadius: '24px',
-  border: '1px solid #334155',
-  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)',
-  textAlign: 'center'
-};
+const cardStyle = { background: '#1e293b', padding: '25px', borderRadius: '20px', border: '1px solid #334155', textAlign: 'center' };
+const cardLabel = { color: '#64748b', fontSize: '11px', fontWeight: '800', letterSpacing: '1px', marginBottom: '10px' };
+const cardValue = { color: '#38bdf8', fontSize: '32px', margin: '0' };
 
-const iconCircle = {
-  fontSize: '32px',
-  background: '#0f172a',
-  width: '60px',
-  height: '60px',
-  lineHeight: '60px',
-  borderRadius: '50%',
-  margin: '0 auto 15px auto',
-  border: '1px solid #38bdf8'
-};
+const guideBox = { background: '#1e293b', padding: '25px', borderRadius: '20px', border: '1px solid #334155' };
+const guideText = { color: '#94a3b8', fontSize: '14px', lineHeight: '1.8' };
 
-const cardLabel = { color: '#64748b', fontSize: '12px', margin: '10px 0', letterSpacing: '1.5px', fontWeight: '800' };
-const cardValue = { color: '#38bdf8', fontSize: '36px', margin: '0' };
-const cardFooter = { color: '#475569', fontSize: '13px', marginTop: '10px' };
-
-const infoBox = {
-  marginTop: '40px',
-  padding: '25px',
-  background: 'rgba(56, 189, 248, 0.05)',
-  borderRadius: '20px',
-  borderLeft: '4px solid #38bdf8'
-};
-
-const formContainer = {
-  background: '#1e293b',
-  padding: '40px',
-  borderRadius: '35px',
-  width: '100%',
-  maxWidth: '550px',
-  border: '1px solid #334155',
-  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-};
-
-const labelStyle = { display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '10px', marginTop: '20px', fontWeight: '800', letterSpacing: '1px' };
-
-const inputStyle = {
-  background: '#0f172a',
-  border: '1px solid #334155',
-  padding: '15px',
-  borderRadius: '15px',
-  color: '#38bdf8',
-  textAlign: 'center',
-  fontSize: '20px',
-  fontWeight: 'bold',
-  width: '100%',
-  outline: 'none',
-  transition: 'border 0.3s'
-};
-
+const formContainer = { background: '#1e293b', padding: '40px', borderRadius: '35px', width: '100%', maxWidth: '500px', border: '1px solid #334155' };
+const labelStyle = { display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '10px', marginTop: '20px', fontWeight: '800' };
+const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '15px', borderRadius: '15px', color: '#38bdf8', textAlign: 'center', fontSize: '20px', fontWeight: 'bold', width: '100%', outline: 'none' };
 const divider = { color: '#38bdf8', fontWeight: 'bold', fontSize: '24px' };
-
-const updateBtnStyle = {
-  width: '100%',
-  background: '#22c55e',
-  color: '#ffffff',
-  border: 'none',
-  padding: '20px',
-  borderRadius: '18px',
-  marginTop: '35px',
-  fontWeight: '900',
-  fontSize: '16px',
-  cursor: 'pointer',
-  boxShadow: '0 10px 15px -3px rgba(34, 197, 94, 0.4)',
-  transition: 'transform 0.2s'
-};
+const updateBtnStyle = { width: '100%', background: '#22c55e', color: '#ffffff', border: 'none', padding: '20px', borderRadius: '18px', marginTop: '35px', fontWeight: '900', cursor: 'pointer' };
 
 export default App;
