@@ -19,13 +19,14 @@ function App() {
   }, []);
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center', backgroundColor: '#1a1a1a', color: 'white', minHeight: '100vh' }}>
-      <h1>Dashboard Pakan Ikan Pintar</h1>
-      <div style={{ border: '1px solid #444', padding: '20px', borderRadius: '15px', display: 'inline-block' }}>
+    <div style={{ padding: '40px', textAlign: 'center', backgroundColor: '#000', color: '#00ff00', minHeight: '100vh', fontFamily: 'monospace' }}>
+      <h1>=== VERSI TERBARU ===</h1>
+      <div style={{ border: '2px solid #00ff00', padding: '20px', borderRadius: '10px', display: 'inline-block' }}>
+        <h2>Monitoring Pakan Ikan</h2>
         <p>Jadwal Sore: {pakan['jam sore'] || '0'}:{pakan['menit sore'] || '0'}</p>
-        <p>Durasi Pakan: {pakan['durasi detik'] || '0'} Detik</p>
-        <hr />
-        <p>Terakhir Kuras: {logAir['tanggal kuras'] || '-'}</p>
+        <p>Durasi: {pakan['durasi detik'] || '0'} Detik</p>
+        <hr style={{ borderColor: '#00ff00' }} />
+        <p>Status Air: {logAir['tanggal kuras'] || 'Memuat data...'}</p>
       </div>
     </div>
   );
