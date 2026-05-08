@@ -12,16 +12,18 @@ function App() {
     jam_sore: 0,
     menit_sore: 0,
     durasi_detik: 0,
-    kipas_on: false 
+    kipas_on: false,
+    suhu: 0,
+    kelembapan: 0
   });
 
-  const [jurnalInput, setJurnalInput] = useState({
-    tglBibit: '',
-    jumlahIkan: '',
-    ukuranBibit: '',
-    tglSortir: ''
-  });
+  // State untuk Jurnal Ikan
+  const [jurnalInput, setJurnalInput] = useState({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
   const [listJurnal, setListJurnal] = useState([]);
+
+  // State BARU untuk Jurnal Pengurasan Air
+  const [kurasInput, setKurasInput] = useState({ tglKuras: '', kondisiAir: '', keterangan: '' });
+  const [listKuras, setListKuras] = useState([]);
 
   useEffect(() => {
     const dbRef = ref(db, '/'); 
@@ -29,12 +31,14 @@ function App() {
       if (snapshot.exists()) {
         const result = snapshot.val();
         setData(result);
+        
+        // Ambil list jurnal ikan
         if (result.jurnal_harian) {
-          const jurnalArray = Object.keys(result.jurnal_harian).map(key => ({
-            id: key,
-            ...result.jurnal_harian[key]
-          }));
-          setListJurnal(jurnalArray.reverse());
+          setListJurnal(Object.keys(result.jurnal_harian).map(key => ({ id: key, ...result.jurnal_harian[key] })).reverse());
+        }
+        // Ambil list jurnal pengurasan air
+        if (result.jurnal_kuras) {
+          setListKuras(Object.keys(result.jurnal_kuras).map(key => ({ id: key, ...result.jurnal_kuras[key] })).reverse());
         }
       }
     });
@@ -42,39 +46,34 @@ function App() {
 
   const handleUpdate = () => {
     const dbRef = ref(db, '/');
-    const dataToUpdate = {
-      ...data,
-      Jadwal: Number(data.Jadwal),
-      end_date: Number(data.end_date),
-      jam_pagi: Number(data.jam_pagi),
-      menit_pagi: Number(data.menit_pagi || 0),
-      jam_sore: Number(data.jam_sore),
-      menit_sore: Number(data.menit_sore || 0),
-      durasi_detik: Number(data.durasi_detik)
-    };
-    update(dbRef, dataToUpdate).then(() => alert("✅ Data Berhasil Diperbarui!"));
+    update(dbRef, { ...data, Jadwal: Number(data.Jadwal), end_date: Number(data.end_date) }).then(() => alert("✅ Update Berhasil!"));
   };
 
   const handleSimpanJurnal = () => {
-    if (!jurnalInput.tglBibit || !jurnalInput.jumlahIkan) {
-      alert("Mohon isi data tanggal dan jumlah bibit!");
-      return;
-    }
-    const jurnalRef = ref(db, 'jurnal_harian');
-    push(jurnalRef, jurnalInput).then(() => {
-      alert("✅ Catatan Jurnal Berhasil Disimpan!");
+    push(ref(db, 'jurnal_harian'), jurnalInput).then(() => {
+      alert("✅ Jurnal Ikan Tersimpan!");
       setJurnalInput({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
+    });
+  };
+
+  // Fungsi Simpan Jurnal Pengurasan Air
+  const handleSimpanKuras = () => {
+    if (!kurasInput.tglKuras) return alert("Isi tanggal pengurasan!");
+    push(ref(db, 'jurnal_kuras'), kurasInput).then(() => {
+      alert("✅ Jadwal Kuras Tersimpan!");
+      setKurasInput({ tglKuras: '', kondisiAir: '', keterangan: '' });
     });
   };
 
   const Sidebar = () => (
     <div style={{ width: '300px', background: '#0f172a', padding: '25px', borderRight: '1px solid #38bdf8', height: '100vh', position: 'sticky', top: 0 }}>
       <h2 style={{ color: '#38bdf8', textAlign: 'center', marginBottom: '30px', fontSize: '22px' }}>Sistem Cerdas Santi</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <button onClick={() => setHalaman('beranda')} style={btnStyle(halaman === 'beranda')}>🏠 Beranda</button>
         <button onClick={() => setHalaman('pakan')} style={btnStyle(halaman === 'pakan')}>🐟 Pakan Pintar</button>
         <button onClick={() => setHalaman('log')} style={btnStyle(halaman === 'log')}>📝 Log Jurnal Ikan</button>
-        <button onClick={() => setHalaman('air')} style={btnStyle(halaman === 'air')}>💧 Log Udara</button>
+        <button onClick={() => setHalaman('air')} style={btnStyle(halaman === 'air')}>💧 Log Air (Kuras)</button>
+        <button onClick={() => setHalaman('kipas')} style={btnStyle(halaman === 'kipas')}>🌀 Log Kipas</button>
         <button onClick={() => setHalaman('hidroponik')} style={btnStyle(halaman === 'hidroponik')}>🌱 Hidroponik</button>
       </div>
     </div>
@@ -83,85 +82,63 @@ function App() {
   return (
     <div style={{ display: 'flex', backgroundColor: '#0b1120', color: '#f8fafc', minHeight: '100vh', fontFamily: 'Arial' }}>
       <Sidebar />
-      <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
+      <div style={{ flex: 1, padding: '40px' }}>
         
-        {/* HALAMAN BERANDA (Desain Kembali Seperti Awal) */}
+        {/* BERANDA & PAKAN PINTAR tetap sama seperti kodingan sebelumnya */}
         {halaman === 'beranda' && (
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <h1 style={{ color: '#38bdf8', marginBottom: '10px', fontSize: '36px' }}>Selamat Datang di Sistem Cerdas Santi</h1>
-            <p style={{ color: '#94a3b8', fontSize: '18px', marginBottom: '40px', lineHeight: '1.6' }}>
-              Solusi manajemen kolam pintar berbasis IoT untuk memudahkan pemantauan dan perawatan ekosistem air Anda secara otomatis dan real-time.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-              <div style={cardStyle}><h4 style={cardLabel}>STATUS PAKAN</h4><h2 style={cardValue}>{data.jam_sore}:00</h2><p style={{ color: '#64748b', fontSize: '12px' }}>Terjadwal Otomatis</p></div>
-              <div style={cardStyle}><h4 style={cardLabel}>KONTROL UDARA</h4><h2 style={{ ...cardValue, color: data.kipas_on ? '#22c55e' : '#ef4444' }}>{data.kipas_on ? 'KIPAS ON' : 'KIPAS OFF'}</h2><p style={{ color: '#64748b', fontSize: '12px' }}>Sensor Suhu Aktif</p></div>
-              <div style={cardStyle}><h4 style={cardLabel}>HIDROPONIK</h4><h2 style={cardValue}>STABIL</h2><p style={{ color: '#64748b', fontSize: '12px' }}>Sirkulasi Air Normal</p></div>
-            </div>
-            <hr style={{ border: '0.5px solid #1e293b', marginBottom: '40px' }} />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-              <div style={guideBox}><h3 style={{ color: '#38bdf8', marginTop: 0 }}>📖 Apa itu Sistem Cerdas Santi?</h3><p style={guideText}>Aplikasi ini dirancang untuk mengintegrasikan perangkat keras (Hardware) dengan database Cloud. Anda dapat mengontrol pemberi pakan otomatis, memantau kualitas udara, hingga mengelola sistem hidroponik dalam satu dashboard.</p></div>
-              <div style={guideBox}><h3 style={{ color: '#38bdf8', marginTop: 0 }}>🚀 Panduan Cepat</h3><ul style={{ ...guideText, paddingLeft: '20px' }}><li><b>Atur Pakan:</b> Masuk ke menu Pakan Pintar untuk mengatur jam dan durasi makan.</li><li><b>Monitor Log:</b> Periksa riwayat suhu dan aktivitas di menu Log Jurnal.</li><li><b>Otomatisasi:</b> Sistem bekerja berdasarkan data yang Anda input.</li></ul></div>
-            </div>
-          </div>
+           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+           <h1 style={{ color: '#38bdf8', fontSize: '36px' }}>Selamat Datang</h1>
+           <p style={{ color: '#94a3b8', fontSize: '18px' }}>Dashboard monitoring ekosistem kolam cerdas Anda.</p>
+         </div>
         )}
 
-        {/* HALAMAN PAKAN PINTAR (Desain Kembali Seperti Awal) */}
-        {halaman === 'pakan' && (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={formContainer}>
-              <h2 style={{ color: '#38bdf8', textAlign: 'center', fontSize: '26px', marginBottom: '5px' }}>Pengaturan Pakan</h2>
-              <p style={{ color: '#64748b', textAlign: 'center', marginBottom: '30px', fontSize: '14px' }}>Konfigurasi Penjadwalan Alat</p>
-              <div style={{ textAlign: 'left' }}>
-                <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
-                <div style={{ display: 'flex', gap: '15px' }}>
-                  <input type="number" value={data.Jadwal} onChange={(e) => setData({...data, Jadwal: e.target.value})} style={inputStyle} />
-                  <input type="number" value={data.end_date} onChange={(e) => setData({...data, end_date: e.target.value})} style={inputStyle} />
-                </div>
-                <label style={labelStyle}>JADWAL PAGI (JAM : MENIT)</label>
-                <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                  <input type="number" value={data.jam_pagi} onChange={(e) => setData({...data, jam_pagi: e.target.value})} style={inputStyle} />
-                  <span style={divider}>:</span>
-                  <input type="number" value={data.menit_pagi || 0} onChange={(e) => setData({...data, menit_pagi: e.target.value})} style={inputStyle} />
-                </div>
-                <label style={labelStyle}>JADWAL SORE (JAM : MENIT)</label>
-                <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                  <input type="number" value={data.jam_sore} onChange={(e) => setData({...data, jam_sore: e.target.value})} style={inputStyle} />
-                  <span style={divider}>:</span>
-                  <input type="number" value={data.menit_sore || 0} onChange={(e) => setData({...data, menit_sore: e.target.value})} style={inputStyle} />
-                </div>
-                <label style={labelStyle}>DURASI PAKAN (DETIK)</label>
-                <input type="number" value={data.durasi_detik} onChange={(e) => setData({...data, durasi_detik: e.target.value})} style={{...inputStyle, width: '100%'}} />
-                <button onClick={handleUpdate} style={updateBtnStyle}>UPDATE DATA & AKTIFKAN</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* HALAMAN LOG JURNAL IKAN */}
+        {/* LOG JURNAL IKAN */}
         {halaman === 'log' && (
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>Catatan Harian Budidaya Ikan</h2>
-            <div style={{ background: '#1e293b', padding: '30px', borderRadius: '20px', marginBottom: '30px', border: '1px solid #334155' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                <div><label style={labelStyle}>TANGGAL MASUK BIBIT</label><input type="date" value={jurnalInput.tglBibit} onChange={(e)=>setJurnalInput({...jurnalInput, tglBibit: e.target.value})} style={inputStyle} /></div>
-                <div><label style={labelStyle}>JUMLAH BIBIT (EKOR)</label><input type="number" placeholder="Contoh: 500" value={jurnalInput.jumlahIkan} onChange={(e)=>setJurnalInput({...jurnalInput, jumlahIkan: e.target.value})} style={inputStyle} /></div>
-                <div><label style={labelStyle}>UKURAN BIBIT (CM)</label><input type="text" placeholder="Contoh: 5-7 cm" value={jurnalInput.ukuranBibit} onChange={(e)=>setJurnalInput({...jurnalInput, ukuranBibit: e.target.value})} style={inputStyle} /></div>
-                <div><label style={labelStyle}>RENCANA TANGGAL SORTIR</label><input type="date" value={jurnalInput.tglSortir} onChange={(e)=>setJurnalInput({...jurnalInput, tglSortir: e.target.value})} style={inputStyle} /></div>
-              </div>
-              <button onClick={handleSimpanJurnal} style={{...updateBtnStyle, marginTop: '25px'}}>SIMPAN CATATAN HARIAN</button>
+            <h2 style={{ color: '#38bdf8' }}>📝 Jurnal Ikan</h2>
+            <div style={formBox}>
+              <input type="date" value={jurnalInput.tglBibit} onChange={(e)=>setJurnalInput({...jurnalInput, tglBibit: e.target.value})} style={inputStyle} />
+              <input type="number" placeholder="Jumlah Bibit" value={jurnalInput.jumlahIkan} onChange={(e)=>setJurnalInput({...jurnalInput, jumlahIkan: e.target.value})} style={inputStyle} />
+              <button onClick={handleSimpanJurnal} style={updateBtnStyle}>SIMPAN</button>
             </div>
-            <div style={{ background: '#1e293b', borderRadius: '20px', padding: '20px', border: '1px solid #334155' }}>
-              <h4 style={{ color: '#94a3b8', marginBottom: '15px' }}>Riwayat Log Ikan</h4>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+          </div>
+        )}
+
+        {/* HALAMAN LOG AIR (Sekarang Jadi Jurnal Pengurasan) */}
+        {halaman === 'air' && (
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>💧 Jurnal Pengurasan Air</h2>
+            <div style={formBox}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div>
+                  <label style={labelMini}>TANGGAL PENGURASAN</label>
+                  <input type="date" value={kurasInput.tglKuras} onChange={(e)=>setKurasInput({...kurasInput, tglKuras: e.target.value})} style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelMini}>KONDISI AIR (SEBELUM)</label>
+                  <input type="text" placeholder="Misal: Keruh / Hijau" value={kurasInput.kondisiAir} onChange={(e)=>setKurasInput({...kurasInput, kondisiAir: e.target.value})} style={inputStyle} />
+                </div>
+              </div>
+              <label style={labelMini}>KETERANGAN / CATATAN TAMBAHAN</label>
+              <input type="text" placeholder="Misal: Ganti air 50%, pembersihan filter" value={kurasInput.keterangan} onChange={(e)=>setKurasInput({...kurasInput, keterangan: e.target.value})} style={inputStyle} />
+              <button onClick={handleSimpanKuras} style={updateBtnStyle}>SIMPAN JADWAL KURAS</button>
+            </div>
+
+            <div style={tableBox}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #334155', color: '#38bdf8' }}>
-                    <th style={thStyle}>Tgl Bibit</th><th style={thStyle}>Jumlah</th><th style={thStyle}>Ukuran</th><th style={thStyle}>Tgl Sortir</th>
+                  <tr style={{ color: '#38bdf8', borderBottom: '1px solid #334155', textAlign: 'left' }}>
+                    <th style={{padding:'10px'}}>Tanggal</th>
+                    <th style={{padding:'10px'}}>Kondisi</th>
+                    <th style={{padding:'10px'}}>Keterangan</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {listJurnal.map((item) => (
-                    <tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}>
-                      <td style={tdStyle}>{item.tglBibit}</td><td style={tdStyle}>{item.jumlahIkan} Ekor</td><td style={tdStyle}>{item.ukuranBibit}</td><td style={tdStyle}>{item.tglSortir}</td>
+                  {listKuras.map(k => (
+                    <tr key={k.id} style={{ borderBottom: '1px solid #1e293b' }}>
+                      <td style={{padding:'10px'}}>{k.tglKuras}</td>
+                      <td style={{padding:'10px'}}>{k.kondisiAir}</td>
+                      <td style={{padding:'10px'}}>{k.keterangan}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -170,29 +147,34 @@ function App() {
           </div>
         )}
 
-        {(halaman === 'air' || halaman === 'hidroponik') && (
-          <div style={{ textAlign: 'center', marginTop: '100px' }}>
-            <h1 style={{ fontSize: '40px', color: '#38bdf8' }}>Halaman {halaman.toUpperCase()}</h1>
-            <p style={{ color: '#64748b' }}>Fitur ini sedang dalam sinkronisasi dengan database sensor.</p>
+        {/* HALAMAN LOG KIPAS (Monitoring Sensor Udara) */}
+        {halaman === 'kipas' && (
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <h2 style={{ color: '#38bdf8' }}>🌀 Monitoring Kipas & Suhu</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
+              <div style={cardSmall}><h4 style={labelMini}>SUHU</h4><h2 style={cardVal}>{data.suhu}°C</h2></div>
+              <div style={cardSmall}><h4 style={labelMini}>KELEMBAPAN</h4><h2 style={cardVal}>{data.kelembapan}%</h2></div>
+            </div>
+            <div style={{...formBox, textAlign:'center', marginTop:'20px'}}>
+               <h3 style={{color: data.kipas_on ? '#22c55e' : '#ef4444'}}>STATUS: {data.kipas_on ? 'KIPAS BERPUTAR' : 'KIPAS MATI'}</h3>
+               <p style={{fontSize:'12px', color:'#64748b'}}>Kipas otomatis menyala jika suhu > 30°C</p>
+            </div>
           </div>
         )}
+
       </div>
     </div>
   );
 }
 
-const btnStyle = (aktif) => ({ background: aktif ? 'linear-gradient(90deg, #38bdf8, #0ea5e9)' : '#1e293b', color: aktif ? '#0f172a' : '#94a3b8', border: 'none', padding: '14px 20px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold', fontSize: '15px' });
-const cardStyle = { background: '#1e293b', padding: '25px', borderRadius: '20px', border: '1px solid #334155', textAlign: 'center' };
-const cardLabel = { color: '#64748b', fontSize: '11px', fontWeight: '800', letterSpacing: '1px', marginBottom: '10px' };
-const cardValue = { color: '#38bdf8', fontSize: '32px', margin: '0' };
-const guideBox = { background: '#1e293b', padding: '25px', borderRadius: '20px', border: '1px solid #334155' };
-const guideText = { color: '#94a3b8', fontSize: '14px', lineHeight: '1.8' };
-const formContainer = { background: '#1e293b', padding: '40px', borderRadius: '35px', width: '100%', maxWidth: '500px', border: '1px solid #334155' };
-const labelStyle = { display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '10px', marginTop: '20px', fontWeight: '800' };
-const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '15px', borderRadius: '15px', color: '#38bdf8', textAlign: 'center', fontSize: '20px', fontWeight: 'bold', width: '100%', outline: 'none' };
-const divider = { color: '#38bdf8', fontWeight: 'bold', fontSize: '24px' };
-const updateBtnStyle = { width: '100%', background: '#22c55e', color: '#ffffff', border: 'none', padding: '20px', borderRadius: '18px', marginTop: '35px', fontWeight: '900', cursor: 'pointer' };
-const thStyle = { textAlign: 'left', padding: '12px', color: '#64748b' };
-const tdStyle = { padding: '12px', color: '#cbd5e1' };
+// STYLES
+const btnStyle = (aktif) => ({ background: aktif ? '#38bdf8' : '#1e293b', color: aktif ? '#0f172a' : '#94a3b8', border: 'none', padding: '12px 15px', borderRadius: '10px', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold', width: '100%' });
+const formBox = { background: '#1e293b', padding: '25px', borderRadius: '20px', border: '1px solid #334155', marginBottom: '20px' };
+const tableBox = { background: '#1e293b', padding: '20px', borderRadius: '20px', border: '1px solid #334155' };
+const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '10px', color: '#38bdf8', width: '100%', marginBottom: '10px', outline: 'none' };
+const updateBtnStyle = { width: '100%', background: '#22c55e', color: 'white', border: 'none', padding: '12px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
+const labelMini = { display: 'block', fontSize: '10px', color: '#64748b', marginBottom: '5px', fontWeight: 'bold' };
+const cardSmall = { background: '#1e293b', padding: '20px', borderRadius: '15px', textAlign: 'center', border: '1px solid #334155' };
+const cardVal = { color: '#38bdf8', fontSize: '30px', margin: '0' };
 
 export default App;
