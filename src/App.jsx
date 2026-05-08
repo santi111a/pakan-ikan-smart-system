@@ -3,36 +3,94 @@ import { db } from './firebase';
 import { ref, onValue } from "firebase/database";
 
 function App() {
-  const [pakan, setPakan] = useState({});
+  const [halaman, setHalaman] = useState('beranda');
+  const [data, setData] = useState({});
 
   useEffect(() => {
-    const pakanRef = ref(db, 'pakan_pintar');
-    onValue(pakanRef, (snapshot) => {
+    // Mengambil seluruh data dari root Firebase agar semua menu terisi
+    const dbRef = ref(db, '/'); 
+    onValue(dbRef, (snapshot) => {
       if (snapshot.exists()) {
-        setPakan(snapshot.val());
+        setData(snapshot.val());
       }
     });
   }, []);
 
-  return (
-    <div style={{ backgroundColor: '#0f172a', color: '#38bdf8', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'sans-serif' }}>
-      <div style={{ padding: '40px', border: '2px solid #38bdf8', borderRadius: '24px', textAlign: 'center', background: '#1e293b', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
-        <h1 style={{ margin: '0 0 10px 0' }}>Santi Smart System v3.0</h1>
-        <p style={{ color: '#94a3b8' }}>Koneksi Vercel & Firebase Berhasil</p>
-        <hr style={{ borderColor: '#334155', margin: '20px 0' }} />
-        
-        <div style={{ marginBottom: '20px' }}>
-          <h3 style={{ color: '#f8fafc' }}>Jadwal Pakan Sore</h3>
-          <p style={{ fontSize: '32px', fontWeight: 'bold' }}>{pakan['jam sore'] || '0'} : {pakan['menit sore'] || '0'}</p>
-        </div>
+  // Komponen Sidebar/Menu
+  const Sidebar = () => (
+    <div style={{ width: '250px', background: '#1e293b', padding: '20px', borderRight: '2px solid #38bdf8' }}>
+      <h2 style={{ color: '#38bdf8', fontSize: '1.2rem' }}>Santi Smart System</h2>
+      <hr style={{ borderColor: '#334155', margin: '20px 0' }} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <button onClick={() => setHalaman('beranda')} style={btnStyle(halaman === 'beranda')}>🏠 Beranda</button>
+        <button onClick={() => setHalaman('pakan')} style={btnStyle(halaman === 'pakan')}>🐟 Pakan Pintar</button>
+        <button onClick={() => setHalaman('log')} style={btnStyle(halaman === 'log')}>📝 Log Jurnal Ikan</button>
+        <button onClick={() => setHalaman('air')} style={btnStyle(halaman === 'air')}>💧 Log Air</button>
+        <button onClick={() => setHalaman('hidroponik')} style={btnStyle(halaman === 'hidroponik')}>🌱 Hidroponik</button>
+      </div>
+    </div>
+  );
 
-        <div>
-          <h3 style={{ color: '#f8fafc' }}>Durasi Pakan</h3>
-          <p style={{ fontSize: '32px', fontWeight: 'bold' }}>{pakan['durasi detik'] || '0'} Detik</p>
-        </div>
+  return (
+    <div style={{ display: 'flex', backgroundColor: '#0f172a', color: '#f8fafc', minHeight: '100vh', fontFamily: 'sans-serif' }}>
+      <Sidebar />
+      
+      <div style={{ flex: 1, padding: '40px' }}>
+        {/* KONTEN BERANDA */}
+        {halaman === 'beranda' && (
+          <div>
+            <h1>Selamat Datang</h1>
+            <p>Pilih menu di samping untuk memonitor sistem Anda.</p>
+          </div>
+        )}
+
+        {/* KONTEN PAKAN PINTAR */}
+        {halaman === 'pakan' && (
+          <div style={{ textAlign: 'center' }}>
+            <h1 style={{ color: '#38bdf8' }}>Pakan Pintar</h1>
+            <div style={{ background: '#1e293b', padding: '30px', borderRadius: '20px', border: '1px solid #334155', display: 'inline-block' }}>
+              <h3>Jadwal Pakan Sore</h3>
+              <p style={{ fontSize: '40px', fontWeight: 'bold' }}>{data.jam_sore || '0'} : 00</p>
+              <hr style={{ borderColor: '#334155' }} />
+              <h3>Durasi Detik</h3>
+              <p style={{ fontSize: '40px', fontWeight: 'bold' }}>{data.durasi_detik || '0'}</p>
+            </div>
+          </div>
+        )}
+
+        {/* KONTEN LOG AIR */}
+        {halaman === 'air' && (
+          <div>
+            <h1>Log Air</h1>
+            <div style={{ background: '#1e293b', padding: '20px', borderRadius: '15px' }}>
+              <p>Status Kipas: {data.kipas_on ? 'NYALA' : 'MATI'}</p>
+              <p>Jadwal Pagi: {data.jam_pagi || '0'}:00</p>
+            </div>
+          </div>
+        )}
+
+        {/* KONTEN LAIN (Placeholder) */}
+        {(halaman === 'log' || halaman === 'hidroponik') && (
+          <div>
+            <h1>Halaman {halaman.toUpperCase()}</h1>
+            <p>Data sedang disiapkan dari sensor...</p>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+const btnStyle = (aktif) => ({
+  background: aktif ? '#38bdf8' : 'transparent',
+  color: aktif ? '#0f172a' : '#38bdf8',
+  border: '1px solid #38bdf8',
+  padding: '12px 15px',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  textAlign: 'left',
+  fontWeight: 'bold',
+  transition: '0.3s'
+});
 
 export default App;
