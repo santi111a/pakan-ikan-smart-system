@@ -1,11 +1,11 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 
+// Konfigurasi Firebase sesuai dengan akun proyek Pakan Ikan Pintar Anda
 const firebaseConfig = {
   apiKey: "AIzaSyA4N3uadS5_mQH6sXs-1N4q2JKa0UjPJ5I",
   authDomain: "pakan-ikan-pintar.firebaseapp.com",
-  // Tambahkan databaseURL ini secara manual agar bisa konek ke Realtime Database
-  databaseURL: "https://pakan-ikan-pintar-default-rtdb.firebaseio.com", 
+  databaseURL: "https://pakan-ikan-pintar-default-rtdb.firebaseio.com",
   projectId: "pakan-ikan-pintar",
   storageBucket: "pakan-ikan-pintar.firebasestorage.app",
   messagingSenderId: "396608989088",
@@ -16,5 +16,5 @@ const firebaseConfig = {
 // Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 
-// Ekspor database agar bisa dipakai di App.jsx
+// Ekspor database agar bisa diimpor oleh Aplikasi.jsx untuk menampilkan data di Beranda
 export const db = getDatabase(app);
