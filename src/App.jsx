@@ -4,29 +4,25 @@ import { ref, onValue } from "firebase/database";
 
 function App() {
   const [pakan, setPakan] = useState({});
-  const [logAir, setLogAir] = useState({});
 
   useEffect(() => {
     const pakanRef = ref(db, 'pakan_pintar');
     onValue(pakanRef, (snapshot) => {
-      if (snapshot.exists()) setPakan(snapshot.val());
-    });
-
-    const airRef = ref(db, 'log_udara');
-    onValue(airRef, (snapshot) => {
-      if (snapshot.exists()) setLogAir(snapshot.val());
+      if (snapshot.exists()) {
+        setPakan(snapshot.val());
+      }
     });
   }, []);
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center', backgroundColor: '#121212', color: '#00d4ff', minHeight: '100vh', fontFamily: 'Arial' }}>
-      <h1>=== KONEKSI BERHASIL ===</h1>
-      <div style={{ border: '2px solid #00d4ff', padding: '20px', borderRadius: '20px', display: 'inline-block', marginTop: '20px' }}>
-        <h2>Status Pakan Ikan</h2>
-        <p>Jadwal Sore: {pakan['jam sore'] || '0'}:{pakan['menit sore'] || '0'}</p>
-        <p>Durasi: {pakan['durasi detik'] || '0'} Detik</p>
-        <hr style={{ borderColor: '#333' }} />
-        <p>Log Terakhir: {logAir['tanggal kuras'] || 'Menunggu data...'}</p>
+    <div style={{ backgroundColor: '#121212', color: 'white', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'sans-serif' }}>
+      <div style={{ padding: '30px', border: '2px solid #00d4ff', borderRadius: '20px', textAlign: 'center' }}>
+        <h1 style={{ color: '#00d4ff' }}>Santi Smart System v3.0</h1>
+        <hr />
+        <h3>Jadwal Pakan Sore</h3>
+        <p style={{ fontSize: '24px' }}>{pakan['jam sore'] || '0'} : {pakan['menit sore'] || '0'}</p>
+        <h3>Durasi Pakan</h3>
+        <p style={{ fontSize: '24px' }}>{pakan['durasi detik'] || '0'} Detik</p>
       </div>
     </div>
   );
