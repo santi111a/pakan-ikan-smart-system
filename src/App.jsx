@@ -4,6 +4,8 @@ import { ref, onValue, update, push } from "firebase/database";
 
 function App() {
   const [halaman, setHalaman] = useState('beranda');
+  
+  // 1. STATE DATA SENSOR/SISTEM UTAMA
   const [data, setData] = useState({
     Jadwal: 0,
     end_date: 0,
@@ -15,36 +17,66 @@ function App() {
     kipas_on: false 
   });
 
-  // State untuk Log Jurnal Ikan
-  const [jurnalInput, setJurnalInput] = useState({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
+  // 2. STATE HIDROPONIK
+  const [hidroInput, setHidroInput] = useState({ 
+    tglTanam: '', 
+    namaTanaman: '', 
+    pupuk: '', 
+    hama: 'Aman', 
+    status: 'Pertumbuhan' 
+  });
+  const [listHidro, setListHidro] = useState([]);
+
+  // 3. STATE JURNAL IKAN
+  const [jurnalInput, setJurnalInput] = useState({ 
+    tglBibit: '', 
+    jumlahIkan: '', 
+    ukuranBibit: '', 
+    tglSortir: '' 
+  });
   const [listJurnal, setListJurnal] = useState([]);
 
-  // State Baru untuk Log Air (Pengurasan)
-  const [airInput, setAirInput] = useState({ tglKuras: '', kondisiAir: '', keterangan: '' });
+  // 4. STATE LOG AIR
+  const [airInput, setAirInput] = useState({ 
+    tglKuras: '', 
+    kondisiAir: '', 
+    keterangan: '' 
+  });
   const [listAir, setListAir] = useState([]);
 
+  // --- LOGIKA PENGAMBILAN DATA (REALTIME) ---
   useEffect(() => {
     const dbRef = ref(db, '/'); 
     onValue(dbRef, (snapshot) => {
       if (snapshot.exists()) {
         const result = snapshot.val();
         setData(result);
-        
+
         // Load Jurnal Ikan
         if (result.jurnal_harian) {
           const jurnalArray = Object.keys(result.jurnal_harian).map(key => ({ id: key, ...result.jurnal_harian[key] }));
           setListJurnal(jurnalArray.reverse());
         }
 
-        // Load Jurnal Pengurasan Air
+        // Load Jurnal Air
         if (result.log_pengurasan) {
           const airArray = Object.keys(result.log_pengurasan).map(key => ({ id: key, ...result.log_pengurasan[key] }));
           setListAir(airArray.reverse());
+        }
+
+        // Load Data Hidroponik
+        if (result.jurnal_hidroponik) {
+          const hidroArray = Object.keys(result.jurnal_hidroponik).map(key => ({ 
+            id: key, 
+            ...result.jurnal_hidroponik[key] 
+          }));
+          setListHidro(hidroArray.reverse());
         }
       }
     });
   }, []);
 
+  // --- FUNGSI HANDLER ---
   const handleUpdate = () => {
     const dbRef = ref(db, '/');
     const dataToUpdate = {
@@ -60,6 +92,16 @@ function App() {
     update(dbRef, dataToUpdate).then(() => alert("✅ Data Berhasil Diperbarui!"));
   };
 
+  const handleSimpanHidro = () => {
+    if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
+      return alert("Mohon isi minimal Tanggal Tanam dan Nama Tanaman!");
+    }
+    push(ref(db, 'jurnal_hidroponik'), hidroInput).then(() => {
+      alert("✅ Data Hidroponik Berhasil Disimpan!");
+      setHidroInput({ tglTanam: '', namaTanaman: '', pupuk: '', hama: 'Aman', status: 'Pertumbuhan' });
+    });
+  };
+
   const handleSimpanJurnal = () => {
     if (!jurnalInput.tglBibit || !jurnalInput.jumlahIkan) return alert("Mohon isi data tanggal dan jumlah bibit!");
     push(ref(db, 'jurnal_harian'), jurnalInput).then(() => {
@@ -68,7 +110,6 @@ function App() {
     });
   };
 
-  // Fungsi Simpan untuk Log Air
   const handleSimpanAir = () => {
     if (!airInput.tglKuras || !airInput.kondisiAir) return alert("Mohon isi tanggal dan kondisi air!");
     push(ref(db, 'log_pengurasan'), airInput).then(() => {
@@ -77,6 +118,7 @@ function App() {
     });
   };
 
+  // --- KOMPONEN SIDEBAR ---
   const Sidebar = () => (
     <div style={{ width: '300px', background: '#0f172a', padding: '25px', borderRight: '1px solid #38bdf8', height: '100vh', position: 'sticky', top: 0 }}>
       <h2 style={{ color: '#38bdf8', textAlign: 'center', marginBottom: '30px', fontSize: '22px' }}>Sistem Cerdas Santi</h2>
@@ -164,7 +206,7 @@ function App() {
           </div>
         )}
 
-        {/* HALAMAN LOG AIR (PENGURASAN) */}
+        {/* HALAMAN LOG AIR */}
         {halaman === 'air' && (
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>💧 Log Pengurasan Air</h2>
@@ -186,18 +228,60 @@ function App() {
           </div>
         )}
 
+        {/* HALAMAN HIDROPONIK */}
         {halaman === 'hidroponik' && (
-          <div style={{ textAlign: 'center', marginTop: '100px' }}>
-            <h1 style={{ fontSize: '40px', color: '#38bdf8' }}>Halaman {halaman.toUpperCase()}</h1>
-            <p style={{ color: '#64748b' }}>Fitur ini sedang dalam sinkronisasi dengan database sensor.</p>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>🌱 Jurnal Budidaya Hidroponik</h2>
+            <div style={jurnalBox}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                <div>
+                  <label style={labelStyle}>TANGGAL TANAM</label>
+                  <input type="date" value={hidroInput.tglTanam} onChange={(e) => setHidroInput({...hidroInput, tglTanam: e.target.value})} style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>NAMA TANAMAN</label>
+                  <input type="text" placeholder="Contoh: Selada" value={hidroInput.namaTanaman} onChange={(e) => setHidroInput({...hidroInput, namaTanaman: e.target.value})} style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>NUTRISI (PPM)</label>
+                  <input type="text" placeholder="1200 PPM" value={hidroInput.pupuk} onChange={(e) => setHidroInput({...hidroInput, pupuk: e.target.value})} style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>KONDISI HAMA</label>
+                  <select value={hidroInput.hama} onChange={(e) => setHidroInput({...hidroInput, hama: e.target.value})} style={inputStyle}>
+                    <option value="Aman">✅ Aman</option>
+                    <option value="Ada Kutu">🐛 Ada Kutu</option>
+                    <option value="Layu">🥀 Layu</option>
+                  </select>
+                </div>
+              </div>
+              <button onClick={handleSimpanHidro} style={{ ...updateBtnStyle, background: 'linear-gradient(90deg, #10b981, #059669)' }}>SIMPAN DATA TANAMAN</button>
+            </div>
+            <div style={historyBox}>
+              <h4 style={{ color: '#94a3b8', marginBottom: '20px' }}>Riwayat Hidroponik</h4>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead><tr style={{ borderBottom: '2px solid #334155', color: '#38bdf8' }}><th style={thStyle}>Tanggal</th><th style={thStyle}>Tanaman</th><th style={thStyle}>Nutrisi</th><th style={thStyle}>Kondisi</th></tr></thead>
+                <tbody>
+                  {listHidro.map((item) => (
+                    <tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}>
+                      <td style={tdStyle}>{item.tglTanam}</td>
+                      <td style={tdStyle}>{item.namaTanaman}</td>
+                      <td style={tdStyle}>{item.pupuk}</td>
+                      <td style={tdStyle}>{item.hama}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
+
       </div>
     </div>
   );
 }
 
-// Styles
+// --- STYLES ---
 const btnStyle = (aktif) => ({ background: aktif ? 'linear-gradient(90deg, #38bdf8, #0ea5e9)' : '#1e293b', color: aktif ? '#0f172a' : '#94a3b8', border: 'none', padding: '14px 20px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold', fontSize: '15px' });
 const cardStyle = { background: '#1e293b', padding: '25px', borderRadius: '20px', border: '1px solid #334155', textAlign: 'center' };
 const cardLabel = { color: '#64748b', fontSize: '11px', fontWeight: '800', letterSpacing: '1px', marginBottom: '10px' };
@@ -213,4 +297,3 @@ const thStyle = { textAlign: 'left', padding: '12px', color: '#64748b' };
 const tdStyle = { padding: '12px', color: '#cbd5e1' };
 
 export default App;
-
