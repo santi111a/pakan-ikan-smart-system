@@ -95,21 +95,97 @@ function App() {
       <Sidebar />
       <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
         
-        {/* HALAMAN BERANDA */}
-        {halaman === 'beranda' && (
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <h1 style={{ color: '#38bdf8', marginBottom: '10px', fontSize: '36px' }}>Selamat Datang di Sistem Cerdas Santi</h1>
-            <p style={{ color: '#94a3b8', fontSize: '18px', marginBottom: '40px', lineHeight: '1.6' }}>
-              Solusi manajemen kolam pintar berbasis IoT untuk memudahkan pemantauan dan perawatan ekosistem air Anda secara otomatis dan real-time.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-              <div style={cardStyle}><h4 style={cardLabel}>STATUS PAKAN</h4><h2 style={cardValue}>{data.jam_sore}:00</h2><p style={{ color: '#64748b', fontSize: '12px' }}>Terjadwal Otomatis</p></div>
-              <div style={cardStyle}><h4 style={cardLabel}>KONTROL UDARA</h4><h2 style={{ ...cardValue, color: data.kipas_on ? '#22c55e' : '#ef4444' }}>{data.kipas_on ? 'KIPAS ON' : 'KIPAS OFF'}</h2><p style={{ color: '#64748b', fontSize: '12px' }}>Sensor Suhu Aktif</p></div>
-              <div style={cardStyle}><h4 style={cardLabel}>HIDROPONIK</h4><h2 style={cardValue}>STABIL</h2><p style={{ color: '#64748b', fontSize: '12px' }}>Sirkulasi Air Normal</p></div>
-            </div>
-          </div>
-        )}
+{/* HALAMAN BERANDA */}
+{halaman === 'beranda' && (
+  <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+    {/* Header Selamat Datang */}
+    <div style={{ marginBottom: '40px' }}>
+      <h1 style={{ color: '#38bdf8', marginBottom: '10px', fontSize: '36px' }}>Selamat Datang, Pengelola!</h1>
+      <p style={{ color: '#94a3b8', fontSize: '16px' }}>Berikut adalah ringkasan kondisi ekosistem cerdas Anda hari ini.</p>
+    </div>
 
+    {/* Baris Ringkasan Utama (Cards) */}
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+      
+      {/* Ringkasan Ikan */}
+      <div style={cardStyle}>
+        <h4 style={cardLabel}>TOTAL IKAN SAAT INI</h4>
+        <h2 style={cardValue}>{listJurnal[0]?.jumlahIkan || '0'} <span style={{fontSize: '16px', color: '#64748b'}}>Ekor</span></h2>
+        <p style={{ color: '#64748b', fontSize: '12px', marginTop: '10px' }}>Input terakhir: {listJurnal[0]?.tglBibit || '-'}</p>
+      </div>
+
+      {/* Ringkasan Pakan - Dengan Format Jam 00:00 */}
+      <div style={cardStyle}>
+        <h4 style={cardLabel}>JADWAL PAKAN BERIKUTNYA</h4>
+        <h2 style={cardValue}>
+          {String(data.jam_sore).padStart(2, '0')}:{String(data.menit_sore || 0).padStart(2, '0')}
+        </h2>
+        <p style={{ color: '#22c55e', fontSize: '12px', marginTop: '10px' }}>Durasi: {data.durasi_detik} Detik</p>
+      </div>
+
+      {/* Ringkasan Udara */}
+      <div style={cardStyle}>
+        <h4 style={cardLabel}>SUHU LINGKUNGAN</h4>
+        <h2 style={{ ...cardValue, color: data.kipas_on ? '#f59e0b' : '#38bdf8' }}>
+          {listUdara[0]?.suhu || '--'}°C
+        </h2>
+        <p style={{ color: data.kipas_on ? '#22c55e' : '#64748b', fontSize: '12px', marginTop: '10px' }}>
+          Status Kipas: {data.kipas_on ? 'AKTIF' : 'STANDBY'}
+        </p>
+      </div>
+
+      {/* Ringkasan Hidroponik */}
+      <div style={cardStyle}>
+        <h4 style={cardLabel}>STATUS HIDROPONIK</h4>
+        <h2 style={cardValue}>{listHidro[0]?.ppm || '0'} <span style={{fontSize: '16px', color: '#64748b'}}>PPM</span></h2>
+        <p style={{ color: '#38bdf8', fontSize: '12px', marginTop: '10px' }}>Tanaman: {listHidro[0]?.tanaman || '-'}</p>
+      </div>
+
+    </div>
+
+    {/* Bagian Detail Tambahan */}
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      
+      {/* Aktivitas Terakhir */}
+      <div style={guideBox}>
+        <h3 style={{ color: '#38bdf8', fontSize: '18px', marginBottom: '15px' }}>📌 Aktivitas Terakhir</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={activityItem}>
+            <span style={{color: '#94a3b8'}}>Ikan:</span> 
+            <span style={{color: '#f8fafc'}}>Penebaran {listJurnal[0]?.jumlahIkan || 0} ekor</span>
+          </div>
+          <div style={activityItem}>
+            <span style={{color: '#94a3b8'}}>Udara:</span> 
+            <span style={{color: '#f8fafc'}}>{listUdara[0]?.suhu ? `Suhu tercatat ${listUdara[0].suhu}°C` : 'Belum ada data'}</span>
+          </div>
+          <div style={activityItem}>
+            <span style={{color: '#94a3b8'}}>Hidro:</span> 
+            <span style={{color: '#f8fafc'}}>Nutrisi: {listHidro[0]?.ppm || 0} PPM</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Status Sistem */}
+      <div style={guideBox}>
+        <h3 style={{ color: '#38bdf8', fontSize: '18px', marginBottom: '15px' }}>🚀 Status Koneksi Alat</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#22c55e' }}>
+          <div style={{ 
+            width: '10px', 
+            height: '10px', 
+            borderRadius: '50%', 
+            background: '#22c55e',
+            boxShadow: '0 0 8px #22c55e' 
+          }}></div>
+          <span style={{ fontWeight: 'bold' }}>Sistem Online</span>
+        </div>
+        <p style={{ color: '#64748b', fontSize: '13px', marginTop: '10px', lineHeight: '1.5' }}>
+          Database Firebase Realtime aktif. Kendali jarak jauh dan pemantauan otomatis berjalan normal.
+        </p>
+      </div>
+
+    </div>
+  </div>
+)}
         {/* HALAMAN PAKAN PINTAR */}
         {halaman === 'pakan' && (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -178,41 +254,35 @@ function App() {
           </div>
         )}
         {/* --- HALAMAN HIDROPONIK (AKTIF) --- */}
-        {halaman === 'hidroponik' && (
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>🌱 Jurnal Budidaya Hidroponik</h2>
-            <div style={jurnalBox}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                <div><label style={labelStyle}>TANGGAL TANAM</label><input type="date" value={hidroInput.tglTanam} onChange={(e)=>setHidroInput({...hidroInput, tglTanam: e.target.value})} style={inputStyle} /></div>
-                <div><label style={labelStyle}>NAMA TANAMAN</label><input type="text" placeholder="Cth: Selada/Pakcoy" value={hidroInput.namaTanaman} onChange={(e)=>setHidroInput({...hidroInput, namaTanaman: e.target.value})} style={inputStyle} /></div>
-                <div><label style={labelStyle}>NUTRISI (PPM)</label><input type="text" placeholder="Cth: 800 PPM" value={hidroInput.jenisNutrisi} onChange={(e)=>setHidroInput({...hidroInput, jenisNutrisi: e.target.value})} style={inputStyle} /></div>
-                <div><label style={labelStyle}>STATUS HAMA</label><input type="text" placeholder="Cth: Aman / Ada Kutu" value={hidroInput.statusHama} onChange={(e)=>setHidroInput({...hidroInput, statusHama: e.target.value})} style={inputStyle} /></div>
-              </div>
-              <button onClick={handleSimpanHidro} style={updateBtnStyle}>SIMPAN DATA HIDROPONIK</button>
-            </div>
-
+       {/* Tabel Riwayat Hidroponik */}
             <div style={historyBox}>
-              <h4 style={{ color: '#94a3b8', marginBottom: '15px' }}>Riwayat Penanaman</h4>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid #334155', color: '#38bdf8' }}>
-                    <th style={thStyle}>Tgl Tanam</th>
-                    <th style={thStyle}>Tanaman</th>
-                    <th style={thStyle}>Nutrisi</th>
-                    <th style={thStyle}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listHidro.map((item) => (
-                    <tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}>
-                      <td style={tdStyle}>{item.tglTanam}</td>
-                      <td style={tdStyle}>{item.namaTanaman}</td>
-                      <td style={tdStyle}>{item.jenisNutrisi}</td>
-                      <td style={tdStyle}>{item.statusHama}</td>
+              <h4 style={{ color: '#94a3b8', marginBottom: '15px' }}>Riwayat Panen & Penanaman</h4>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid #334155', color: '#38bdf8' }}>
+                      <th style={thStyle}>Tanaman</th>
+                      <th style={thStyle}>Tgl Tanam</th>
+                      <th style={thStyle}>Pupuk</th>
+                      <th style={thStyle}>Hama</th>
+                      <th style={thStyle}>Hasil</th>
+                      <th style={thStyle}>Harga Jual</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {listHidro.map((item) => (
+                      <tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}>
+                        <td style={tdStyle}>{item.namaTanaman}</td>
+                        <td style={tdStyle}>{item.tglTanam}</td>
+                        <td style={tdStyle}>{item.pupuk}</td>
+                        <td style={{...tdStyle, color: item.hama.toLowerCase() === 'aman' ? '#22c55e' : '#f59e0b'}}>{item.hama}</td>
+                        <td style={tdStyle}>{item.hasilPanen}</td>
+                        <td style={{...tdStyle, fontWeight: 'bold', color: '#38bdf8'}}>Rp {Number(item.hargaJual).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
@@ -220,20 +290,19 @@ function App() {
     </div>
   );
 }
+
 // Styles
 const btnStyle = (aktif) => ({ background: aktif ? 'linear-gradient(90deg, #38bdf8, #0ea5e9)' : '#1e293b', color: aktif ? '#0f172a' : '#94a3b8', border: 'none', padding: '14px 20px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold', fontSize: '15px' });
 const cardStyle = { background: '#1e293b', padding: '25px', borderRadius: '20px', border: '1px solid #334155', textAlign: 'center' };
 const cardLabel = { color: '#64748b', fontSize: '11px', fontWeight: '800', letterSpacing: '1px', marginBottom: '10px' };
-const cardValue = { color: '#38bdf8', fontSize: '32px', margin: '0' };
+const cardValue = { color: '#38bdf8', fontSize: '28px', margin: '0' };
 const formContainer = { background: '#1e293b', padding: '40px', borderRadius: '35px', width: '100%', maxWidth: '500px', border: '1px solid #334155' };
 const jurnalBox = { background: '#1e293b', padding: '30px', borderRadius: '20px', marginBottom: '30px', border: '1px solid #334155' };
 const historyBox = { background: '#1e293b', borderRadius: '20px', padding: '20px', border: '1px solid #334155' };
-const labelStyle = { display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '10px', marginTop: '10px', fontWeight: '800' };
-const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '15px', borderRadius: '15px', color: '#38bdf8', textAlign: 'center', fontSize: '18px', fontWeight: 'bold', width: '100%', outline: 'none' };
-const divider = { color: '#38bdf8', fontWeight: 'bold', fontSize: '24px' };
-const updateBtnStyle = { width: '100%', background: '#22c55e', color: '#ffffff', border: 'none', padding: '20px', borderRadius: '18px', marginTop: '25px', fontWeight: '900', cursor: 'pointer' };
-const thStyle = { textAlign: 'left', padding: '12px', color: '#64748b' };
-const tdStyle = { padding: '12px', color: '#cbd5e1' };
+const labelStyle = { display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '8px', fontWeight: '800' };
+const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '10px', color: '#38bdf8', fontSize: '15px', width: '100%', outline: 'none' };
+const updateBtnStyle = { width: '100%', background: '#22c55e', color: '#ffffff', border: 'none', padding: '15px', borderRadius: '12px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer' };
+const thStyle = { textAlign: 'left', padding: '12px', color: '#64748b', fontSize: '13px' };
+const tdStyle = { padding: '12px', color: '#cbd5e1', fontSize: '14px' };
 
 export default App;
-
