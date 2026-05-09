@@ -19,12 +19,14 @@ function App() {
 
   // 2. STATE HIDROPONIK
   const [hidroInput, setHidroInput] = useState({ 
-    tglTanam: '', 
-    namaTanaman: '', 
-    pupuk: '', 
-    hama: 'Aman', 
-    status: 'Pertumbuhan' 
-  });
+  tglTanam: '', 
+  namaTanaman: '', 
+  pupuk: '', 
+  hama: 'Aman', 
+  status: 'Pertumbuhan',
+  jumlahPanen: '', // Tambahkan ini
+  hargaJual: ''    // Tambahkan ini
+});
   const [listHidro, setListHidro] = useState([]);
 
   // 3. STATE JURNAL IKAN
@@ -93,14 +95,25 @@ function App() {
   };
 
   const handleSimpanHidro = () => {
-    if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
-      return alert("Mohon isi minimal Tanggal Tanam dan Nama Tanaman!");
-    }
-    push(ref(db, 'jurnal_hidroponik'), hidroInput).then(() => {
-      alert("✅ Data Hidroponik Berhasil Disimpan!");
-      setHidroInput({ tglTanam: '', namaTanaman: '', pupuk: '', hama: 'Aman', status: 'Pertumbuhan' });
+  if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
+    return alert("Mohon isi minimal Tanggal Tanam dan Nama Tanaman!");
+  }
+  
+  // Mengirim data ke path 'jurnal_hidroponik' di Firebase
+  push(ref(db, 'jurnal_hidroponik'), hidroInput).then(() => {
+    alert("✅ Data Hidroponik Berhasil Disimpan!");
+    // Reset form setelah simpan
+    setHidroInput({ 
+      tglTanam: '', 
+      namaTanaman: '', 
+      pupuk: '', 
+      hama: 'Aman', 
+      status: 'Pertumbuhan',
+      jumlahPanen: '', 
+      hargaJual: '' 
     });
-  };
+  });
+};
 
   const handleSimpanJurnal = () => {
     if (!jurnalInput.tglBibit || !jurnalInput.jumlahIkan) return alert("Mohon isi data tanggal dan jumlah bibit!");
@@ -257,8 +270,7 @@ function App() {
           </div>
         )}
 
-        {/* HALAMAN HIDROPONIK */}
-       {/* HALAMAN HIDROPONIK */}
+{/* HALAMAN HIDROPONIK */}
 {halaman === 'hidroponik' && (
   <div style={{ maxWidth: '900px', margin: '0 auto' }}>
     <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>🌱 Jurnal Budidaya Hidroponik</h2>
@@ -297,14 +309,14 @@ function App() {
           <input type="number" placeholder="Contoh: 15000" value={hidroInput.hargaJual} onChange={(e) => setHidroInput({...hidroInput, hargaJual: e.target.value})} style={inputStyle} />
         </div>
       </div>
-      <button onClick={handleSimpanHidro} style={{ ...updateBtnStyle, background: 'linear-gradient(90deg, #10b981, #059669)' }}>
+      <button onClick={handleSimpanHidro} style={{ ...updateBtnStyle, background: 'linear-gradient(90deg, #10b981, #059669)', marginTop: '30px' }}>
         SIMPAN DATA TANAMAN
       </button>
     </div>
 
     {/* Tabel Riwayat */}
     <div style={historyBox}>
-      <h4 style={{ color: '#94a3b8', marginBottom: '20px' }}>Riwayat Hidroponik</h4>
+      <h4 style={{ color: '#94a3b8', marginBottom: '20px', textAlign: 'center' }}>Riwayat Hidroponik</h4>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ borderBottom: '2px solid #334155', color: '#38bdf8' }}>
@@ -321,7 +333,9 @@ function App() {
               <td style={tdStyle}>{item.tglTanam}</td>
               <td style={tdStyle}>{item.namaTanaman}</td>
               <td style={tdStyle}>{item.jumlahPanen || '-'}</td>
-              <td style={tdStyle}>{item.hargaJual ? `Rp ${Number(item.hargaJual).toLocaleString('id-ID')}` : '-'}</td>
+              <td style={tdStyle}>
+                {item.hargaJual ? `Rp ${Number(item.hargaJual).toLocaleString('id-ID')}` : '-'}
+              </td>
               <td style={tdStyle}>{item.hama}</td>
             </tr>
           ))}
