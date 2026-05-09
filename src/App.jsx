@@ -17,32 +17,16 @@ function App() {
     kipas_on: false 
   });
 
-  // 2. STATE HIDROPONIK
-  const handleSimpanHidro = () => {
-  // Validasi dasar
-  if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
-    return alert("Mohon isi Tanggal dan Nama Tanaman!");
-  }
-
-  const dbRef = ref(db, 'jurnal_hidroponik');
-  
-  // push akan mengirim objek hidroInput (termasuk jumlahPanen & hargaJual)
-  push(dbRef, hidroInput)
-    .then(() => {
-      alert("✅ Data Berhasil Disimpan!");
-      // Reset form agar kembali kosong
-      setHidroInput({ 
-        tglTanam: '', 
-        namaTanaman: '', 
-        pupuk: '', 
-        hama: 'Aman', 
-        status: 'Pertumbuhan',
-        jumlahPanen: '', 
-        hargaJual: '' 
-      });
-    })
-    .catch((error) => alert("Gagal menyimpan: " + error.message));
-};
+  // 2. STATE HIDROPONIK (DIPERBAIKI: State Harus Ada di Sini)
+  const [hidroInput, setHidroInput] = useState({ 
+    tglTanam: '', 
+    namaTanaman: '', 
+    pupuk: '', 
+    hama: 'Aman', 
+    status: 'Pertumbuhan',
+    jumlahPanen: '', 
+    hargaJual: '' 
+  });
   const [listHidro, setListHidro] = useState([]);
 
   // 3. STATE JURNAL IKAN
@@ -70,19 +54,16 @@ function App() {
         const result = snapshot.val();
         setData(result);
 
-        // Load Jurnal Ikan
         if (result.jurnal_harian) {
           const jurnalArray = Object.keys(result.jurnal_harian).map(key => ({ id: key, ...result.jurnal_harian[key] }));
           setListJurnal(jurnalArray.reverse());
         }
 
-        // Load Jurnal Air
         if (result.log_pengurasan) {
           const airArray = Object.keys(result.log_pengurasan).map(key => ({ id: key, ...result.log_pengurasan[key] }));
           setListAir(airArray.reverse());
         }
 
-        // Load Data Hidroponik
         if (result.jurnal_hidroponik) {
           const hidroArray = Object.keys(result.jurnal_hidroponik).map(key => ({ 
             id: key, 
@@ -111,25 +92,18 @@ function App() {
   };
 
   const handleSimpanHidro = () => {
-  if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
-    return alert("Mohon isi minimal Tanggal Tanam dan Nama Tanaman!");
-  }
-  
-  // Mengirim data ke path 'jurnal_hidroponik' di Firebase
-  push(ref(db, 'jurnal_hidroponik'), hidroInput).then(() => {
-    alert("✅ Data Hidroponik Berhasil Disimpan!");
-    // Reset form setelah simpan
-    setHidroInput({ 
-      tglTanam: '', 
-      namaTanaman: '', 
-      pupuk: '', 
-      hama: 'Aman', 
-      status: 'Pertumbuhan',
-      jumlahPanen: '', 
-      hargaJual: '' 
-    });
-  });
-};
+    if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
+      return alert("Mohon isi minimal Tanggal Tanam dan Nama Tanaman!");
+    }
+    
+    push(ref(db, 'jurnal_hidroponik'), hidroInput).then(() => {
+      alert("✅ Data Hidroponik Berhasil Disimpan!");
+      setHidroInput({ 
+        tglTanam: '', namaTanaman: '', pupuk: '', hama: 'Aman', 
+        status: 'Pertumbuhan', jumlahPanen: '', hargaJual: '' 
+      });
+    }).catch((err) => alert("Gagal: " + err.message));
+  };
 
   const handleSimpanJurnal = () => {
     if (!jurnalInput.tglBibit || !jurnalInput.jumlahIkan) return alert("Mohon isi data tanggal dan jumlah bibit!");
@@ -141,30 +115,11 @@ function App() {
 
   const handleSimpanAir = () => {
     if (!airInput.tglKuras || !airInput.kondisiAir) return alert("Mohon isi tanggal dan kondisi air!");
-    push(ref(db, 'log_pengurasan'), airInput).then(() => {
+    push(ref(db, 'log_pengurasan'), airAirInput).then(() => {
       alert("✅ Log Pengurasan Berhasil Disimpan!");
       setAirInput({ tglKuras: '', kondisiAir: '', keterangan: '' });
     });
   };
-
-  // --- KOMPONEN SIDEBAR ---
-  const Sidebar = () => (
-    <div style={{ width: '300px', background: '#0f172a', padding: '25px', borderRight: '1px solid #38bdf8', height: '100vh', position: 'sticky', top: 0 }}>
-      <h2 style={{ color: '#38bdf8', textAlign: 'center', marginBottom: '30px', fontSize: '22px' }}>Sistem Cerdas Santi</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <button onClick={() => setHalaman('beranda')} style={btnStyle(halaman === 'beranda')}>🏠 Beranda</button>
-        <button onClick={() => setHalaman('pakan')} style={btnStyle(halaman === 'pakan')}>🐟 Pakan Pintar</button>
-        <button onClick={() => setHalaman('log')} style={btnStyle(halaman === 'log')}>📝 Log Jurnal Ikan</button>
-        <button onClick={() => setHalaman('air')} style={btnStyle(halaman === 'air')}>💧 Log Air</button>
-        <button onClick={() => setHalaman('hidroponik')} style={btnStyle(halaman === 'hidroponik')}>🌱 Hidroponik</button>
-      </div>
-    </div>
-  );
-
-  return (
-    <div style={{ display: 'flex', backgroundColor: '#0b1120', color: '#f8fafc', minHeight: '100vh', fontFamily: 'Arial' }}>
-      <Sidebar />
-      <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
         
         {/* HALAMAN BERANDA */}
 {/* HALAMAN BERANDA */}
@@ -287,11 +242,11 @@ function App() {
         )}
 
 {/* HALAMAN HIDROPONIK */}
+{/* HALAMAN HIDROPONIK */}
 {halaman === 'hidroponik' && (
   <div style={{ maxWidth: '900px', margin: '0 auto' }}>
     <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>🌱 Jurnal Budidaya Hidroponik</h2>
     
-    {/* Form Input */}
     <div style={jurnalBox}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
         <div>
@@ -314,12 +269,10 @@ function App() {
             <option value="Layu">🥀 Layu</option>
           </select>
         </div>
-        {/* INPUT BARU: JUMLAH PANEN */}
         <div>
           <label style={labelStyle}>JUMLAH PANEN</label>
           <input type="text" placeholder="Contoh: 10 Kg" value={hidroInput.jumlahPanen} onChange={(e) => setHidroInput({...hidroInput, jumlahPanen: e.target.value})} style={inputStyle} />
         </div>
-        {/* INPUT BARU: HARGA JUAL */}
         <div>
           <label style={labelStyle}>HARGA JUAL (RP)</label>
           <input type="number" placeholder="Contoh: 15000" value={hidroInput.hargaJual} onChange={(e) => setHidroInput({...hidroInput, hargaJual: e.target.value})} style={inputStyle} />
@@ -330,7 +283,6 @@ function App() {
       </button>
     </div>
 
-    {/* Tabel Riwayat */}
     <div style={historyBox}>
       <h4 style={{ color: '#94a3b8', marginBottom: '20px', textAlign: 'center' }}>Riwayat Hidroponik</h4>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -344,23 +296,21 @@ function App() {
           </tr>
         </thead>
         <tbody>
-  {listHidro.map((item) => (
-    <tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}>
-      <td style={tdStyle}>{item.tglTanam}</td>
-      <td style={tdStyle}>{item.namaTanaman}</td>
-      
-      {/* Pastikan menggunakan item.jumlahPanen */}
-      <td style={tdStyle}>{item.jumlahPanen || '-'}</td>
-      
-      {/* Pastikan menggunakan item.hargaJual dengan format Rupiah */}
-      <td style={tdStyle}>
-        {item.hargaJual ? `Rp ${Number(item.hargaJual).toLocaleString('id-ID')}` : '-'}
-      </td>
-      
-      <td style={tdStyle}>{item.hama}</td>
-    </tr>
-  ))}
-</tbody>
+          {listHidro.map((item) => (
+            <tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}>
+              <td style={tdStyle}>{item.tglTanam}</td>
+              <td style={tdStyle}>{item.namaTanaman}</td>
+              <td style={tdStyle}>{item.jumlahPanen || '-'}</td>
+              <td style={tdStyle}>
+                {item.hargaJual ? `Rp ${Number(item.hargaJual).toLocaleString('id-ID')}` : '-'}
+              </td>
+              <td style={tdStyle}>{item.hama}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
 )}
         
 // --- STYLES ---
