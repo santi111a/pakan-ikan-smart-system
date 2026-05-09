@@ -17,16 +17,53 @@ function App() {
     kipas_on: false 
   });
 
-  // 2. STATE HIDROPONIK (DIPERBAIKI: State Harus Ada di Sini)
-  const [hidroInput, setHidroInput] = useState({ 
-    tglTanam: '', 
-    namaTanaman: '', 
-    pupuk: '', 
-    hama: 'Aman', 
-    status: 'Pertumbuhan',
-    jumlahPanen: '', 
-    hargaJual: '' 
-  });
+  // --- Cukup tulis SATU KALI saja fungsi-fungsi ini ---
+
+const handleSimpanHidro = () => {
+  if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
+    return alert("Mohon isi minimal Tanggal Tanam dan Nama Tanaman!");
+  }
+  
+  // Pastikan hargaJual disimpan sebagai angka agar bisa dihitung/di-format
+  const dataSiapSimpan = {
+    ...hidroInput,
+    hargaJual: hidroInput.hargaJual ? Number(hidroInput.hargaJual) : 0
+  };
+
+  push(ref(db, 'jurnal_hidroponik'), dataSiapSimpan)
+    .then(() => {
+      alert("✅ Data Hidroponik Berhasil Disimpan!");
+      // Reset form ke awal
+      setHidroInput({ 
+        tglTanam: '', 
+        namaTanaman: '', 
+        pupuk: '', 
+        hama: 'Aman', 
+        status: 'Pertumbuhan', 
+        jumlahPanen: '', 
+        hargaJual: '' 
+      });
+    })
+    .catch((err) => alert("Gagal: " + err.message));
+};
+
+const handleSimpanJurnal = () => {
+  if (!jurnalInput.tglBibit || !jurnalInput.jumlahIkan) {
+    return alert("Mohon isi data tanggal dan jumlah bibit!");
+  }
+  
+  push(ref(db, 'jurnal_harian'), jurnalInput)
+    .then(() => {
+      alert("✅ Catatan Jurnal Berhasil Disimpan!");
+      setJurnalInput({ 
+        tglBibit: '', 
+        jumlahIkan: '', 
+        ukuranBibit: '', 
+        tglSortir: '' 
+      });
+    })
+    .catch((err) => alert("Gagal: " + err.message));
+};
   const [listHidro, setListHidro] = useState([]);
 
   // 3. STATE JURNAL IKAN
