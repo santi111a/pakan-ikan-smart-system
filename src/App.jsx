@@ -138,9 +138,9 @@ function App() {
       <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
         
         {/* HALAMAN BERANDA */}
+{/* HALAMAN BERANDA */}
 {halaman === 'beranda' && (
   <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
-    {/* Ucapan Selamat Datang yang Diperbarui */}
     <h1 style={{ color: '#38bdf8', marginBottom: '10px', fontSize: '36px' }}>
       Halo, Selamat Datang! 👋
     </h1>
@@ -151,25 +151,31 @@ function App() {
       Solusi manajemen kolam pintar berbasis IoT untuk memudahkan pemantauan dan perawatan ekosistem air Anda secara otomatis dan real-time.
     </p>
 
-    {/* Grid Kartu - Sekarang hanya menampilkan Pakan dan Hidroponik */}
     <div style={{ 
       display: 'grid', 
       gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
       gap: '25px', 
       marginBottom: '40px' 
     }}>
-      {/* Kartu Status Pakan */}
+      {/* KARTU PAKAN - Perbaikan Menit */}
       <div style={cardStyle}>
-        <h4 style={cardLabel}>STATUS PAKAN</h4>
-        <h2 style={cardValue}>{data.jam_sore}:00</h2>
-        <p style={{ color: '#64748b', fontSize: '12px' }}>Terjadwal Otomatis</p>
+        <h4 style={cardLabel}>JADWAL PAKAN TERDEKAT</h4>
+        <h2 style={cardValue}>
+          {/* Menampilkan jam dan menit pagi secara dinamis */}
+          {String(data.jam_pagi).padStart(2, '0')}:{String(data.menit_pagi || 0).padStart(2, '0')}
+        </h2>
+        <p style={{ color: '#64748b', fontSize: '12px' }}>Sesi Pagi Aktif</p>
       </div>
 
-      {/* Kartu Status Hidroponik */}
+      {/* KARTU HIDROPONIK - Menampilkan Tanaman Terbaru */}
       <div style={cardStyle}>
-        <h4 style={cardLabel}>HIDROPONIK</h4>
-        <h2 style={cardValue}>STABIL</h2>
-        <p style={{ color: '#64748b', fontSize: '12px' }}>Sirkulasi Air Normal</p>
+        <h4 style={cardLabel}>TANAMAN SAAT INI</h4>
+        <h2 style={{ ...cardValue, fontSize: '24px', textTransform: 'uppercase' }}>
+          {listHidro.length > 0 ? listHidro[0].namaTanaman : 'BELUM ADA DATA'}
+        </h2>
+        <p style={{ color: '#64748b', fontSize: '12px' }}>
+          Status: {listHidro.length > 0 ? listHidro[0].hama : '-'}
+        </p>
       </div>
     </div>
   </div>
