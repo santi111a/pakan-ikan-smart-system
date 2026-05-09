@@ -18,15 +18,31 @@ function App() {
   });
 
   // 2. STATE HIDROPONIK
-  const [hidroInput, setHidroInput] = useState({ 
-  tglTanam: '', 
-  namaTanaman: '', 
-  pupuk: '', 
-  hama: 'Aman', 
-  status: 'Pertumbuhan',
-  jumlahPanen: '', // Tambahkan ini
-  hargaJual: ''    // Tambahkan ini
-});
+  const handleSimpanHidro = () => {
+  // Validasi dasar
+  if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
+    return alert("Mohon isi Tanggal dan Nama Tanaman!");
+  }
+
+  const dbRef = ref(db, 'jurnal_hidroponik');
+  
+  // push akan mengirim objek hidroInput (termasuk jumlahPanen & hargaJual)
+  push(dbRef, hidroInput)
+    .then(() => {
+      alert("✅ Data Berhasil Disimpan!");
+      // Reset form agar kembali kosong
+      setHidroInput({ 
+        tglTanam: '', 
+        namaTanaman: '', 
+        pupuk: '', 
+        hama: 'Aman', 
+        status: 'Pertumbuhan',
+        jumlahPanen: '', 
+        hargaJual: '' 
+      });
+    })
+    .catch((error) => alert("Gagal menyimpan: " + error.message));
+};
   const [listHidro, setListHidro] = useState([]);
 
   // 3. STATE JURNAL IKAN
@@ -328,21 +344,23 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {listHidro.map((item) => (
-            <tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}>
-              <td style={tdStyle}>{item.tglTanam}</td>
-              <td style={tdStyle}>{item.namaTanaman}</td>
-              <td style={tdStyle}>{item.jumlahPanen || '-'}</td>
-              <td style={tdStyle}>
-                {item.hargaJual ? `Rp ${Number(item.hargaJual).toLocaleString('id-ID')}` : '-'}
-              </td>
-              <td style={tdStyle}>{item.hama}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
+  {listHidro.map((item) => (
+    <tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}>
+      <td style={tdStyle}>{item.tglTanam}</td>
+      <td style={tdStyle}>{item.namaTanaman}</td>
+      
+      {/* Pastikan menggunakan item.jumlahPanen */}
+      <td style={tdStyle}>{item.jumlahPanen || '-'}</td>
+      
+      {/* Pastikan menggunakan item.hargaJual dengan format Rupiah */}
+      <td style={tdStyle}>
+        {item.hargaJual ? `Rp ${Number(item.hargaJual).toLocaleString('id-ID')}` : '-'}
+      </td>
+      
+      <td style={tdStyle}>{item.hama}</td>
+    </tr>
+  ))}
+</tbody>
 )}
         
 // --- STYLES ---
