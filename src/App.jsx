@@ -167,21 +167,16 @@ function App() {
        {/* HALAMAN LOG AIR */}
         {halaman === 'air' && (
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>💧 Log Pengurasan</h2>
+            <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>💧 Log Pengurasan Air</h2>
             <div style={jurnalBox}>
-              <input type="date" value={airInput.tglKuras} onChange={(e)=>setAirInput({...airInput, tglKuras: e.target.value})} style={{...inputStyle, marginBottom: '15px'}} />
-              <input type="text" placeholder="Kondisi Air (Keruh/Hijau)" value={airInput.kondisiAir} onChange={(e)=>setAirInput({...airInput, kondisiAir: e.target.value})} style={inputStyle} />
-              <button onClick={handleSimpanAir} style={updateBtnStyle}>SIMPAN LOG AIR</button>
-            </div>
-            <div style={historyBox}>
-               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr style={{ borderBottom: '1px solid #334155', color: '#38bdf8' }}><th style={thStyle}>Tanggal</th><th style={thStyle}>Kondisi</th><th style={thStyle}>Catatan</th></tr></thead>
-                <tbody>{listAir.map((item) => (<tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}><td style={tdStyle}>{item.tglKuras}</td><td style={tdStyle}>{item.kondisiAir}</td><td style={tdStyle}>{item.keterangan || '-'}</td></tr>))}</tbody>
-              </table>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div><label style={labelStyle}>TANGGAL PENGURASAN</label><input type="date" value={airInput.tglKuras} onChange={(e)=>setAirInput({...airInput, tglKuras: e.target.value})} style={inputStyle} /></div>
+                <div><label style={labelStyle}>KONDISI AIR</label><input type="text" value={airInput.kondisiAir} onChange={(e)=>setAirInput({...airInput, kondisiAir: e.target.value})} style={inputStyle} /></div>
+              </div>
+              <button onClick={handleSimpanAir} style={updateBtnStyle}>SIMPAN DATA PENGURASAN</button>
             </div>
           </div>
         )}
-
         {/* --- HALAMAN HIDROPONIK (AKTIF) --- */}
         {halaman === 'hidroponik' && (
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
