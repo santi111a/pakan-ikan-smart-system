@@ -138,19 +138,42 @@ function App() {
       <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
         
         {/* HALAMAN BERANDA */}
-        {halaman === 'beranda' && (
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <h1 style={{ color: '#38bdf8', marginBottom: '10px', fontSize: '36px' }}>Selamat Datang di Sistem Cerdas Santi</h1>
-            <p style={{ color: '#94a3b8', fontSize: '18px', marginBottom: '40px', lineHeight: '1.6' }}>
-              Solusi manajemen kolam pintar berbasis IoT untuk memudahkan pemantauan dan perawatan ekosistem air Anda secara otomatis dan real-time.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-              <div style={cardStyle}><h4 style={cardLabel}>STATUS PAKAN</h4><h2 style={cardValue}>{data.jam_sore}:00</h2><p style={{ color: '#64748b', fontSize: '12px' }}>Terjadwal Otomatis</p></div>
-              <div style={cardStyle}><h4 style={cardLabel}>KONTROL UDARA</h4><h2 style={{ ...cardValue, color: data.kipas_on ? '#22c55e' : '#ef4444' }}>{data.kipas_on ? 'KIPAS ON' : 'KIPAS OFF'}</h2><p style={{ color: '#64748b', fontSize: '12px' }}>Sensor Suhu Aktif</p></div>
-              <div style={cardStyle}><h4 style={cardLabel}>HIDROPONIK</h4><h2 style={cardValue}>STABIL</h2><p style={{ color: '#64748b', fontSize: '12px' }}>Sirkulasi Air Normal</p></div>
-            </div>
-          </div>
-        )}
+{halaman === 'beranda' && (
+  <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+    {/* Ucapan Selamat Datang yang Diperbarui */}
+    <h1 style={{ color: '#38bdf8', marginBottom: '10px', fontSize: '36px' }}>
+      Halo, Selamat Datang! 👋
+    </h1>
+    <h2 style={{ color: '#f8fafc', marginBottom: '20px', fontSize: '24px' }}>
+      Sistem Cerdas Santi
+    </h2>
+    <p style={{ color: '#94a3b8', fontSize: '18px', marginBottom: '40px', lineHeight: '1.6' }}>
+      Solusi manajemen kolam pintar berbasis IoT untuk memudahkan pemantauan dan perawatan ekosistem air Anda secara otomatis dan real-time.
+    </p>
+
+    {/* Grid Kartu - Sekarang hanya menampilkan Pakan dan Hidroponik */}
+    <div style={{ 
+      display: 'grid', 
+      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+      gap: '25px', 
+      marginBottom: '40px' 
+    }}>
+      {/* Kartu Status Pakan */}
+      <div style={cardStyle}>
+        <h4 style={cardLabel}>STATUS PAKAN</h4>
+        <h2 style={cardValue}>{data.jam_sore}:00</h2>
+        <p style={{ color: '#64748b', fontSize: '12px' }}>Terjadwal Otomatis</p>
+      </div>
+
+      {/* Kartu Status Hidroponik */}
+      <div style={cardStyle}>
+        <h4 style={cardLabel}>HIDROPONIK</h4>
+        <h2 style={cardValue}>STABIL</h2>
+        <p style={{ color: '#64748b', fontSize: '12px' }}>Sirkulasi Air Normal</p>
+      </div>
+    </div>
+  </div>
+)}
 
         {/* HALAMAN PAKAN PINTAR */}
         {halaman === 'pakan' && (
