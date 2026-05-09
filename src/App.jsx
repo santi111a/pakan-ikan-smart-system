@@ -214,5 +214,3 @@ const tdStyle = { padding: '12px', color: '#cbd5e1' };
 
 export default App;
 
-
-fix 2 plus log air
