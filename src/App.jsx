@@ -258,58 +258,79 @@ function App() {
         )}
 
         {/* HALAMAN HIDROPONIK */}
-        {halaman === 'hidroponik' && (
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>🌱 Jurnal Budidaya Hidroponik</h2>
-            <div style={jurnalBox}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                <div>
-                  <label style={labelStyle}>TANGGAL TANAM</label>
-                  <input type="date" value={hidroInput.tglTanam} onChange={(e) => setHidroInput({...hidroInput, tglTanam: e.target.value})} style={inputStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>NAMA TANAMAN</label>
-                  <input type="text" placeholder="Contoh: Selada" value={hidroInput.namaTanaman} onChange={(e) => setHidroInput({...hidroInput, namaTanaman: e.target.value})} style={inputStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>NUTRISI (PPM)</label>
-                  <input type="text" placeholder="1200 PPM" value={hidroInput.pupuk} onChange={(e) => setHidroInput({...hidroInput, pupuk: e.target.value})} style={inputStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>KONDISI HAMA</label>
-                  <select value={hidroInput.hama} onChange={(e) => setHidroInput({...hidroInput, hama: e.target.value})} style={inputStyle}>
-                    <option value="Aman">✅ Aman</option>
-                    <option value="Ada Kutu">🐛 Ada Kutu</option>
-                    <option value="Layu">🥀 Layu</option>
-                  </select>
-                </div>
-              </div>
-              <button onClick={handleSimpanHidro} style={{ ...updateBtnStyle, background: 'linear-gradient(90deg, #10b981, #059669)' }}>SIMPAN DATA TANAMAN</button>
-            </div>
-            <div style={historyBox}>
-              <h4 style={{ color: '#94a3b8', marginBottom: '20px' }}>Riwayat Hidroponik</h4>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr style={{ borderBottom: '2px solid #334155', color: '#38bdf8' }}><th style={thStyle}>Tanggal</th><th style={thStyle}>Tanaman</th><th style={thStyle}>Nutrisi</th><th style={thStyle}>Kondisi</th></tr></thead>
-                <tbody>
-                  {listHidro.map((item) => (
-                    <tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}>
-                      <td style={tdStyle}>{item.tglTanam}</td>
-                      <td style={tdStyle}>{item.namaTanaman}</td>
-                      <td style={tdStyle}>{item.pupuk}</td>
-                      <td style={tdStyle}>{item.hama}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
+       {/* HALAMAN HIDROPONIK */}
+{halaman === 'hidroponik' && (
+  <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+    <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>🌱 Jurnal Budidaya Hidroponik</h2>
+    
+    {/* Form Input */}
+    <div style={jurnalBox}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+        <div>
+          <label style={labelStyle}>TANGGAL TANAM</label>
+          <input type="date" value={hidroInput.tglTanam} onChange={(e) => setHidroInput({...hidroInput, tglTanam: e.target.value})} style={inputStyle} />
+        </div>
+        <div>
+          <label style={labelStyle}>NAMA TANAMAN</label>
+          <input type="text" placeholder="Contoh: Selada" value={hidroInput.namaTanaman} onChange={(e) => setHidroInput({...hidroInput, namaTanaman: e.target.value})} style={inputStyle} />
+        </div>
+        <div>
+          <label style={labelStyle}>NUTRISI (PPM)</label>
+          <input type="text" placeholder="1200 PPM" value={hidroInput.pupuk} onChange={(e) => setHidroInput({...hidroInput, pupuk: e.target.value})} style={inputStyle} />
+        </div>
+        <div>
+          <label style={labelStyle}>KONDISI HAMA</label>
+          <select value={hidroInput.hama} onChange={(e) => setHidroInput({...hidroInput, hama: e.target.value})} style={inputStyle}>
+            <option value="Aman">✅ Aman</option>
+            <option value="Ada Kutu">🐛 Ada Kutu</option>
+            <option value="Layu">🥀 Layu</option>
+          </select>
+        </div>
+        {/* INPUT BARU: JUMLAH PANEN */}
+        <div>
+          <label style={labelStyle}>JUMLAH PANEN</label>
+          <input type="text" placeholder="Contoh: 10 Kg" value={hidroInput.jumlahPanen} onChange={(e) => setHidroInput({...hidroInput, jumlahPanen: e.target.value})} style={inputStyle} />
+        </div>
+        {/* INPUT BARU: HARGA JUAL */}
+        <div>
+          <label style={labelStyle}>HARGA JUAL (RP)</label>
+          <input type="number" placeholder="Contoh: 15000" value={hidroInput.hargaJual} onChange={(e) => setHidroInput({...hidroInput, hargaJual: e.target.value})} style={inputStyle} />
+        </div>
       </div>
+      <button onClick={handleSimpanHidro} style={{ ...updateBtnStyle, background: 'linear-gradient(90deg, #10b981, #059669)' }}>
+        SIMPAN DATA TANAMAN
+      </button>
     </div>
-  );
-}
 
+    {/* Tabel Riwayat */}
+    <div style={historyBox}>
+      <h4 style={{ color: '#94a3b8', marginBottom: '20px' }}>Riwayat Hidroponik</h4>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr style={{ borderBottom: '2px solid #334155', color: '#38bdf8' }}>
+            <th style={thStyle}>Tanggal</th>
+            <th style={thStyle}>Tanaman</th>
+            <th style={thStyle}>Panen</th>
+            <th style={thStyle}>Harga</th>
+            <th style={thStyle}>Kondisi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listHidro.map((item) => (
+            <tr key={item.id} style={{ borderBottom: '1px solid #1e293b' }}>
+              <td style={tdStyle}>{item.tglTanam}</td>
+              <td style={tdStyle}>{item.namaTanaman}</td>
+              <td style={tdStyle}>{item.jumlahPanen || '-'}</td>
+              <td style={tdStyle}>{item.hargaJual ? `Rp ${Number(item.hargaJual).toLocaleString('id-ID')}` : '-'}</td>
+              <td style={tdStyle}>{item.hama}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+        
 // --- STYLES ---
 const btnStyle = (aktif) => ({ background: aktif ? 'linear-gradient(90deg, #38bdf8, #0ea5e9)' : '#1e293b', color: aktif ? '#0f172a' : '#94a3b8', border: 'none', padding: '14px 20px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold', fontSize: '15px' });
 const cardStyle = { background: '#1e293b', padding: '25px', borderRadius: '20px', border: '1px solid #334155', textAlign: 'center' };
