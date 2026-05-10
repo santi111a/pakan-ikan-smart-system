@@ -162,9 +162,9 @@ function App() {
         <div style={iconCircle}>🌱</div>
         <span style={menuLabel}>Hidroponik</span>
       </div>
+      </div>
     </div>
-  </div>
-)}
+  );
 
         {halaman === 'pakan' && (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
