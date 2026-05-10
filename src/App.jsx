@@ -92,23 +92,22 @@ function App() {
     });
   };
 
-  return (
+return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
       
-      {/* HEADER TETAP DI ATAS */}
+      {/* HEADER */}
       <div style={{ padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a' }}>
         <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px' }}>Santi Smart System</h2>
       </div>
 
       <div style={{ padding: '20px' }}>
         
-        {/* 1. HALAMAN BERANDA (HANYA MUNCUL JIKA HALAMAN === 'BERANDA') */}
+        {/* --- 1. HALAMAN BERANDA (GRID MENU) --- */}
         {halaman === 'beranda' && (
           <div style={dashboardContainer}>
             <div style={{ textAlign: 'center', marginBottom: '25px' }}>
               <p style={{ color: '#94a3b8' }}>Halo! Pilih menu monitor:</p>
             </div>
-
             <div style={menuGrid}>
               <div onClick={() => setHalaman('pakan')} style={menuCard}>
                 <div style={iconCircle}>🐟</div>
@@ -130,7 +129,7 @@ function App() {
           </div>
         )}
 
-        {/* 2. TOMBOL KEMBALI (MUNCUL DI SEMUA HALAMAN KECUALI BERANDA) */}
+        {/* --- 2. TOMBOL KEMBALI --- */}
         {halaman !== 'beranda' && (
           <button 
             onClick={() => setHalaman('beranda')} 
@@ -139,33 +138,6 @@ function App() {
             ⬅ Kembali ke Menu
           </button>
         )}
-      {/* MENU PAKAN */}
-      <div onClick={() => setHalaman('pakan')} style={menuCard}>
-        <div style={iconCircle}>🐟</div>
-        <span style={menuLabel}>Pakan Pintar</span>
-      </div>
-
-      {/* MENU JURNAL IKAN */}
-      <div onClick={() => setHalaman('log')} style={menuCard}>
-        <div style={iconCircle}>📝</div>
-        <span style={menuLabel}>Jurnal Ikan</span>
-      </div>
-
-      {/* MENU LOG AIR */}
-      <div onClick={() => setHalaman('air')} style={menuCard}>
-        <div style={iconCircle}>💧</div>
-        <span style={menuLabel}>Log Air</span>
-      </div>
-
-      {/* MENU HIDROPONIK */}
-      <div onClick={() => setHalaman('hidroponik')} style={menuCard}>
-        <div style={iconCircle}>🌱</div>
-        <span style={menuLabel}>Hidroponik</span>
-      </div>
-      </div>
-    </div>
-  );
-
         {halaman === 'pakan' && (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div style={formContainer}>
