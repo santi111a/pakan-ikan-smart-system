@@ -212,17 +212,53 @@ function App() {
   );
 }
 
-// --- STYLES ---
-const btnStyle = (aktif) => ({ background: aktif ? 'linear-gradient(90deg, #38bdf8, #0ea5e9)' : '#1e293b', color: aktif ? '#0f172a' : '#94a3b8', border: 'none', padding: '14px', borderRadius: '10px', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold' });
-const formContainer = { background: '#1e293b', padding: '30px', borderRadius: '25px', width: '100%', maxWidth: '450px', border: '1px solid #334155' };
-const labelStyle = { display: 'block', fontSize: '10px', color: '#64748b', marginBottom: '5px', fontWeight: '800' };
-const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '10px', color: '#38bdf8', textAlign: 'center', fontSize: '16px', fontWeight: 'bold', width: '100%', outline: 'none' };
-const updateBtnStyle = { width: '100%', background: '#22c55e', color: 'white', border: 'none', padding: '15px', borderRadius: '12px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer' };
-const jurnalBox = { background: '#1e293b', padding: '25px', borderRadius: '15px', marginBottom: '20px', border: '1px solid #334155' };
-const historyBox = { background: '#1e293b', borderRadius: '15px', padding: '15px', border: '1px solid #334155' };
-const trHead = { color: '#38bdf8', borderBottom: '2px solid #334155' };
-const trBody = { borderBottom: '1px solid #1e293b' };
-const thStyle = { textAlign: 'left', padding: '10px', fontSize: '12px' };
-const tdStyle = { padding: '10px', fontSize: '13px', color: '#cbd5e1' };
+// --- STYLES YANG DIRAPIKAN ---
+
+const containerUtama = {
+  maxWidth: '1000px', // Lebar maksimal konten agar tidak terlalu melebar
+  margin: '0 auto',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '30px' // Jarak antar kotak form dan kotak tabel
+};
+
+const jurnalBox = { 
+  background: '#1e293b', 
+  padding: '30px', 
+  borderRadius: '16px', 
+  border: '1px solid #334155',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' // Biar kotak terlihat lebih "dalam"
+};
+
+const inputStyle = { 
+  background: '#0f172a', 
+  border: '1px solid #334155', 
+  padding: '12px', 
+  borderRadius: '8px', // Jangan terlalu bulat agar terlihat profesional
+  color: '#38bdf8', 
+  fontSize: '14px', 
+  width: '100%', 
+  boxSizing: 'border-box', // Penting! Supaya padding tidak merusak lebar kotak
+  outline: 'none',
+  marginTop: '5px'
+};
+
+const historyBox = { 
+  background: '#1e293b', 
+  borderRadius: '16px', 
+  padding: '20px', 
+  border: '1px solid #334155',
+  overflowX: 'auto' // Penting! Agar tabel tidak berantakan di layar kecil
+};
+
+const thStyle = { 
+  textAlign: 'left', 
+  padding: '15px 10px', 
+  fontSize: '12px', 
+  color: '#94a3b8', // Warna abu-abu untuk header tabel lebih rapi
+  textTransform: 'uppercase',
+  letterSpacing: '1px',
+  borderBottom: '2px solid #334155'
+};
 
 export default App;
