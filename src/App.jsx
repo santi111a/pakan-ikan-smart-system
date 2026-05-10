@@ -96,9 +96,11 @@ return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
       
       {/* HEADER TETAP MUNCUL DI ATAS */}
-      <div style={{ padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a' }}>
-        <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px' }}>Smart Farming KSTM AL IHYA</h2>
-      </div>
+<div style={{ padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a' }}>
+  <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
+    Smart Farming KSTM AL IHYA
+  </h2>
+</div>
 
       <div style={{ padding: '15px' }}>
         
