@@ -5,7 +5,7 @@ import { ref, onValue, update, push } from "firebase/database";
 function App() {
   const [halaman, setHalaman] = useState('beranda');
   
-  // 1. STATE SISTEM UTAMA
+  // 1. STATE SISTEM UTAMA (Lengkap untuk Pakan)
   const [data, setData] = useState({
     Jadwal: 0, end_date: 0, jam_pagi: 0, menit_pagi: 0,
     jam_sore: 0, menit_sore: 0, durasi_detik: 0, kipas_on: false 
@@ -24,7 +24,6 @@ function App() {
   const [airInput, setAirInput] = useState({ tglKuras: '', kondisiAir: '', keterangan: '' });
   const [listAir, setListAir] = useState([]);
 
-  // --- LOGIKA PENGAMBILAN DATA (REALTIME) ---
   useEffect(() => {
     const dbRef = ref(db, '/'); 
     onValue(dbRef, (snapshot) => {
@@ -38,16 +37,17 @@ function App() {
     });
   }, []);
 
-  // --- FUNGSI SIMPAN ---
   const handleUpdate = () => {
     update(ref(db, '/'), { 
       ...data, 
       Jadwal: Number(data.Jadwal), 
       end_date: Number(data.end_date), 
       jam_pagi: Number(data.jam_pagi), 
+      menit_pagi: Number(data.menit_pagi || 0),
       jam_sore: Number(data.jam_sore), 
+      menit_sore: Number(data.menit_sore || 0),
       durasi_detik: Number(data.durasi_detik) 
-    }).then(() => alert("✅ Data Diperbarui!"));
+    }).then(() => alert("✅ Data Pakan Diperbarui!"));
   };
 
   const handleSimpanHidro = () => {
@@ -56,22 +56,6 @@ function App() {
     push(ref(db, 'jurnal_hidroponik'), dataSiap).then(() => {
       alert("✅ Data Hidroponik Berhasil!");
       setHidroInput({ tglTanam: '', namaTanaman: '', pupuk: '', hama: 'Aman', jumlahPanen: '', hargaJual: '' });
-    });
-  };
-
-  const handleSimpanJurnal = () => {
-    if (!jurnalInput.tglBibit || !jurnalInput.jumlahIkan) return alert("Isi data bibit!");
-    push(ref(db, 'jurnal_harian'), jurnalInput).then(() => {
-      alert("✅ Jurnal Berhasil!");
-      setJurnalInput({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
-    });
-  };
-
-  const handleSimpanAir = () => {
-    if (!airInput.tglKuras || !airInput.kondisiAir) return alert("Isi data air!");
-    push(ref(db, 'log_pengurasan'), airInput).then(() => {
-      alert("✅ Log Air Berhasil!");
-      setAirInput({ tglKuras: '', kondisiAir: '', keterangan: '' });
     });
   };
 
@@ -89,35 +73,44 @@ function App() {
         </div>
       </div>
 
-      {/* ISI KONTEN */}
       <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
-        
         {halaman === 'beranda' && (
           <div style={{ textAlign: 'center' }}>
             <h1 style={{ color: '#38bdf8' }}>Halo, Selamat Datang! 👋</h1>
             <p>Manajemen Kolam Pintar Real-time.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '30px' }}>
-               <div style={cardStyle}>
-                  <h4 style={cardLabel}>JADWAL PAKAN PAGI</h4>
-                  <h2 style={cardValue}>{String(data.jam_pagi).padStart(2, '0')}:{String(data.menit_pagi || 0).padStart(2, '0')}</h2>
-               </div>
-               <div style={cardStyle}>
-                  <h4 style={cardLabel}>TANAMAN TERAKHIR</h4>
-                  <h2 style={{...cardValue, fontSize: '20px'}}>{listHidro.length > 0 ? listHidro[0].namaTanaman : '-'}</h2>
-               </div>
-            </div>
           </div>
         )}
 
+        {/* HALAMAN PAKAN PINTAR (KEMBALI KE DESAIN AWAL) */}
         {halaman === 'pakan' && (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div style={formContainer}>
-              <h2 style={{ color: '#38bdf8', textAlign: 'center', marginBottom: '20px' }}>Pengaturan Pakan</h2>
-              <label style={labelStyle}>JAM PAGI</label>
-              <input type="number" value={data.jam_pagi} onChange={(e) => setData({...data, jam_pagi: e.target.value})} style={inputStyle} />
-              <label style={labelStyle}>DURASI (DETIK)</label>
-              <input type="number" value={data.durasi_detik} onChange={(e) => setData({...data, durasi_detik: e.target.value})} style={inputStyle} />
-              <button onClick={handleUpdate} style={updateBtnStyle}>UPDATE DATA</button>
+              <h2 style={{ color: '#38bdf8', textAlign: 'center', fontSize: '26px', marginBottom: '20px' }}>Pengaturan Pakan</h2>
+              
+              <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
+              <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
+                <input type="number" value={data.Jadwal} onChange={(e) => setData({...data, Jadwal: e.target.value})} style={inputStyle} />
+                <input type="number" value={data.end_date} onChange={(e) => setData({...data, end_date: e.target.value})} style={inputStyle} />
+              </div>
+
+              <label style={labelStyle}>JADWAL PAGI (JAM : MENIT)</label>
+              <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '15px' }}>
+                <input type="number" value={data.jam_pagi} onChange={(e) => setData({...data, jam_pagi: e.target.value})} style={inputStyle} />
+                <span style={divider}>:</span>
+                <input type="number" value={data.menit_pagi || 0} onChange={(e) => setData({...data, menit_pagi: e.target.value})} style={inputStyle} />
+              </div>
+
+              <label style={labelStyle}>JADWAL SORE (JAM : MENIT)</label>
+              <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '15px' }}>
+                <input type="number" value={data.jam_sore} onChange={(e) => setData({...data, jam_sore: e.target.value})} style={inputStyle} />
+                <span style={divider}>:</span>
+                <input type="number" value={data.menit_sore || 0} onChange={(e) => setData({...data, menit_sore: e.target.value})} style={inputStyle} />
+              </div>
+
+              <label style={labelStyle}>DURASI PAKAN (DETIK)</label>
+              <input type="number" value={data.durasi_detik} onChange={(e) => setData({...data, durasi_detik: e.target.value})} style={{...inputStyle, width: '100%'}} />
+              
+              <button onClick={handleUpdate} style={updateBtnStyle}>UPDATE DATA & AKTIFKAN</button>
             </div>
           </div>
         )}
@@ -158,33 +151,20 @@ function App() {
             </div>
           </div>
         )}
-
-        {/* HALAMAN LAINNYA (Log Ikan & Air) tetap berfungsi seperti biasa */}
-        {halaman === 'log' && (
-           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-              <h2 style={{ color: '#38bdf8', marginBottom: '25px' }}>📝 Log Ikan</h2>
-              <div style={jurnalBox}>
-                 <input type="date" value={jurnalInput.tglBibit} onChange={(e)=>setJurnalInput({...jurnalInput, tglBibit:e.target.value})} style={inputStyle} />
-                 <button onClick={handleSimpanJurnal} style={updateBtnStyle}>SIMPAN JURNAL</button>
-              </div>
-           </div>
-        )}
       </div>
     </div>
   );
 }
 
-// --- STYLES ---
-const btnStyle = (aktif) => ({ background: aktif ? '#38bdf8' : '#1e293b', color: aktif ? '#0f172a' : '#94a3b8', border: 'none', padding: '14px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold' });
-const cardStyle = { background: '#1e293b', padding: '20px', borderRadius: '15px', border: '1px solid #334155' };
-const cardLabel = { color: '#64748b', fontSize: '10px', marginBottom: '5px' };
-const cardValue = { color: '#38bdf8', margin: 0 };
-const formContainer = { background: '#1e293b', padding: '30px', borderRadius: '20px', width: '100%', maxWidth: '400px' };
-const jurnalBox = { background: '#1e293b', padding: '30px', borderRadius: '20px', marginBottom: '30px' };
-const historyBox = { background: '#1e293b', borderRadius: '20px', padding: '20px' };
-const labelStyle = { display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '5px', marginTop: '10px', fontWeight: 'bold' };
-const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '10px', color: '#38bdf8', width: '100%', outline: 'none' };
-const updateBtnStyle = { width: '100%', background: '#22c55e', color: 'white', border: 'none', padding: '15px', borderRadius: '10px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer' };
+// --- STYLES (SESUAI DESAIN AWAL YANG RAPI) ---
+const btnStyle = (aktif) => ({ background: aktif ? 'linear-gradient(90deg, #38bdf8, #0ea5e9)' : '#1e293b', color: aktif ? '#0f172a' : '#94a3b8', border: 'none', padding: '14px 20px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold' });
+const formContainer = { background: '#1e293b', padding: '40px', borderRadius: '35px', width: '100%', maxWidth: '500px', border: '1px solid #334155' };
+const labelStyle = { display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '8px', fontWeight: '800' };
+const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '15px', borderRadius: '15px', color: '#38bdf8', textAlign: 'center', fontSize: '18px', fontWeight: 'bold', width: '100%', outline: 'none' };
+const divider = { color: '#38bdf8', fontWeight: 'bold', fontSize: '24px' };
+const updateBtnStyle = { width: '100%', background: '#22c55e', color: 'white', border: 'none', padding: '20px', borderRadius: '18px', marginTop: '25px', fontWeight: '900', cursor: 'pointer' };
+const jurnalBox = { background: '#1e293b', padding: '30px', borderRadius: '20px', marginBottom: '30px', border: '1px solid #334155' };
+const historyBox = { background: '#1e293b', borderRadius: '20px', padding: '20px', border: '1px solid #334155' };
 const thStyle = { textAlign: 'left', padding: '12px', color: '#64748b' };
 const tdStyle = { padding: '12px', color: '#cbd5e1' };
 
