@@ -11,23 +11,44 @@ function App() {
     jam_sore: 0, menit_sore: 0, durasi_detik: 0, kipas_on: false 
   });
 
-  // 2. STATE INPUT
-  const [hidroInput, setHidroInput] = useState({ tglTanam: '', namaTanaman: '', pupuk: '', hama: 'Aman', jumlahPanen: '', hargaJual: '' });
+  // 2. STATE HIDROPONIK
+  const [hidroInput, setHidroInput] = useState({ 
+    tglTanam: '', namaTanaman: '', pupuk: '', 
+    hama: 'Aman', jumlahPanen: '', hargaJual: '' 
+  });
   const [listHidro, setListHidro] = useState([]);
-  const [jurnalInput, setJurnalInput] = useState({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
+
+  // 3. STATE JURNAL IKAN
+  const [jurnalInput, setJurnalInput] = useState({ 
+    tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' 
+  });
   const [listJurnal, setListJurnal] = useState([]);
-  const [airInput, setAirInput] = useState({ tglKuras: '', kondisiAir: '', keterangan: '' });
+
+  // 4. STATE LOG AIR
+  const [airInput, setAirInput] = useState({ 
+    tglKuras: '', kondisiAir: '', keterangan: '' 
+  });
   const [listAir, setListAir] = useState([]);
 
   // --- AMBIL DATA REALTIME ---
   useEffect(() => {
-    onValue(ref(db, '/'), (snapshot) => {
+    const dbRef = ref(db, '/'); 
+    onValue(dbRef, (snapshot) => {
       if (snapshot.exists()) {
         const result = snapshot.val();
         setData(result);
-        if (result.jurnal_harian) setListJurnal(Object.keys(result.jurnal_harian).map(key => ({ id: key, ...result.jurnal_harian[key] })).reverse());
-        if (result.log_pengurasan) setListAir(Object.keys(result.log_pengurasan).map(key => ({ id: key, ...result.log_pengurasan[key] })).reverse());
-        if (result.jurnal_hidroponik) setListHidro(Object.keys(result.jurnal_hidroponik).map(key => ({ id: key, ...result.jurnal_hidroponik[key] })).reverse());
+        // Load Jurnal Ikan
+        if (result.jurnal_harian) {
+          setListJurnal(Object.keys(result.jurnal_harian).map(key => ({ id: key, ...result.jurnal_harian[key] })).reverse());
+        }
+        // Load Log Air
+        if (result.log_pengurasan) {
+          setListAir(Object.keys(result.log_pengurasan).map(key => ({ id: key, ...result.log_pengurasan[key] })).reverse());
+        }
+        // Load Hidroponik
+        if (result.jurnal_hidroponik) {
+          setListHidro(Object.keys(result.jurnal_hidroponik).map(key => ({ id: key, ...result.jurnal_hidroponik[key] })).reverse());
+        }
       }
     });
   }, []);
@@ -36,9 +57,12 @@ function App() {
   const handleUpdatePakan = () => {
     update(ref(db, '/'), { 
       ...data, 
-      Jadwal: Number(data.Jadwal), end_date: Number(data.end_date), 
-      jam_pagi: Number(data.jam_pagi), menit_pagi: Number(data.menit_pagi || 0),
-      jam_sore: Number(data.jam_sore), menit_sore: Number(data.menit_sore || 0),
+      Jadwal: Number(data.Jadwal), 
+      end_date: Number(data.end_date), 
+      jam_pagi: Number(data.jam_pagi), 
+      menit_pagi: Number(data.menit_pagi || 0),
+      jam_sore: Number(data.jam_sore), 
+      menit_sore: Number(data.menit_sore || 0),
       durasi_detik: Number(data.durasi_detik) 
     }).then(() => alert("✅ Pengaturan Pakan Diperbarui!"));
   };
@@ -71,7 +95,7 @@ function App() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
       {/* SIDEBAR */}
-      <div style={{ width: '280px', padding: '30px', borderRight: '1px solid #1e293b', background: '#0f172a', position: 'fixed', height: '100vh' }}>
+      <div style={{ width: '280px', padding: '30px', borderRight: '1px solid #1e293b', background: '#0f172a' }}>
         <h2 style={{ color: '#38bdf8', marginBottom: '40px', textAlign: 'center' }}>Sistem Cerdas Santi</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <button onClick={() => setHalaman('beranda')} style={btnStyle(halaman === 'beranda')}>🏠 Beranda</button>
@@ -83,10 +107,10 @@ function App() {
       </div>
 
       {/* AREA KONTEN UTAMA */}
-      <div style={{ flex: 1, padding: '40px', marginLeft: '280px', overflowY: 'auto' }}>
+      <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
         
         {halaman === 'beranda' && (
-          <div style={{ textAlign: 'center', marginTop: '100px' }}>
+          <div style={{ textAlign: 'center' }}>
             <h1 style={{ color: '#38bdf8' }}>Halo, Selamat Datang! 👋</h1>
             <p style={{ color: '#94a3b8' }}>Monitoring Sistem Kolam Pintar Real-time.</p>
           </div>
@@ -96,129 +120,145 @@ function App() {
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div style={formContainer}>
               <h2 style={{ color: '#38bdf8', textAlign: 'center', marginBottom: '20px' }}>Pengaturan Pakan</h2>
-              <label style={labelStyle}>RENTANG TANGGAL</label>
+              <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
               <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
                 <input type="number" value={data.Jadwal} onChange={(e) => setData({...data, Jadwal: e.target.value})} style={inputStyle} />
                 <input type="number" value={data.end_date} onChange={(e) => setData({...data, end_date: e.target.value})} style={inputStyle} />
               </div>
-              <label style={labelStyle}>JADWAL PAGI</label>
+              <label style={labelStyle}>JADWAL PAGI (JAM : MENIT)</label>
               <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '15px' }}>
                 <input type="number" value={data.jam_pagi} onChange={(e) => setData({...data, jam_pagi: e.target.value})} style={inputStyle} />
+                <span style={{color: '#38bdf8', fontWeight: 'bold', fontSize: '20px'}}>:</span>
                 <input type="number" value={data.menit_pagi || 0} onChange={(e) => setData({...data, menit_pagi: e.target.value})} style={inputStyle} />
               </div>
-              <label style={labelStyle}>DURASI (DETIK)</label>
-              <input type="number" value={data.durasi_detik} onChange={(e) => setData({...data, durasi_detik: e.target.value})} style={inputStyle} />
+              <label style={labelStyle}>JADWAL SORE (JAM : MENIT)</label>
+              <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '15px' }}>
+                <input type="number" value={data.jam_sore} onChange={(e) => setData({...data, jam_sore: e.target.value})} style={inputStyle} />
+                <span style={{color: '#38bdf8', fontWeight: 'bold', fontSize: '20px'}}>:</span>
+                <input type="number" value={data.menit_sore || 0} onChange={(e) => setData({...data, menit_sore: e.target.value})} style={inputStyle} />
+              </div>
+              <label style={labelStyle}>DURASI PAKAN (DETIK)</label>
+              <input type="number" value={data.durasi_detik} onChange={(e) => setData({...data, durasi_detik: e.target.value})} style={{...inputStyle, width: '100%'}} />
               <button onClick={handleUpdatePakan} style={updateBtnStyle}>UPDATE DATA & AKTIFKAN</button>
             </div>
           </div>
         )}
 
+        {/* --- LOG JURNAL IKAN (YANG TADI HILANG) --- */}
         {halaman === 'log' && (
-          <div style={containerUtama}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>📝 Jurnal Budidaya Ikan</h2>
             <div style={jurnalBox}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                 <div><label style={labelStyle}>TGL BIBIT</label><input type="date" value={jurnalInput.tglBibit} onChange={(e)=>setJurnalInput({...jurnalInput, tglBibit: e.target.value})} style={inputStyle} /></div>
-                <div><label style={labelStyle}>JUMLAH</label><input type="number" value={jurnalInput.jumlahIkan} onChange={(e)=>setJurnalInput({...jurnalInput, jumlahIkan: e.target.value})} style={inputStyle} /></div>
-                <div><label style={labelStyle}>UKURAN</label><input type="text" value={jurnalInput.ukuranBibit} onChange={(e)=>setJurnalInput({...jurnalInput, ukuranBibit: e.target.value})} style={inputStyle} /></div>
+                <div><label style={labelStyle}>JUMLAH (EKOR)</label><input type="number" value={jurnalInput.jumlahIkan} onChange={(e)=>setJurnalInput({...jurnalInput, jumlahIkan: e.target.value})} style={inputStyle} /></div>
+                <div><label style={labelStyle}>UKURAN (CM)</label><input type="text" value={jurnalInput.ukuranBibit} onChange={(e)=>setJurnalInput({...jurnalInput, ukuranBibit: e.target.value})} style={inputStyle} /></div>
                 <div><label style={labelStyle}>TGL SORTIR</label><input type="date" value={jurnalInput.tglSortir} onChange={(e)=>setJurnalInput({...jurnalInput, tglSortir: e.target.value})} style={inputStyle} /></div>
               </div>
               <button onClick={handleSimpanJurnalIkan} style={updateBtnStyle}>SIMPAN DATA IKAN</button>
             </div>
             <div style={historyBox}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr><th style={thStyle}>Tgl Bibit</th><th style={thStyle}>Jumlah</th><th style={thStyle}>Ukuran</th><th style={thStyle}>Tgl Sortir</th></tr></thead>
+                <thead><tr style={trHead}><th style={thStyle}>Tgl Bibit</th><th style={thStyle}>Jumlah</th><th style={thStyle}>Ukuran</th><th style={thStyle}>Tgl Sortir</th></tr></thead>
                 <tbody>{listJurnal.map((item) => (<tr key={item.id} style={trBody}><td style={tdStyle}>{item.tglBibit}</td><td style={tdStyle}>{item.jumlahIkan}</td><td style={tdStyle}>{item.ukuranBibit}</td><td style={tdStyle}>{item.tglSortir}</td></tr>))}</tbody>
               </table>
             </div>
           </div>
         )}
 
-        {/* ... Lakukan hal yang sama untuk Air & Hidroponik (Gunakan grid dan style yang sama) ... */}
+        {/* --- LOG AIR (YANG TADI HILANG) --- */}
+        {halaman === 'air' && (
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>💧 Log Pengurasan Air</h2>
+            <div style={jurnalBox}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <div><label style={labelStyle}>TGL KURAS</label><input type="date" value={airInput.tglKuras} onChange={(e)=>setAirInput({...airInput, tglKuras: e.target.value})} style={inputStyle} /></div>
+                <div><label style={labelStyle}>KONDISI</label><input type="text" placeholder="Hijau/Keruh" value={airInput.kondisiAir} onChange={(e)=>setAirInput({...airInput, kondisiAir: e.target.value})} style={inputStyle} /></div>
+              </div>
+              <div style={{marginTop: '15px'}}><label style={labelStyle}>KETERANGAN</label><input type="text" value={airInput.keterangan} onChange={(e)=>setAirInput({...airInput, keterangan: e.target.value})} style={inputStyle} /></div>
+              <button onClick={handleSimpanAir} style={updateBtnStyle}>SIMPAN DATA AIR</button>
+            </div>
+            <div style={historyBox}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead><tr style={trHead}><th style={thStyle}>Tanggal</th><th style={thStyle}>Kondisi</th><th style={thStyle}>Keterangan</th></tr></thead>
+                <tbody>{listAir.map((item) => (<tr key={item.id} style={trBody}><td style={tdStyle}>{item.tglKuras}</td><td style={tdStyle}>{item.kondisiAir}</td><td style={tdStyle}>{item.keterangan || '-'}</td></tr>))}</tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
+        {halaman === 'hidroponik' && (
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>🌱 Jurnal Hidroponik</h2>
+            <div style={jurnalBox}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px' }}>
+                <div><label style={labelStyle}>TGL TANAM</label><input type="date" value={hidroInput.tglTanam} onChange={(e) => setHidroInput({...hidroInput, tglTanam: e.target.value})} style={inputStyle} /></div>
+                <div><label style={labelStyle}>NAMA TANAMAN</label><input type="text" value={hidroInput.namaTanaman} onChange={(e) => setHidroInput({...hidroInput, namaTanaman: e.target.value})} style={inputStyle} /></div>
+                <div><label style={labelStyle}>PANEN (KG)</label><input type="text" value={hidroInput.jumlahPanen} onChange={(e) => setHidroInput({...hidroInput, jumlahPanen: e.target.value})} style={inputStyle} /></div>
+                <div><label style={labelStyle}>HARGA JUAL</label><input type="number" value={hidroInput.hargaJual} onChange={(e) => setHidroInput({...hidroInput, hargaJual: e.target.value})} style={inputStyle} /></div>
+              </div>
+              <button onClick={handleSimpanHidro} style={{...updateBtnStyle, background: '#10b981'}}>SIMPAN DATA HIDROPONIK</button>
+            </div>
+            <div style={historyBox}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead><tr style={trHead}><th style={thStyle}>Tanggal</th><th style={thStyle}>Tanaman</th><th style={thStyle}>Panen</th><th style={thStyle}>Harga</th></tr></thead>
+                <tbody>{listHidro.map((item) => (<tr key={item.id} style={trBody}><td style={tdStyle}>{item.tglTanam}</td><td style={tdStyle}>{item.namaTanaman}</td><td style={tdStyle}>{item.jumlahPanen}</td><td style={tdStyle}>{item.hargaJual ? `Rp ${Number(item.hargaJual).toLocaleString('id-ID')}` : '-'}</td></tr>))}</tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-// --- STYLES ---
-
-const btnStyle = (aktif) => ({
-  background: aktif ? '#38bdf8' : '#1e293b',
-  color: aktif ? '#0f172a' : '#94a3b8',
-  border: 'none',
-  padding: '14px',
-  borderRadius: '10px',
-  cursor: 'pointer',
-  textAlign: 'left',
-  fontWeight: 'bold',
-  width: '100%'
-});
-
-const formContainer = {
-  background: '#1e293b',
-  padding: '30px',
-  borderRadius: '20px',
-  width: '100%',
-  maxWidth: '450px',
-  border: '1px solid #334155'
-};
+// --- STYLES YANG DIRAPIKAN ---
 
 const containerUtama = {
-  maxWidth: '1000px',
+  maxWidth: '1000px', // Lebar maksimal konten agar tidak terlalu melebar
   margin: '0 auto',
   display: 'flex',
   flexDirection: 'column',
-  gap: '20px'
+  gap: '30px' // Jarak antar kotak form dan kotak tabel
 };
 
 const jurnalBox = { 
   background: '#1e293b', 
   padding: '30px', 
   borderRadius: '16px', 
-  border: '1px solid #334155'
-};
-
-const labelStyle = { 
-  display: 'block', 
-  fontSize: '11px', 
-  color: '#94a3b8', 
-  fontWeight: 'bold',
-  marginBottom: '5px' 
+  border: '1px solid #334155',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' // Biar kotak terlihat lebih "dalam"
 };
 
 const inputStyle = { 
   background: '#0f172a', 
   border: '1px solid #334155', 
   padding: '12px', 
-  borderRadius: '8px', 
+  borderRadius: '8px', // Jangan terlalu bulat agar terlihat profesional
   color: '#38bdf8', 
+  fontSize: '14px', 
   width: '100%', 
-  boxSizing: 'border-box',
-  outline: 'none'
-};
-
-const updateBtnStyle = {
-  width: '100%',
-  background: '#22c55e',
-  color: 'white',
-  border: 'none',
-  padding: '15px',
-  borderRadius: '10px',
-  marginTop: '20px',
-  fontWeight: 'bold',
-  cursor: 'pointer'
+  boxSizing: 'border-box', // Penting! Supaya padding tidak merusak lebar kotak
+  outline: 'none',
+  marginTop: '5px'
 };
 
 const historyBox = { 
   background: '#1e293b', 
   borderRadius: '16px', 
   padding: '20px', 
-  border: '1px solid #334155'
+  border: '1px solid #334155',
+  overflowX: 'auto' // Penting! Agar tabel tidak berantakan di layar kecil
 };
 
-const thStyle = { textAlign: 'left', padding: '15px 10px', fontSize: '12px', color: '#38bdf8', borderBottom: '2px solid #334155' };
-const tdStyle = { padding: '15px 10px', fontSize: '13px', color: '#cbd5e1', borderBottom: '1px solid #1e293b' };
-const trBody = { background: 'transparent' };
+const thStyle = { 
+  textAlign: 'left', 
+  padding: '15px 10px', 
+  fontSize: '12px', 
+  color: '#94a3b8', // Warna abu-abu untuk header tabel lebih rapi
+  textTransform: 'uppercase',
+  letterSpacing: '1px',
+  borderBottom: '2px solid #334155'
+};
 
 export default App;
