@@ -93,33 +93,52 @@ function App() {
   };
 
   return (
-  <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#0f172a', color: 'white' }}>
-    
-    {/* Sidebar hanya muncul jika bukan di beranda atau gunakan Menu Navigasi Bawah nanti */}
-    {halaman !== 'beranda' && (
-       <div style={{ padding: '10px', background: '#1e293b', textAlign: 'center' }}>
-          <button onClick={() => setHalaman('beranda')} style={{ background: 'none', border: 'none', color: '#38bdf8', fontWeight: 'bold' }}>
-            ⬅ Kembali ke Dashboard
-          </button>
-       </div>
-    )}
+    <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
+      
+      {/* HEADER TETAP DI ATAS */}
+      <div style={{ padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a' }}>
+        <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px' }}>Santi Smart System</h2>
+      </div>
 
-    <div style={{ flex: 1, padding: '10px' }}>
-       {/* Isi Konten (Beranda, Pakan, dll) */}
-    </div>
-  </div>
-);
-      {/* AREA KONTEN UTAMA */}
-      <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
+      <div style={{ padding: '20px' }}>
         
+        {/* 1. HALAMAN BERANDA (HANYA MUNCUL JIKA HALAMAN === 'BERANDA') */}
         {halaman === 'beranda' && (
-  <div style={dashboardContainer}>
-    <header style={{ textAlign: 'center', marginBottom: '30px' }}>
-      <h1 style={{ color: '#38bdf8', fontSize: '24px' }}>Dashboard Sistem</h1>
-      <p style={{ color: '#94a3b8', fontSize: '14px' }}>Pilih menu untuk memonitor kolam</p>
-    </header>
+          <div style={dashboardContainer}>
+            <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+              <p style={{ color: '#94a3b8' }}>Halo! Pilih menu monitor:</p>
+            </div>
 
-    <div style={menuGrid}>
+            <div style={menuGrid}>
+              <div onClick={() => setHalaman('pakan')} style={menuCard}>
+                <div style={iconCircle}>🐟</div>
+                <span style={menuLabel}>Pakan Pintar</span>
+              </div>
+              <div onClick={() => setHalaman('log')} style={menuCard}>
+                <div style={iconCircle}>📝</div>
+                <span style={menuLabel}>Jurnal Ikan</span>
+              </div>
+              <div onClick={() => setHalaman('air')} style={menuCard}>
+                <div style={iconCircle}>💧</div>
+                <span style={menuLabel}>Log Air</span>
+              </div>
+              <div onClick={() => setHalaman('hidroponik')} style={menuCard}>
+                <div style={iconCircle}>🌱</div>
+                <span style={menuLabel}>Hidroponik</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 2. TOMBOL KEMBALI (MUNCUL DI SEMUA HALAMAN KECUALI BERANDA) */}
+        {halaman !== 'beranda' && (
+          <button 
+            onClick={() => setHalaman('beranda')} 
+            style={{ background: '#1e293b', border: '1px solid #334155', color: '#38bdf8', padding: '10px 15px', borderRadius: '10px', marginBottom: '20px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            ⬅ Kembali ke Menu
+          </button>
+        )}
       {/* MENU PAKAN */}
       <div onClick={() => setHalaman('pakan')} style={menuCard}>
         <div style={iconCircle}>🐟</div>
