@@ -178,8 +178,8 @@ function App() {
 
   // --- FUNGSI SIMPAN ---
   const handleUpdatePakan = () => {
-    update(ref(db, '/'), { 
-      ...data, 
+    const pekanData = {
+     
       Jadwal: Number(data.Jadwal), 
       end_date: Number(data.end_date), 
       jam_pagi: Number(data.jam_pagi), 
@@ -187,7 +187,12 @@ function App() {
       jam_sore: Number(data.jam_sore), 
       menit_sore: Number(data.menit_sore || 0),
       durasi_detik: Number(data.durasi_detik) 
-    }).then(() => alert("✅ Pengaturan Pakan Diperbarui!"));
+    };
+
+    update(ref(db, '/'),PakanData)
+    .then(() => alert("✅ Pengaturan Pakan Diperbarui!"))
+    .catch((error)=> alert("❌ Gagal update: " + error.message));
+  
   };
 
   const handleSimpanHidro = () => {
@@ -364,7 +369,7 @@ return (
           </div>
         )}
       </div>
-        );
+    );
 } 
 
 export default App;
