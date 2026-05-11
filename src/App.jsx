@@ -2,6 +2,129 @@ import React, { useState, useEffect } from 'react';
 import { db } from './firebase'; 
 import { ref, onValue, update, push } from "firebase/database";
 
+const btnStyle = (aktif) => ({
+  background: aktif ? '#38bdf8' : '#1e293b',
+  color: aktif ? '#0f172a' : '#94a3b8',
+  border: 'none',
+  padding: '12px 15px',
+  borderRadius: '10px',
+  cursor: 'pointer',
+  textAlign: 'left',
+  fontWeight: 'bold',
+  width: '100%',
+  transition: '0.3s'
+});
+
+const formContainer = {
+  background: '#1e293b',
+  padding: '25px',
+  borderRadius: '20px',
+  width: '100%',
+  maxWidth: '450px',
+  border: '1px solid #334155'
+};
+
+const labelStyle = {
+  display: 'block',
+  fontSize: '11px',
+  color: '#64748b',
+  marginBottom: '5px',
+  fontWeight: 'bold',
+  textTransform: 'uppercase'
+};
+
+const inputStyle = { 
+  background: '#0f172a', 
+  border: '1px solid #334155', 
+  padding: '12px', 
+  borderRadius: '8px', 
+  color: '#38bdf8', 
+  fontSize: '14px', 
+  width: '100%', 
+  boxSizing: 'border-box', 
+  outline: 'none',
+  marginTop: '5px'
+};
+
+const updateBtnStyle = {
+  width: '100%',
+  background: '#0ea5e9',
+  color: 'white',
+  border: 'none',
+  padding: '14px',
+  borderRadius: '10px',
+  marginTop: '20px',
+  fontWeight: 'bold',
+  cursor: 'pointer'
+};
+
+const jurnalBox = { 
+  background: '#1e293b', 
+  padding: '30px', 
+  borderRadius: '16px', 
+  border: '1px solid #334155',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
+};
+
+const historyBox = { 
+  background: '#1e293b', 
+  borderRadius: '16px', 
+  padding: '20px', 
+  border: '1px solid #334155',
+  overflowX: 'auto',
+  marginTop: '20px'
+};
+
+// Style Tabel Tambahan agar tidak error
+const thStyle = { textAlign: 'left', padding: '15px 10px', fontSize: '12px', color: '#38bdf8', borderBottom: '2px solid #334155' };
+const tdStyle = { padding: '15px 10px', fontSize: '13px', color: '#cbd5e1', borderBottom: '1px solid #1e293b' };
+const trHead = { background: 'transparent' };
+const trBody = { background: 'transparent' };
+const dashboardContainer = {
+  padding: '20px',
+  maxWidth: '500px',
+  margin: '0 auto'
+};
+
+const menuGrid = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  gap: '15px',
+  marginTop: '20px'
+};
+
+const menuCard = {
+  background: '#1e293b',
+  padding: '20px',
+  borderRadius: '20px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  border: '1px solid #334155',
+  transition: 'transform 0.2s',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+};
+
+const iconCircle = {
+  width: '50px',
+  height: '50px',
+  background: '#0f172a',
+  borderRadius: '50%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '24px',
+  marginBottom: '10px'
+};
+
+const menuLabel = {
+  fontSize: '14px',
+  fontWeight: 'bold',
+  color: '#cbd5e1'
+};
+
 function App() {
   const [halaman, setHalaman] = useState('beranda');
   
@@ -97,7 +220,7 @@ return (
       
       {/* HEADER TETAP MUNCUL DI ATAS */}
       <div style={{ padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a' }}>
-        <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px' }}>Santi Smart System</h2>
+        <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px' }}>Smart Farming KSTM Al-Ihya</h2>
       </div>
 
       <div style={{ padding: '15px' }}>
@@ -132,6 +255,10 @@ return (
             </div>
           </div>
         )}
+        </div>
+        </div>
+);
+}
 
         {/* --- AREA 2: ISI FORMULIR (Muncul jika masuk ke salah satu menu) --- */}
         {halaman !== 'beranda' && (
@@ -237,124 +364,7 @@ return (
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-// --- STYLES YANG DIRAPIKAN & LENGKAP ---
-
-// Fungsi untuk tombol sidebar agar bisa berubah warna saat aktif
-const btnStyle = (aktif) => ({
-  background: aktif ? '#38bdf8' : '#1e293b',
-  color: aktif ? '#0f172a' : '#94a3b8',
-  border: 'none',
-  padding: '12px 15px',
-  borderRadius: '10px',
-  cursor: 'pointer',
-  textAlign: 'left',
-  fontWeight: 'bold',
-  width: '100%',
-  transition: '0.3s'});
-
-const formContainer = {
-  background: '#1e293b',
-  padding: '25px',
-  borderRadius: '20px',
-  width: '100%',
-  maxWidth: '450px',
-  border: '1px solid #334155'};
-
-const labelStyle = {
-  display: 'block',
-  fontSize: '11px',
-  color: '#64748b',
-  marginBottom: '5px',
-  fontWeight: 'bold',
-  textTransform: 'uppercase'};
-
-const inputStyle = { 
-  background: '#0f172a', 
-  border: '1px solid #334155', 
-  padding: '12px', 
-  borderRadius: '8px', 
-  color: '#38bdf8', 
-  fontSize: '14px', 
-  width: '100%', 
-  boxSizing: 'border-box', 
-  outline: 'none',
-  marginTop: '5px'};
-
-const updateBtnStyle = {
-  width: '100%',
-  background: '#0ea5e9',
-  color: 'white',
-  border: 'none',
-  padding: '14px',
-  borderRadius: '10px',
-  marginTop: '20px',
-  fontWeight: 'bold',
-  cursor: 'pointer'};
-
-const jurnalBox = { 
-  background: '#1e293b', 
-  padding: '30px', 
-  borderRadius: '16px', 
-  border: '1px solid #334155',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' };
-
-const historyBox = { 
-  background: '#1e293b', 
-  borderRadius: '16px', 
-  padding: '20px', 
-  border: '1px solid #334155',
-  overflowX: 'auto',
-  marginTop: '20px'};
-
-// Style Tabel Tambahan agar tidak error
-const thStyle = { textAlign: 'left', padding: '15px 10px', fontSize: '12px', color: '#38bdf8', borderBottom: '2px solid #334155' };
-const tdStyle = { padding: '15px 10px', fontSize: '13px', color: '#cbd5e1', borderBottom: '1px solid #1e293b' };
-const trHead = { background: 'transparent' };
-const trBody = { background: 'transparent' };
-const dashboardContainer = {
-  padding: '20px',
-  maxWidth: '500px',
-  margin: '0 auto'};
-
-const menuGrid = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, 1fr)',
-  gap: '15px',
-  marginTop: '20px'};
-
-const menuCard = {
-  background: '#1e293b',
-  padding: '20px',
-  borderRadius: '20px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  border: '1px solid #334155',
-  transition: 'transform 0.2s',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'};
-
-const iconCircle = {
-  width: '50px',
-  height: '50px',
-  background: '#0f172a',
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '24px',
-  marginBottom: '10px'};
-
-const menuLabel = {
-  fontSize: '14px',
-  fontWeight: 'bold',
-  color: '#cbd5e1'};
+  ); // Penutup return
+} // <--- PASTIKAN ADA KURUNG INI UNTUK MENUTUP FUNCTION APP
 
 export default App;
-
-
