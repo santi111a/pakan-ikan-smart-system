@@ -92,59 +92,30 @@ function App() {
     });
   };
 
-return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
-      
-      {/* HEADER TETAP MUNCUL DI ATAS */}
-      <div style={{ padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a' }}>
-        <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px' }}>Santi Smart System</h2>
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
+      {/* SIDEBAR */}
+      <div style={{ width: '280px', padding: '30px', borderRight: '1px solid #1e293b', background: '#0f172a' }}>
+        <h2 style={{ color: '#38bdf8', marginBottom: '40px', textAlign: 'center' }}>Sistem Cerdas Santi</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button onClick={() => setHalaman('beranda')} style={btnStyle(halaman === 'beranda')}>🏠 Beranda</button>
+          <button onClick={() => setHalaman('pakan')} style={btnStyle(halaman === 'pakan')}>🐟 Pakan Pintar</button>
+          <button onClick={() => setHalaman('log')} style={btnStyle(halaman === 'log')}>📝 Log Jurnal Ikan</button>
+          <button onClick={() => setHalaman('air')} style={btnStyle(halaman === 'air')}>💧 Log Air</button>
+          <button onClick={() => setHalaman('hidroponik')} style={btnStyle(halaman === 'hidroponik')}>🌱 Hidroponik</button>
+        </div>
       </div>
 
-      <div style={{ padding: '15px' }}>
+      {/* AREA KONTEN UTAMA */}
+      <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
         
-        {/* --- AREA 1: MENU UTAMA (Hanya muncul jika di Beranda) --- */}
         {halaman === 'beranda' && (
-          <div style={dashboardContainer}>
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-              <p style={{ color: '#94a3b8', fontSize: '14px' }}>Pilih Menu Kontrol:</p>
-            </div>
-
-            <div style={menuGrid}>
-              <div onClick={() => setHalaman('pakan')} style={menuCard}>
-                <div style={iconCircle}>🐟</div>
-                <span style={menuLabel}>Pakan Pintar</span>
-              </div>
-
-              <div onClick={() => setHalaman('log')} style={menuCard}>
-                <div style={iconCircle}>📝</div>
-                <span style={menuLabel}>Jurnal Ikan</span>
-              </div>
-
-              <div onClick={() => setHalaman('air')} style={menuCard}>
-                <div style={iconCircle}>💧</div>
-                <span style={menuLabel}>Log Air</span>
-              </div>
-
-              <div onClick={() => setHalaman('hidroponik')} style={menuCard}>
-                <div style={iconCircle}>🌱</div>
-                <span style={menuLabel}>Hidroponik</span>
-              </div>
-            </div>
+          <div style={{ textAlign: 'center' }}>
+            <h1 style={{ color: '#38bdf8' }}>Halo, Selamat Datang! 👋</h1>
+            <p style={{ color: '#94a3b8' }}>Monitoring Sistem Kolam Pintar Real-time.</p>
           </div>
         )}
 
-        {/* --- AREA 2: ISI FORMULIR (Muncul jika masuk ke salah satu menu) --- */}
-        {halaman !== 'beranda' && (
-          <div style={{ animation: 'fadeIn 0.3s' }}>
-            
-            {/* Tombol Back agar tidak terjebak di dalam menu */}
-            <button 
-              onClick={() => setHalaman('beranda')} 
-              style={{ background: '#1e293b', border: '1px solid #334155', color: '#38bdf8', padding: '12px', borderRadius: '10px', marginBottom: '20px', cursor: 'pointer', fontWeight: 'bold', width: '100%' }}
-            >
-              ⬅ Kembali ke Dashboard
-            </button>
-            {/* FORM PAKAN */}
         {halaman === 'pakan' && (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div style={formContainer}>
@@ -254,7 +225,8 @@ const btnStyle = (aktif) => ({
   textAlign: 'left',
   fontWeight: 'bold',
   width: '100%',
-  transition: '0.3s'});
+  transition: '0.3s'
+});
 
 const formContainer = {
   background: '#1e293b',
@@ -262,7 +234,8 @@ const formContainer = {
   borderRadius: '20px',
   width: '100%',
   maxWidth: '450px',
-  border: '1px solid #334155'};
+  border: '1px solid #334155'
+};
 
 const labelStyle = {
   display: 'block',
@@ -270,7 +243,8 @@ const labelStyle = {
   color: '#64748b',
   marginBottom: '5px',
   fontWeight: 'bold',
-  textTransform: 'uppercase'};
+  textTransform: 'uppercase'
+};
 
 const inputStyle = { 
   background: '#0f172a', 
@@ -282,7 +256,8 @@ const inputStyle = {
   width: '100%', 
   boxSizing: 'border-box', 
   outline: 'none',
-  marginTop: '5px'};
+  marginTop: '5px'
+};
 
 const updateBtnStyle = {
   width: '100%',
@@ -293,14 +268,16 @@ const updateBtnStyle = {
   borderRadius: '10px',
   marginTop: '20px',
   fontWeight: 'bold',
-  cursor: 'pointer'};
+  cursor: 'pointer'
+};
 
 const jurnalBox = { 
   background: '#1e293b', 
   padding: '30px', 
   borderRadius: '16px', 
   border: '1px solid #334155',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' };
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
+};
 
 const historyBox = { 
   background: '#1e293b', 
@@ -308,51 +285,15 @@ const historyBox = {
   padding: '20px', 
   border: '1px solid #334155',
   overflowX: 'auto',
-  marginTop: '20px'};
+  marginTop: '20px'
+};
 
 // Style Tabel Tambahan agar tidak error
 const thStyle = { textAlign: 'left', padding: '15px 10px', fontSize: '12px', color: '#38bdf8', borderBottom: '2px solid #334155' };
 const tdStyle = { padding: '15px 10px', fontSize: '13px', color: '#cbd5e1', borderBottom: '1px solid #1e293b' };
 const trHead = { background: 'transparent' };
 const trBody = { background: 'transparent' };
-const dashboardContainer = {
-  padding: '20px',
-  maxWidth: '500px',
-  margin: '0 auto'};
-
-const menuGrid = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, 1fr)',
-  gap: '15px',
-  marginTop: '20px'};
-
-const menuCard = {
-  background: '#1e293b',
-  padding: '20px',
-  borderRadius: '20px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  border: '1px solid #334155',
-  transition: 'transform 0.2s',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'};
-
-const iconCircle = {
-  width: '50px',
-  height: '50px',
-  background: '#0f172a',
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '24px',
-  marginBottom: '10px'};
-
-const menuLabel = {
-  fontSize: '14px',
-  fontWeight: 'bold',
-  color: '#cbd5e1'};
 
 export default App;
+
+
