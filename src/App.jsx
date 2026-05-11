@@ -364,7 +364,7 @@ return (
           </div>
         )}
       </div>
-  ); // Penutup return
-} // <--- PASTIKAN ADA KURUNG INI UNTUK MENUTUP FUNCTION APP
+        );
+} 
 
 export default App;
