@@ -2,128 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { db } from './firebase'; 
 import { ref, onValue, update, push } from "firebase/database";
 
-const btnStyle = (aktif) => ({
-  background: aktif ? '#38bdf8' : '#1e293b',
-  color: aktif ? '#0f172a' : '#94a3b8',
-  border: 'none',
-  padding: '12px 15px',
-  borderRadius: '10px',
-  cursor: 'pointer',
-  textAlign: 'left',
-  fontWeight: 'bold',
-  width: '100%',
-  transition: '0.3s'
-});
-
-const formContainer = {
-  background: '#1e293b',
-  padding: '25px',
-  borderRadius: '20px',
-  width: '100%',
-  maxWidth: '450px',
-  border: '1px solid #334155'
-};
-
-const labelStyle = {
-  display: 'block',
-  fontSize: '11px',
-  color: '#64748b',
-  marginBottom: '5px',
-  fontWeight: 'bold',
-  textTransform: 'uppercase'
-};
-
-const inputStyle = { 
-  background: '#0f172a', 
-  border: '1px solid #334155', 
-  padding: '12px', 
-  borderRadius: '8px', 
-  color: '#38bdf8', 
-  fontSize: '14px', 
-  width: '100%', 
-  boxSizing: 'border-box', 
-  outline: 'none',
-  marginTop: '5px'
-};
-
-const updateBtnStyle = {
-  width: '100%',
-  background: '#0ea5e9',
-  color: 'white',
-  border: 'none',
-  padding: '14px',
-  borderRadius: '10px',
-  marginTop: '20px',
-  fontWeight: 'bold',
-  cursor: 'pointer'
-};
-
-const jurnalBox = { 
-  background: '#1e293b', 
-  padding: '30px', 
-  borderRadius: '16px', 
-  border: '1px solid #334155',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
-};
-
-const historyBox = { 
-  background: '#1e293b', 
-  borderRadius: '16px', 
-  padding: '20px', 
-  border: '1px solid #334155',
-  overflowX: 'auto',
-  marginTop: '20px'
-};
-
-// Style Tabel Tambahan agar tidak error
-const thStyle = { textAlign: 'left', padding: '15px 10px', fontSize: '12px', color: '#38bdf8', borderBottom: '2px solid #334155' };
-const tdStyle = { padding: '15px 10px', fontSize: '13px', color: '#cbd5e1', borderBottom: '1px solid #1e293b' };
-const trHead = { background: 'transparent' };
-const trBody = { background: 'transparent' };
-const dashboardContainer = {
-  padding: '20px',
-  maxWidth: '500px',
-  margin: '0 auto'
-};
-
-const menuGrid = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, 1fr)',
-  gap: '15px',
-  marginTop: '20px'
-};
-
-const menuCard = {
-  background: '#1e293b',
-  padding: '20px',
-  borderRadius: '20px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  border: '1px solid #334155',
-  transition: 'transform 0.2s',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-};
-
-const iconCircle = {
-  width: '50px',
-  height: '50px',
-  background: '#0f172a',
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '24px',
-  marginBottom: '10px'
-};
-
-const menuLabel = {
-  fontSize: '14px',
-  fontWeight: 'bold',
-  color: '#cbd5e1'
-};
+const dashboardContainer = { padding: '20px', maxWidth: '500px', margin: '0 auto' };
+const menuGrid = { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px', marginTop: '20px' };
+const menuCard = { background: '#1e293b', padding: '20px', borderRadius: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '1px solid #334155', transition: 'transform 0.2s' };
+const iconCircle = { width: '50px', height: '50px', background: '#0f172a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', marginBottom: '10px' };
+const menuLabel = { fontSize: '14px', fontWeight: 'bold', color: '#cbd5e1' };
+const jurnalBox = { background: '#1e293b', padding: '30px', borderRadius: '16px', border: '1px solid #334155' };
+const labelStyle = { display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '5px', fontWeight: 'bold', textTransform: 'uppercase' };
+const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '8px', color: '#38bdf8', width: '100%', boxSizing: 'border-box' };
+const updateBtnStyle = { width: '100%', background: '#0ea5e9', color: 'white', border: 'none', padding: '14px', borderRadius: '10px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer' };
 
 function App() {
   const [halaman, setHalaman] = useState('beranda');
@@ -174,12 +61,14 @@ function App() {
         }
       }
     });
-  }, []);
+  }, 
+  []);
+}
 
   // --- FUNGSI SIMPAN ---
   const handleUpdatePakan = () => {
-    const pekanData = {
-     
+    update(ref(db, '/'), { 
+      ...data,
       Jadwal: Number(data.Jadwal), 
       end_date: Number(data.end_date), 
       jam_pagi: Number(data.jam_pagi), 
@@ -187,12 +76,18 @@ function App() {
       jam_sore: Number(data.jam_sore), 
       menit_sore: Number(data.menit_sore || 0),
       durasi_detik: Number(data.durasi_detik) 
-    };
-
-    update(ref(db, '/'),PakanData)
-    .then(() => alert("✅ Pengaturan Pakan Diperbarui!"))
-    .catch((error)=> alert("❌ Gagal update: " + error.message));
-  
+   }).then(() => alert("✅ Pengaturan Pakan Diperbarui!"));
+  };
+  const handleSimpanHidro = () => {
+    if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
+      alert("Tanggal dan Nama Tanaman wajib diisi!");
+      return;
+    }
+push(ref(db, 'jurnal_hidroponik'), hidroInput)
+      .then(() => {
+        alert("✅ Data Hidroponik Tersimpan!");
+        setHidroInput({ tglTanam: '', namaTanaman: '', pupuk: '', hama: 'Aman', jumlahPanen: '', hargaJual: '' });
+      });
   };
 
   const handleSimpanHidro = () => {
@@ -222,21 +117,23 @@ function App() {
 
 return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
-      
+  
       {/* HEADER TETAP MUNCUL DI ATAS */}
       <div style={{ padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a' }}>
         <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px' }}>Smart Farming KSTM Al-Ihya</h2>
       </div>
 
       <div style={{ padding: '15px' }}>
-        
+       </div>
         {/* --- AREA 1: MENU UTAMA (Hanya muncul jika di Beranda) --- */}
         {halaman === 'beranda' && (
           <div style={dashboardContainer}>
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
               <p style={{ color: '#94a3b8', fontSize: '14px' }}>Pilih Menu Kontrol:</p>
             </div>
-
+            </div>
+        )}
+          
             <div style={menuGrid}>
               <div onClick={() => setHalaman('pakan')} style={menuCard}>
                 <div style={iconCircle}>🐟</div>
@@ -259,24 +156,20 @@ return (
               </div>
             </div>
           </div>
-        )}
-        </div>
-        </div>
-);
-}
-
-        {/* --- AREA 2: ISI FORMULIR (Muncul jika masuk ke salah satu menu) --- */}
+       )
+        {/* --- AREA 2: HALAMAN LAIN (Agar tidak blank saat diklik) --- */}
         {halaman !== 'beranda' && (
-          <div style={{ animation: 'fadeIn 0.3s' }}>
-            
-            {/* Tombol Back agar tidak terjebak di dalam menu */}
-            <button 
-              onClick={() => setHalaman('beranda')} 
-              style={{ background: '#1e293b', border: '1px solid #334155', color: '#38bdf8', padding: '12px', borderRadius: '10px', marginBottom: '20px', cursor: 'pointer', fontWeight: 'bold', width: '100%' }}
-            >
-              ⬅ Kembali ke Dashboard
-            </button>
-            {/* FORM PAKAN */}
+          <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+             <button 
+                onClick={() => setHalaman('beranda')} 
+                style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', marginBottom: '15px', fontWeight: 'bold' }}
+             >
+
+               ← Kembali ke Menu
+               </button>
+               </div>
+        )}
+            /* FORM PAKAN */
         {halaman === 'pakan' && (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div style={formContainer}>
@@ -302,8 +195,10 @@ return (
               <input type="number" value={data.durasi_detik} onChange={(e) => setData({...data, durasi_detik: e.target.value})} style={{...inputStyle, width: '100%'}} />
               <button onClick={handleUpdatePakan} style={updateBtnStyle}>UPDATE DATA & AKTIFKAN</button>
             </div>
-          </div>
-        )}
+            </div>
+        )
+      }
+    
 
         {/* --- LOG JURNAL IKAN (YANG TADI HILANG) --- */}
         {halaman === 'log' && (
@@ -365,11 +260,8 @@ return (
                 <thead><tr style={trHead}><th style={thStyle}>Tanggal</th><th style={thStyle}>Tanaman</th><th style={thStyle}>Panen</th><th style={thStyle}>Harga</th></tr></thead>
                 <tbody>{listHidro.map((item) => (<tr key={item.id} style={trBody}><td style={tdStyle}>{item.tglTanam}</td><td style={tdStyle}>{item.namaTanaman}</td><td style={tdStyle}>{item.jumlahPanen}</td><td style={tdStyle}>{item.hargaJual ? `Rp ${Number(item.hargaJual).toLocaleString('id-ID')}` : '-'}</td></tr>))}</tbody>
               </table>
-            </div>
           </div>
-        )}
-      </div>
-    );
-} 
-
+        </div>
+       );
+    } 
 export default App;
