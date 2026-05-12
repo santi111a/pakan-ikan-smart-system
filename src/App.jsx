@@ -8,7 +8,8 @@ function App() {
   // 1. STATE SISTEM UTAMA (FIREBASE ROOT)
   const [data, setData] = useState({
     Jadwal: 0, end_date: 0, jam_pagi: 0, menit_pagi: 0,
-    jam_sore: 0, menit_sore: 0, durasi_detik: 0, kipas_on: false 
+    jam_sore: 0, menit_sore: 0, durasi_detik: 0, kipas_on: false,
+    wifi_ssid: '', wifi_pass: '' // State baru untuk membaca data wifi dari DB
   });
 
   // 2. STATE INPUT & LIST DATA
@@ -21,11 +22,13 @@ function App() {
   const [airInput, setAirInput] = useState({ tglKuras: '', kondisiAir: '', keterangan: '' });
   const [listAir, setListAir] = useState([]);
 
-  // STATE TAKARAN PAKAN
   const [pakanInput, setPakanInput] = useState({ 
     namaIkan: '', usiaIkan: '', ukuranIkan: '', takaranPakan: '', durasiKipas: '', durasiGanti: '' 
   });
   const [listPakan, setListPakan] = useState([]);
+
+  // STATE KHUSUS PENGATURAN WIFI
+  const [wifiInput, setWifiInput] = useState({ ssid: '', pass: '' });
 
   // --- AMBIL DATA REALTIME DARI FIREBASE ---
   useEffect(() => {
@@ -60,6 +63,17 @@ function App() {
       menit_pagi: data.menit_pagi,
       durasi_detik: data.durasi_detik 
     }).then(() => alert("✅ Pengaturan Pakan Diperbarui!"));
+  };
+
+  const handleUpdateWifi = () => {
+    if (!wifiInput.ssid || !wifiInput.pass) return alert("Isi SSID dan Password WiFi!");
+    update(ref(db, '/'), { 
+      wifi_ssid: wifiInput.ssid, 
+      wifi_pass: wifiInput.pass 
+    }).then(() => {
+      alert("✅ Kredensial WiFi Berhasil Dikirim ke Alat!");
+      setWifiInput({ ssid: '', pass: '' });
+    }).catch((err) => alert("Gagal: " + err.message));
   };
 
   const handleSimpanJurnalIkan = () => {
@@ -120,6 +134,11 @@ function App() {
                 <span style={menuLabel}>Takaran Pakan</span>
                 <span style={subLabel}>{listPakan.length} Log</span>
               </div>
+              <div onClick={() => setHalaman('wifi')} style={menuCard}>
+                <div style={iconCircle}>📶</div>
+                <span style={menuLabel}>Set WiFi</span>
+                <span style={subLabel}>{data.wifi_ssid || 'Belum Set'}</span>
+              </div>
               <div onClick={() => setHalaman('log')} style={menuCard}>
                 <div style={iconCircle}>📓</div>
                 <span style={menuLabel}>Jurnal Ikan</span>
@@ -156,6 +175,29 @@ function App() {
           <div style={{ animation: 'fadeIn 0.3s', maxWidth: '900px', margin: '0 auto' }}>
             <button onClick={() => setHalaman('beranda')} style={backBtnStyle}>⬅ Kembali ke Dashboard</button>
 
+            {/* HALAMAN PENGATURAN WIFI */}
+            {halaman === 'wifi' && (
+              <div style={formContainer}>
+                <h2 style={{ color: '#38bdf8', textAlign: 'center' }}>📶 Pengaturan WiFi Alat</h2>
+                <p style={{ fontSize: '12px', color: '#94a3b8', textAlign: 'center', marginBottom: '20px' }}>
+                  Update SSID dan Password agar alat (ESP32) dapat terhubung ke internet.
+                </p>
+                <div style={{marginBottom: '15px'}}>
+                   <label style={labelStyle}>NAMA WIFI (SSID)</label>
+                   <input type="text" placeholder="Masukkan SSID" value={wifiInput.ssid} onChange={(e)=>setWifiInput({...wifiInput, ssid: e.target.value})} style={inputStyle} />
+                </div>
+                <div style={{marginBottom: '15px'}}>
+                   <label style={labelStyle}>PASSWORD WIFI</label>
+                   <input type="password" placeholder="Masukkan Password" value={wifiInput.pass} onChange={(e)=>setWifiInput({...wifiInput, pass: e.target.value})} style={inputStyle} />
+                </div>
+                <button onClick={handleUpdateWifi} style={{...updateBtnStyle, background: '#10b981'}}>KIRIM KE ALAT</button>
+                <div style={{marginTop: '20px', padding: '10px', background: '#0f172a', borderRadius: '8px', textAlign: 'center'}}>
+                   <small style={{color: '#64748b'}}>SSID Saat Ini: </small>
+                   <span style={{color: '#38bdf8', fontWeight: 'bold'}}>{data.wifi_ssid || '-'}</span>
+                </div>
+              </div>
+            )}
+
             {/* HALAMAN TAKARAN PAKAN */}
             {halaman === 'takaran' && (
               <>
@@ -166,7 +208,6 @@ function App() {
                     <div><label style={labelStyle}>USIA IKAN</label><input type="text" placeholder="Contoh: 2 Minggu" value={pakanInput.usiaIkan} onChange={(e) => setPakanInput({...pakanInput, usiaIkan: e.target.value})} style={inputStyle} /></div>
                     <div><label style={labelStyle}>UKURAN IKAN (CM)</label><input type="text" placeholder="Contoh: 5-7 cm" value={pakanInput.ukuranIkan} onChange={(e) => setPakanInput({...pakanInput, ukuranIkan: e.target.value})} style={inputStyle} /></div>
                     <div><label style={labelStyle}>TAKARAN PAKAN (GR/KG)</label><input type="text" placeholder="Contoh: 500 gr" value={pakanInput.takaranPakan} onChange={(e) => setPakanInput({...pakanInput, takaranPakan: e.target.value})} style={inputStyle} /></div>
-                    {/* PERUBAHAN DISINI: MENIT MENJADI DETIK */}
                     <div><label style={labelStyle}>DURASI KIPAS (DETIK)</label><input type="number" placeholder="Contoh: 30" value={pakanInput.durasiKipas} onChange={(e) => setPakanInput({...pakanInput, durasiKipas: e.target.value})} style={inputStyle} /></div>
                     <div><label style={labelStyle}>DURASI GANTI TAKARAN</label><input type="text" placeholder="Contoh: 10 Hari Sekali" value={pakanInput.durasiGanti} onChange={(e) => setPakanInput({...pakanInput, durasiGanti: e.target.value})} style={inputStyle} /></div>
                   </div>
@@ -197,7 +238,6 @@ function App() {
               </>
             )}
 
-            {/* HALAMAN LAINNYA TETAP SAMA */}
             {halaman === 'hidroponik' && (
               <>
                 <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>🌱 Jurnal Hidroponik</h2>
@@ -311,7 +351,7 @@ function App() {
   );
 }
 
-// --- CSS-IN-JS STYLES (Sama seperti sebelumnya) ---
+// --- CSS-IN-JS STYLES ---
 const headerStyle = { padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a', position: 'sticky', top: 0, zIndex: 10 };
 const dashboardContainer = { maxWidth: '500px', margin: '0 auto' };
 const menuGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' };
