@@ -11,32 +11,25 @@ function App() {
     jam_sore: 0, menit_sore: 0, durasi_detik: 0, kipas_on: false 
   });
 
-  // 2. STATE HIDROPONIK
-  const [hidroInput, setHidroInput] = useState({ 
-    tglTanam: '', namaTanaman: '', pupuk: '', 
-    hama: 'Aman', jumlahPanen: '', hargaJual: '' 
-  });
+  // 2. STATE INPUT & LIST DATA
+  const [hidroInput, setHidroInput] = useState({ tglTanam: '', namaTanaman: '', pupuk: '', hama: 'Aman', jumlahPanen: '', hargaJual: '' });
   const [listHidro, setListHidro] = useState([]);
 
-  // 3. STATE JURNAL IKAN
-  const [jurnalInput, setJurnalInput] = useState({ 
-    tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' 
-  });
+  const [jurnalInput, setJurnalInput] = useState({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
   const [listJurnal, setListJurnal] = useState([]);
 
-  // 4. STATE LOG AIR
-  const [airInput, setAirInput] = useState({ 
-    tglKuras: '', kondisiAir: '', keterangan: '' 
-  });
+  const [airInput, setAirInput] = useState({ tglKuras: '', kondisiAir: '', keterangan: '' });
   const [listAir, setListAir] = useState([]);
 
-  // --- AMBIL DATA REALTIME ---
+  // --- AMBIL DATA REALTIME DARI FIREBASE ---
   useEffect(() => {
     const dbRef = ref(db, '/'); 
     onValue(dbRef, (snapshot) => {
       if (snapshot.exists()) {
         const result = snapshot.val();
         setData(prev => ({ ...prev, ...result }));
+        
+        // Mapping data dari Firebase ke State
         if (result.jurnal_harian) {
           setListJurnal(Object.keys(result.jurnal_harian).map(key => ({ id: key, ...result.jurnal_harian[key] })).reverse());
         }
@@ -50,89 +43,71 @@ function App() {
     });
   }, []);
 
-  // --- FUNGSI UPDATE ---
-  const handleToggleKipas = () => {
-    update(ref(db, '/'), { kipas_on: !data.kipas_on });
-  };
+  // --- FUNGSI SIMPAN & UPDATE ---
+  const handleToggleKipas = () => update(ref(db, '/'), { kipas_on: !data.kipas_on });
 
   const handleUpdatePakan = () => {
-    update(ref(db, '/'), { 
-      ...data, 
-      Jadwal: Number(data.Jadwal), 
-      end_date: Number(data.end_date), 
-      jam_pagi: Number(data.jam_pagi), 
-      menit_pagi: Number(data.menit_pagi || 0),
-      jam_sore: Number(data.jam_sore), 
-      menit_sore: Number(data.menit_sore || 0),
-      durasi_detik: Number(data.durasi_detik) 
-    }).then(() => alert("✅ Pengaturan Pakan Diperbarui!"));
+    update(ref(db, '/'), { ...data }).then(() => alert("✅ Jadwal Pakan Diperbarui!"));
   };
 
   const handleSimpanJurnalIkan = () => {
-    if (!jurnalInput.tglBibit || !jurnalInput.jumlahIkan) return alert("Isi Tanggal dan Jumlah Ikan!");
+    if (!jurnalInput.tglBibit) return alert("Isi tanggal dulu!");
     push(ref(db, 'jurnal_harian'), jurnalInput).then(() => {
       alert("✅ Jurnal Ikan Tersimpan!");
       setJurnalInput({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
     });
   };
 
-  // --- FUNGSI LAINNYA (AIR & HIDRO) ---
   const handleSimpanAir = () => {
+    if (!airInput.tglKuras) return alert("Isi tanggal kuras!");
     push(ref(db, 'log_pengurasan'), airInput).then(() => {
-      alert("✅ Log Air Tersimpan!");
+      alert("✅ Log Air Berhasil Dicatat!");
       setAirInput({ tglKuras: '', kondisiAir: '', keterangan: '' });
-    });
-  };
-
-  const handleSimpanHidro = () => {
-    push(ref(db, 'jurnal_hidroponik'), hidroInput).then(() => {
-      alert("✅ Data Hidroponik Tersimpan!");
-      setHidroInput({ tglTanam: '', namaTanaman: '', pupuk: '', hama: 'Aman', jumlahPanen: '', hargaJual: '' });
     });
   };
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
       
-      {/* HEADER */}
-      <div style={{ padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a' }}>
+      {/* HEADER UTAMA */}
+      <div style={{ padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a', position: 'sticky', top: 0, zIndex: 10 }}>
         <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px' }}>Santi Smart System</h2>
       </div>
 
       <div style={{ padding: '15px' }}>
         
-        {/* --- DASHBOARD --- */}
+        {/* --- MENU UTAMA (DASHBOARD) --- */}
         {halaman === 'beranda' && (
           <div style={dashboardContainer}>
             <div style={menuGrid}>
               <div onClick={() => setHalaman('pakan')} style={menuCard}>
                 <div style={iconCircle}>🐟</div>
                 <span style={menuLabel}>Pakan Pintar</span>
-                <span style={subLabel}>Aktif: {data.jam_pagi}:{data.menit_pagi}</span>
+                <span style={subLabel}>Pagi: {data.jam_pagi}:{data.menit_pagi}</span>
               </div>
               <div onClick={() => setHalaman('log')} style={menuCard}>
                 <div style={iconCircle}>📓</div>
                 <span style={menuLabel}>Jurnal Ikan</span>
-                <span style={subLabel}>{listJurnal.length} Catatan</span>
+                <span style={subLabel}>{listJurnal.length} Entri</span>
               </div>
               <div onClick={() => setHalaman('air')} style={menuCard}>
                 <div style={iconCircle}>💧</div>
                 <span style={menuLabel}>Log Air</span>
-                <span style={subLabel}>{listAir[0]?.kondisiAir || 'Normal'}</span>
+                <span style={subLabel}>{listAir[0]?.kondisiAir || 'N/A'}</span>
               </div>
               <div onClick={() => setHalaman('hidroponik')} style={menuCard}>
                 <div style={iconCircle}>🌱</div>
                 <span style={menuLabel}>Hidroponik</span>
-                <span style={subLabel}>{listHidro.length} Tanaman</span>
+                <span style={subLabel}>Cek Tanaman</span>
               </div>
             </div>
 
-            {/* KONTROL KIPAS */}
+            {/* QUICK CONTROL KIPAS */}
             <div style={kipasBox}>
               <div>
-                <div style={{ fontWeight: 'bold' }}>Kontrol Kipas</div>
+                <div style={{ fontWeight: 'bold' }}>Sirkulasi Kipas</div>
                 <div style={{ fontSize: '12px', color: data.kipas_on ? '#10b981' : '#ef4444' }}>
-                  {data.kipas_on ? '● Menyala' : '● Mati'}
+                  {data.kipas_on ? '● Status: Aktif' : '● Status: Mati'}
                 </div>
               </div>
               <button onClick={handleToggleKipas} style={{ ...toggleBtn, background: data.kipas_on ? '#ef4444' : '#10b981' }}>
@@ -142,12 +117,45 @@ function App() {
           </div>
         )}
 
-        {/* --- AREA FORMULIR --- */}
+        {/* --- AREA HALAMAN DETAIL --- */}
         {halaman !== 'beranda' && (
           <div style={{ animation: 'fadeIn 0.3s' }}>
             <button onClick={() => setHalaman('beranda')} style={backBtnStyle}>⬅ Kembali ke Dashboard</button>
 
-            {/* --- LOG JURNAL IKAN --- */}
+            {/* --- LOG AIR (NEW) --- */}
+            {halaman === 'air' && (
+              <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+                <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>💧 Log Pengurasan Air</h2>
+                <div style={jurnalBox}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div><label style={labelStyle}>TGL KURAS</label><input type="date" value={airInput.tglKuras} onChange={(e)=>setAirInput({...airInput, tglKuras: e.target.value})} style={inputStyle} /></div>
+                    <div><label style={labelStyle}>KONDISI</label><input type="text" placeholder="Hijau/Keruh" value={airInput.kondisiAir} onChange={(e)=>setAirInput({...airInput, kondisiAir: e.target.value})} style={inputStyle} /></div>
+                  </div>
+                  <div style={{marginTop: '15px'}}><label style={labelStyle}>KETERANGAN</label><input type="text" placeholder="Misal: Ganti air 50%" value={airInput.keterangan} onChange={(e)=>setAirInput({...airInput, keterangan: e.target.value})} style={inputStyle} /></div>
+                  <button onClick={handleSimpanAir} style={updateBtnStyle}>SIMPAN DATA AIR</button>
+                </div>
+                <div style={historyBox}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead><tr style={trHead}><th style={thStyle}>Tanggal</th><th style={thStyle}>Kondisi</th><th style={thStyle}>Keterangan</th></tr></thead>
+                    <tbody>
+                      {listAir.length > 0 ? (
+                        listAir.map((item) => (
+                          <tr key={item.id} style={trBody}>
+                            <td style={tdStyle}>{item.tglKuras}</td>
+                            <td style={tdStyle}>{item.kondisiAir}</td>
+                            <td style={tdStyle}>{item.keterangan || '-'}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr><td colSpan="3" style={{...tdStyle, textAlign: 'center'}}>Belum ada data air</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* --- JURNAL IKAN --- */}
             {halaman === 'log' && (
               <div style={{ maxWidth: '900px', margin: '0 auto' }}>
                 <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>📝 Jurnal Budidaya Ikan</h2>
@@ -160,44 +168,18 @@ function App() {
                   </div>
                   <button onClick={handleSimpanJurnalIkan} style={updateBtnStyle}>SIMPAN DATA IKAN</button>
                 </div>
-                
                 <div style={historyBox}>
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr style={trHead}>
-                        <th style={thStyle}>Tgl Bibit</th>
-                        <th style={thStyle}>Jumlah</th>
-                        <th style={thStyle}>Ukuran</th>
-                        <th style={thStyle}>Tgl Sortir</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {listJurnal.map((item) => (
-                        <tr key={item.id} style={trBody}>
-                          <td style={tdStyle}>{item.tglBibit}</td>
-                          <td style={tdStyle}>{item.jumlahIkan} ekor</td>
-                          <td style={tdStyle}>{item.ukuranBibit} cm</td>
-                          <td style={tdStyle}>{item.tglSortir}</td>
-                        </tr>
-                      ))}
-                    </tbody>
+                    <thead><tr style={trHead}><th style={thStyle}>Tgl Bibit</th><th style={thStyle}>Jumlah</th><th style={thStyle}>Ukuran</th><th style={thStyle}>Tgl Sortir</th></tr></thead>
+                    <tbody>{listJurnal.map((item) => (<tr key={item.id} style={trBody}><td style={tdStyle}>{item.tglBibit}</td><td style={tdStyle}>{item.jumlahIkan}</td><td style={tdStyle}>{item.ukuranBibit}</td><td style={tdStyle}>{item.tglSortir}</td></tr>))}</tbody>
                   </table>
                 </div>
               </div>
             )}
 
-            {/* FORM PAKAN (SEDERHANA) */}
-            {halaman === 'pakan' && (
-              <div style={formContainer}>
-                <h3 style={{ textAlign: 'center', color: '#38bdf8' }}>⚙️ Pengaturan Pakan</h3>
-                <label style={labelStyle}>JAM PAGI</label>
-                <input type="number" value={data.jam_pagi} onChange={(e)=>setData({...data, jam_pagi: e.target.value})} style={inputStyle} />
-                <button onClick={handleUpdatePakan} style={updateBtnStyle}>SIMPAN JADWAL</button>
-              </div>
-            )}
-            
-            {/* ... section air & hidro bisa ditambahkan di sini ... */}
-
+            {/* --- HALAMAN LAIN (PLACEHOLDER) --- */}
+            {halaman === 'pakan' && <div style={{textAlign: 'center'}}>Halaman Pakan sedang dikembangkan.</div>}
+            {halaman === 'hidroponik' && <div style={{textAlign: 'center'}}>Halaman Hidroponik sedang dikembangkan.</div>}
           </div>
         )}
       </div>
@@ -205,22 +187,19 @@ function App() {
   );
 }
 
-// --- STYLES ---
+// --- STYLES OBJECT ---
 const dashboardContainer = { maxWidth: '500px', margin: '0 auto' };
 const menuGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' };
-const menuCard = { background: '#1e293b', padding: '20px', borderRadius: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', border: '1px solid #334155' };
+const menuCard = { background: '#1e293b', padding: '20px', borderRadius: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', border: '1px solid #334155', transition: '0.2s' };
 const iconCircle = { fontSize: '32px', marginBottom: '10px' };
 const menuLabel = { fontSize: '14px', fontWeight: 'bold' };
 const subLabel = { fontSize: '11px', color: '#94a3b8', marginTop: '5px' };
 const kipasBox = { marginTop: '25px', padding: '20px', background: '#1e293b', borderRadius: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
 const toggleBtn = { border: 'none', color: 'white', padding: '10px 15px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
-const formContainer = { background: '#1e293b', padding: '20px', borderRadius: '20px', maxWidth: '400px', margin: '0 auto' };
-const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '8px', color: '#38bdf8', width: '100%', marginBottom: '10px', boxSizing: 'border-box' };
+const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '8px', color: '#38bdf8', width: '100%', boxSizing: 'border-box' };
 const labelStyle = { fontSize: '11px', color: '#64748b', fontWeight: 'bold', display: 'block', marginBottom: '5px' };
 const updateBtnStyle = { width: '100%', background: '#0ea5e9', color: 'white', border: 'none', padding: '14px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
 const backBtnStyle = { background: '#1e293b', border: '1px solid #334155', color: '#38bdf8', padding: '12px', borderRadius: '10px', marginBottom: '20px', cursor: 'pointer', width: '100%' };
-
-// STYLE TABEL JURNAL IKAN
 const jurnalBox = { background: '#1e293b', padding: '25px', borderRadius: '20px', marginBottom: '20px' };
 const historyBox = { background: '#1e293b', padding: '15px', borderRadius: '20px', overflowX: 'auto' };
 const trHead = { borderBottom: '2px solid #334155', textAlign: 'left' };
