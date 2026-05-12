@@ -21,6 +21,12 @@ function App() {
   const [airInput, setAirInput] = useState({ tglKuras: '', kondisiAir: '', keterangan: '' });
   const [listAir, setListAir] = useState([]);
 
+  // --- TAMBAHAN: STATE TAKARAN PAKAN ---
+  const [pakanInput, setPakanInput] = useState({ 
+    namaIkan: '', usiaIkan: '', ukuranIkan: '', takaranPakan: '', durasiKipas: '', durasiGanti: '' 
+  });
+  const [listPakan, setListPakan] = useState([]);
+
   // --- AMBIL DATA REALTIME DARI FIREBASE ---
   useEffect(() => {
     const dbRef = ref(db, '/'); 
@@ -38,6 +44,10 @@ function App() {
         }
         if (result.jurnal_hidroponik) {
           setListHidro(Object.keys(result.jurnal_hidroponik).map(key => ({ id: key, ...result.jurnal_hidroponik[key] })).reverse());
+        }
+        // Ambil data jurnal pakan
+        if (result.jurnal_pakan) {
+          setListPakan(Object.keys(result.jurnal_pakan).map(key => ({ id: key, ...result.jurnal_pakan[key] })).reverse());
         }
       }
     });
@@ -78,12 +88,25 @@ function App() {
     });
   };
 
+  // --- TAMBAHAN: FUNGSI SIMPAN TAKARAN PAKAN ---
+  const handleSimpanTakaranPakan = () => {
+    if (!pakanInput.namaIkan || !pakanInput.takaranPakan) return alert("Lengkapi data pakan!");
+    push(ref(db, 'jurnal_pakan'), pakanInput).then(() => {
+      alert("✅ Jurnal Takaran Pakan Tersimpan!");
+      setPakanInput({ namaIkan: '', usiaIkan: '', ukuranIkan: '', takaranPakan: '', durasiKipas: '', durasiGanti: '' });
+    });
+  };
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
       
       {/* --- HEADER --- */}
       <div style={headerStyle}>
-        <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+        <h2 
+          lang="en" 
+          className="notranslate"
+          style={{ color: '#38bdf8', margin: 0, fontSize: '20px', letterSpacing: '1px', textTransform: 'uppercase' }}
+        >
           Smart Farming KSTM AL IHYA
         </h2>
       </div>
@@ -96,8 +119,13 @@ function App() {
             <div style={menuGrid}>
               <div onClick={() => setHalaman('pakan')} style={menuCard}>
                 <div style={iconCircle}>🐟</div>
-                <span style={menuLabel}>Pakan Pintar</span>
+                <span style={menuLabel}>Jadwal Pakan</span>
                 <span style={subLabel}>Pagi {data.jam_pagi}:{data.menit_pagi}</span>
+              </div>
+              <div onClick={() => setHalaman('takaran')} style={menuCard}>
+                <div style={iconCircle}>⚖️</div>
+                <span style={menuLabel}>Takaran Pakan</span>
+                <span style={subLabel}>{listPakan.length} Log</span>
               </div>
               <div onClick={() => setHalaman('log')} style={menuCard}>
                 <div style={iconCircle}>📓</div>
@@ -135,6 +163,46 @@ function App() {
         {halaman !== 'beranda' && (
           <div style={{ animation: 'fadeIn 0.3s', maxWidth: '900px', margin: '0 auto' }}>
             <button onClick={() => setHalaman('beranda')} style={backBtnStyle}>⬅ Kembali ke Dashboard</button>
+
+            {/* HALAMAN TAKARAN PAKAN (TAMBAHAN BARU) */}
+            {halaman === 'takaran' && (
+              <>
+                <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>⚖️ Jurnal Takaran Pakan</h2>
+                <div style={jurnalBox}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                    <div><label style={labelStyle}>NAMA IKAN</label><input type="text" placeholder="Lele/Nila" value={pakanInput.namaIkan} onChange={(e) => setPakanInput({...pakanInput, namaIkan: e.target.value})} style={inputStyle} /></div>
+                    <div><label style={labelStyle}>USIA IKAN</label><input type="text" placeholder="Contoh: 2 Minggu" value={pakanInput.usiaIkan} onChange={(e) => setPakanInput({...pakanInput, usiaIkan: e.target.value})} style={inputStyle} /></div>
+                    <div><label style={labelStyle}>UKURAN IKAN (CM)</label><input type="text" placeholder="Contoh: 5-7 cm" value={pakanInput.ukuranIkan} onChange={(e) => setPakanInput({...pakanInput, ukuranIkan: e.target.value})} style={inputStyle} /></div>
+                    <div><label style={labelStyle}>TAKARAN PAKAN (GR/KG)</label><input type="text" placeholder="Contoh: 500 gr" value={pakanInput.takaranPakan} onChange={(e) => setPakanInput({...pakanInput, takaranPakan: e.target.value})} style={inputStyle} /></div>
+                    <div><label style={labelStyle}>DURASI KIPAS (MENIT)</label><input type="text" placeholder="Kipas berputar" value={pakanInput.durasiKipas} onChange={(e) => setPakanInput({...pakanInput, durasiKipas: e.target.value})} style={inputStyle} /></div>
+                    <div><label style={labelStyle}>DURASI GANTI TAKARAN</label><input type="text" placeholder="Contoh: Setiap 10 hari" value={pakanInput.durasiGanti} onChange={(e) => setPakanInput({...pakanInput, durasiGanti: e.target.value})} style={inputStyle} /></div>
+                  </div>
+                  <button onClick={handleSimpanTakaranPakan} style={{...updateBtnStyle, background: '#10b981'}}>SIMPAN DATA TAKARAN</button>
+                </div>
+                <div style={historyBox}>
+                   <table style={tableStyle}>
+                     <thead><tr style={trHead}>
+                       <th style={thStyle}>Ikan</th>
+                       <th style={thStyle}>Usia/Size</th>
+                       <th style={thStyle}>Takaran</th>
+                       <th style={thStyle}>Kipas</th>
+                       <th style={thStyle}>Ganti Tiap</th>
+                     </tr></thead>
+                     <tbody>
+                       {listPakan.map((item) => (
+                         <tr key={item.id} style={trBody}>
+                           <td style={tdStyle}>{item.namaIkan}</td>
+                           <td style={tdStyle}>{item.usiaIkan} / {item.ukuranIkan}</td>
+                           <td style={tdStyle}>{item.takaranPakan}</td>
+                           <td style={tdStyle}>{item.durasiKipas}</td>
+                           <td style={tdStyle}>{item.durasiGanti}</td>
+                         </tr>
+                       ))}
+                     </tbody>
+                   </table>
+                </div>
+              </>
+            )}
 
             {/* HALAMAN HIDROPONIK */}
             {halaman === 'hidroponik' && (
