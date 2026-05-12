@@ -16,29 +16,29 @@ function App() {
   const [halaman, setHalaman] = React.useState('beranda');
   
   // 1. STATE SISTEM UTAMA
-  const [data, setData] = useState({
+  const [data, setData] = React.useState({
     Jadwal: 0, end_date: 0, jam_pagi: 0, menit_pagi: 0,
     jam_sore: 0, menit_sore: 0, durasi_detik: 0, kipas_on: false 
   });
 
   // 2. STATE HIDROPONIK
-  const [hidroInput, setHidroInput] = useState({ 
+  const [hidroInput, setHidroInput] = React.useState({ 
     tglTanam: '', namaTanaman: '', pupuk: '', 
     hama: 'Aman', jumlahPanen: '', hargaJual: '' 
   });
-  const [listHidro, setListHidro] = useState([]);
+  const [listHidro, setListHidro] = React.useState([]);
 
   // 3. STATE JURNAL IKAN
-  const [jurnalInput, setJurnalInput] = useState({ 
+  const [jurnalInput, setJurnalInput] = React.useState({ 
     tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' 
   });
-  const [listJurnal, setListJurnal] = useState([]);
+  const [listJurnal, setListJurnal] = React.useState([]);
 
   // 4. STATE LOG AIR
-  const [airInput, setAirInput] = useState({ 
+  const [airInput, setAirInput] = React.useState({ 
     tglKuras: '', kondisiAir: '', keterangan: '' 
   });
-  const [listAir, setListAir] = useState([]);
+  const [listAir, setListAir] = React.useState([]);
 
   // --- AMBIL DATA REALTIME ---
   useEffect(() => {
