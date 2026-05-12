@@ -21,7 +21,7 @@ function App() {
   const [airInput, setAirInput] = useState({ tglKuras: '', kondisiAir: '', keterangan: '' });
   const [listAir, setListAir] = useState([]);
 
-  // --- TAMBAHAN: STATE TAKARAN PAKAN ---
+  // STATE TAKARAN PAKAN
   const [pakanInput, setPakanInput] = useState({ 
     namaIkan: '', usiaIkan: '', ukuranIkan: '', takaranPakan: '', durasiKipas: '', durasiGanti: '' 
   });
@@ -35,7 +35,6 @@ function App() {
         const result = snapshot.val();
         setData(prev => ({ ...prev, ...result }));
         
-        // Mapping List Data (Terbaru di Atas)
         if (result.jurnal_harian) {
           setListJurnal(Object.keys(result.jurnal_harian).map(key => ({ id: key, ...result.jurnal_harian[key] })).reverse());
         }
@@ -45,7 +44,6 @@ function App() {
         if (result.jurnal_hidroponik) {
           setListHidro(Object.keys(result.jurnal_hidroponik).map(key => ({ id: key, ...result.jurnal_hidroponik[key] })).reverse());
         }
-        // Ambil data jurnal pakan
         if (result.jurnal_pakan) {
           setListPakan(Object.keys(result.jurnal_pakan).map(key => ({ id: key, ...result.jurnal_pakan[key] })).reverse());
         }
@@ -88,7 +86,6 @@ function App() {
     });
   };
 
-  // --- TAMBAHAN: FUNGSI SIMPAN TAKARAN PAKAN ---
   const handleSimpanTakaranPakan = () => {
     if (!pakanInput.namaIkan || !pakanInput.takaranPakan) return alert("Lengkapi data pakan!");
     push(ref(db, 'jurnal_pakan'), pakanInput).then(() => {
@@ -102,11 +99,7 @@ function App() {
       
       {/* --- HEADER --- */}
       <div style={headerStyle}>
-        <h2 
-          lang="en" 
-          className="notranslate"
-          style={{ color: '#38bdf8', margin: 0, fontSize: '20px', letterSpacing: '1px', textTransform: 'uppercase' }}
-        >
+        <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px', letterSpacing: '1px', textTransform: 'uppercase' }}>
           Smart Farming KSTM AL IHYA
         </h2>
       </div>
@@ -144,7 +137,6 @@ function App() {
               </div>
             </div>
 
-            {/* KONTROL KIPAS QUICK VIEW */}
             <div style={kipasBox}>
               <div>
                 <div style={{ fontWeight: 'bold' }}>Sirkulasi Kipas</div>
@@ -164,7 +156,7 @@ function App() {
           <div style={{ animation: 'fadeIn 0.3s', maxWidth: '900px', margin: '0 auto' }}>
             <button onClick={() => setHalaman('beranda')} style={backBtnStyle}>⬅ Kembali ke Dashboard</button>
 
-            {/* HALAMAN TAKARAN PAKAN (TAMBAHAN BARU) */}
+            {/* HALAMAN TAKARAN PAKAN */}
             {halaman === 'takaran' && (
               <>
                 <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>⚖️ Jurnal Takaran Pakan</h2>
@@ -174,8 +166,9 @@ function App() {
                     <div><label style={labelStyle}>USIA IKAN</label><input type="text" placeholder="Contoh: 2 Minggu" value={pakanInput.usiaIkan} onChange={(e) => setPakanInput({...pakanInput, usiaIkan: e.target.value})} style={inputStyle} /></div>
                     <div><label style={labelStyle}>UKURAN IKAN (CM)</label><input type="text" placeholder="Contoh: 5-7 cm" value={pakanInput.ukuranIkan} onChange={(e) => setPakanInput({...pakanInput, ukuranIkan: e.target.value})} style={inputStyle} /></div>
                     <div><label style={labelStyle}>TAKARAN PAKAN (GR/KG)</label><input type="text" placeholder="Contoh: 500 gr" value={pakanInput.takaranPakan} onChange={(e) => setPakanInput({...pakanInput, takaranPakan: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>DURASI KIPAS (MENIT)</label><input type="text" placeholder="Kipas berputar" value={pakanInput.durasiKipas} onChange={(e) => setPakanInput({...pakanInput, durasiKipas: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>DURASI GANTI TAKARAN</label><input type="text" placeholder="Contoh: Setiap 10 hari" value={pakanInput.durasiGanti} onChange={(e) => setPakanInput({...pakanInput, durasiGanti: e.target.value})} style={inputStyle} /></div>
+                    {/* PERUBAHAN DISINI: MENIT MENJADI DETIK */}
+                    <div><label style={labelStyle}>DURASI KIPAS (DETIK)</label><input type="number" placeholder="Contoh: 30" value={pakanInput.durasiKipas} onChange={(e) => setPakanInput({...pakanInput, durasiKipas: e.target.value})} style={inputStyle} /></div>
+                    <div><label style={labelStyle}>DURASI GANTI TAKARAN</label><input type="text" placeholder="Contoh: 10 Hari Sekali" value={pakanInput.durasiGanti} onChange={(e) => setPakanInput({...pakanInput, durasiGanti: e.target.value})} style={inputStyle} /></div>
                   </div>
                   <button onClick={handleSimpanTakaranPakan} style={{...updateBtnStyle, background: '#10b981'}}>SIMPAN DATA TAKARAN</button>
                 </div>
@@ -185,7 +178,7 @@ function App() {
                        <th style={thStyle}>Ikan</th>
                        <th style={thStyle}>Usia/Size</th>
                        <th style={thStyle}>Takaran</th>
-                       <th style={thStyle}>Kipas</th>
+                       <th style={thStyle}>Kipas (Dtk)</th>
                        <th style={thStyle}>Ganti Tiap</th>
                      </tr></thead>
                      <tbody>
@@ -194,7 +187,7 @@ function App() {
                            <td style={tdStyle}>{item.namaIkan}</td>
                            <td style={tdStyle}>{item.usiaIkan} / {item.ukuranIkan}</td>
                            <td style={tdStyle}>{item.takaranPakan}</td>
-                           <td style={tdStyle}>{item.durasiKipas}</td>
+                           <td style={tdStyle}>{item.durasiKipas}s</td>
                            <td style={tdStyle}>{item.durasiGanti}</td>
                          </tr>
                        ))}
@@ -204,7 +197,7 @@ function App() {
               </>
             )}
 
-            {/* HALAMAN HIDROPONIK */}
+            {/* HALAMAN LAINNYA TETAP SAMA */}
             {halaman === 'hidroponik' && (
               <>
                 <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>🌱 Jurnal Hidroponik</h2>
@@ -235,7 +228,6 @@ function App() {
               </>
             )}
 
-            {/* HALAMAN LOG AIR */}
             {halaman === 'air' && (
               <>
                 <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>💧 Log Pengurasan Air</h2>
@@ -264,7 +256,6 @@ function App() {
               </>
             )}
 
-            {/* HALAMAN JURNAL IKAN */}
             {halaman === 'log' && (
               <>
                 <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>📝 Jurnal Budidaya Ikan</h2>
@@ -295,7 +286,6 @@ function App() {
               </>
             )}
 
-            {/* HALAMAN PAKAN */}
             {halaman === 'pakan' && (
               <div style={formContainer}>
                 <h2 style={{ color: '#38bdf8', textAlign: 'center' }}>⚙️ Pengaturan Pakan</h2>
@@ -321,7 +311,7 @@ function App() {
   );
 }
 
-// --- CSS-IN-JS STYLES ---
+// --- CSS-IN-JS STYLES (Sama seperti sebelumnya) ---
 const headerStyle = { padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a', position: 'sticky', top: 0, zIndex: 10 };
 const dashboardContainer = { maxWidth: '500px', margin: '0 auto' };
 const menuGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' };
