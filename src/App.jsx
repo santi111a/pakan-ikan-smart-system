@@ -47,7 +47,11 @@ function App() {
   const handleToggleKipas = () => update(ref(db, '/'), { kipas_on: !data.kipas_on });
 
   const handleUpdatePakan = () => {
-    update(ref(db, '/'), { ...data }).then(() => alert("✅ Pengaturan Pakan Diperbarui!"));
+    update(ref(db, '/'), { 
+      jam_pagi: data.jam_pagi, 
+      menit_pagi: data.menit_pagi,
+      durasi_detik: data.durasi_detik 
+    }).then(() => alert("✅ Pengaturan Pakan Diperbarui!"));
   };
 
   const handleSimpanJurnalIkan = () => {
@@ -77,14 +81,16 @@ function App() {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
       
-      {/* HEADER */}
+      {/* --- HEADER --- */}
       <div style={headerStyle}>
-        <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px' }}>Santi Smart System</h2>
+        <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+          Smart Farming KSTM AL IHYA
+        </h2>
       </div>
 
       <div style={{ padding: '15px' }}>
         
-        {/* --- DASHBOARD --- */}
+        {/* --- DASHBOARD UTAMA --- */}
         {halaman === 'beranda' && (
           <div style={dashboardContainer}>
             <div style={menuGrid}>
@@ -110,7 +116,7 @@ function App() {
               </div>
             </div>
 
-            {/* KONTROL KIPAS */}
+            {/* KONTROL KIPAS QUICK VIEW */}
             <div style={kipasBox}>
               <div>
                 <div style={{ fontWeight: 'bold' }}>Sirkulasi Kipas</div>
@@ -127,12 +133,12 @@ function App() {
 
         {/* --- AREA HALAMAN DETAIL --- */}
         {halaman !== 'beranda' && (
-          <div style={{ animation: 'fadeIn 0.3s' }}>
+          <div style={{ animation: 'fadeIn 0.3s', maxWidth: '900px', margin: '0 auto' }}>
             <button onClick={() => setHalaman('beranda')} style={backBtnStyle}>⬅ Kembali ke Dashboard</button>
 
             {/* HALAMAN HIDROPONIK */}
             {halaman === 'hidroponik' && (
-              <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+              <>
                 <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>🌱 Jurnal Hidroponik</h2>
                 <div style={jurnalBox}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px' }}>
@@ -158,14 +164,13 @@ function App() {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </>
             )}
 
             {/* HALAMAN LOG AIR */}
             {halaman === 'air' && (
-              <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+              <>
                 <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>💧 Log Pengurasan Air</h2>
-                {/* Form Log Air ... */}
                 <div style={jurnalBox}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                     <div><label style={labelStyle}>TGL KURAS</label><input type="date" value={airInput.tglKuras} onChange={(e)=>setAirInput({...airInput, tglKuras: e.target.value})} style={inputStyle} /></div>
@@ -174,7 +179,6 @@ function App() {
                   <div style={{marginTop: '15px'}}><label style={labelStyle}>KETERANGAN</label><input type="text" value={airInput.keterangan} onChange={(e)=>setAirInput({...airInput, keterangan: e.target.value})} style={inputStyle} /></div>
                   <button onClick={handleSimpanAir} style={updateBtnStyle}>SIMPAN DATA AIR</button>
                 </div>
-                {/* Tabel Log Air ... */}
                 <div style={historyBox}>
                    <table style={tableStyle}>
                      <thead><tr style={trHead}><th style={thStyle}>Tanggal</th><th style={thStyle}>Kondisi</th><th style={thStyle}>Keterangan</th></tr></thead>
@@ -189,14 +193,13 @@ function App() {
                      </tbody>
                    </table>
                 </div>
-              </div>
+              </>
             )}
 
             {/* HALAMAN JURNAL IKAN */}
             {halaman === 'log' && (
-              <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+              <>
                 <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>📝 Jurnal Budidaya Ikan</h2>
-                {/* Form Jurnal Ikan ... */}
                 <div style={jurnalBox}>
                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                      <div><label style={labelStyle}>TGL BIBIT</label><input type="date" value={jurnalInput.tglBibit} onChange={(e)=>setJurnalInput({...jurnalInput, tglBibit: e.target.value})} style={inputStyle} /></div>
@@ -206,7 +209,6 @@ function App() {
                    </div>
                    <button onClick={handleSimpanJurnalIkan} style={updateBtnStyle}>SIMPAN DATA IKAN</button>
                 </div>
-                {/* Tabel Jurnal Ikan ... */}
                 <div style={historyBox}>
                    <table style={tableStyle}>
                      <thead><tr style={trHead}><th style={thStyle}>Tgl Bibit</th><th style={thStyle}>Jumlah</th><th style={thStyle}>Ukuran</th><th style={thStyle}>Tgl Sortir</th></tr></thead>
@@ -222,15 +224,25 @@ function App() {
                      </tbody>
                    </table>
                 </div>
-              </div>
+              </>
             )}
 
             {/* HALAMAN PAKAN */}
             {halaman === 'pakan' && (
               <div style={formContainer}>
                 <h2 style={{ color: '#38bdf8', textAlign: 'center' }}>⚙️ Pengaturan Pakan</h2>
-                <label style={labelStyle}>JAM PAGI</label>
-                <input type="number" value={data.jam_pagi} onChange={(e)=>setData({...data, jam_pagi: e.target.value})} style={inputStyle} />
+                <div style={{marginBottom: '15px'}}>
+                   <label style={labelStyle}>JAM PAGI (JAM)</label>
+                   <input type="number" value={data.jam_pagi} onChange={(e)=>setData({...data, jam_pagi: parseInt(e.target.value)})} style={inputStyle} />
+                </div>
+                <div style={{marginBottom: '15px'}}>
+                   <label style={labelStyle}>MENIT PAGI (MENIT)</label>
+                   <input type="number" value={data.menit_pagi} onChange={(e)=>setData({...data, menit_pagi: parseInt(e.target.value)})} style={inputStyle} />
+                </div>
+                <div style={{marginBottom: '15px'}}>
+                   <label style={labelStyle}>DURASI (DETIK)</label>
+                   <input type="number" value={data.durasi_detik} onChange={(e)=>setData({...data, durasi_detik: parseInt(e.target.value)})} style={inputStyle} />
+                </div>
                 <button onClick={handleUpdatePakan} style={updateBtnStyle}>UPDATE JADWAL</button>
               </div>
             )}
@@ -241,18 +253,18 @@ function App() {
   );
 }
 
-// --- STYLES OBJECT ---
+// --- CSS-IN-JS STYLES ---
 const headerStyle = { padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a', position: 'sticky', top: 0, zIndex: 10 };
 const dashboardContainer = { maxWidth: '500px', margin: '0 auto' };
 const menuGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' };
-const menuCard = { background: '#1e293b', padding: '20px', borderRadius: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', border: '1px solid #334155' };
+const menuCard = { background: '#1e293b', padding: '20px', borderRadius: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', border: '1px solid #334155', transition: '0.2s' };
 const iconCircle = { fontSize: '32px', marginBottom: '10px' };
 const menuLabel = { fontSize: '14px', fontWeight: 'bold' };
 const subLabel = { fontSize: '11px', color: '#94a3b8', marginTop: '5px' };
-const kipasBox = { marginTop: '25px', padding: '20px', background: '#1e293b', borderRadius: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
+const kipasBox = { marginTop: '25px', padding: '20px', background: '#1e293b', borderRadius: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #334155' };
 const toggleBtn = { border: 'none', color: 'white', padding: '10px 15px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
-const formContainer = { background: '#1e293b', padding: '20px', borderRadius: '20px', maxWidth: '400px', margin: '0 auto' };
-const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '8px', color: '#38bdf8', width: '100%', boxSizing: 'border-box', marginBottom: '10px' };
+const formContainer = { background: '#1e293b', padding: '25px', borderRadius: '20px', maxWidth: '400px', margin: '0 auto' };
+const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '8px', color: '#38bdf8', width: '100%', boxSizing: 'border-box' };
 const labelStyle = { fontSize: '11px', color: '#64748b', fontWeight: 'bold', display: 'block', marginBottom: '5px' };
 const updateBtnStyle = { width: '100%', background: '#0ea5e9', color: 'white', border: 'none', padding: '14px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
 const backBtnStyle = { background: '#1e293b', border: '1px solid #334155', color: '#38bdf8', padding: '12px', borderRadius: '10px', marginBottom: '20px', cursor: 'pointer', width: '100%' };
