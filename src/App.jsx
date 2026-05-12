@@ -13,7 +13,7 @@ const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding
 const updateBtnStyle = { width: '100%', background: '#0ea5e9', color: 'white', border: 'none', padding: '14px', borderRadius: '10px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer' };
 
 function App() {
-  const [halaman, setHalaman] = useState('beranda');
+  const [halaman, setHalaman] = React.useState('beranda');
   
   // 1. STATE SISTEM UTAMA
   const [data, setData] = useState({
