@@ -59,9 +59,20 @@ function App() {
 
   const handleUpdatePakan = () => {
     update(ref(db, '/'), { 
-      jam_pagi: data.jam_pagi, 
-      menit_pagi: data.menit_pagi,
-      durasi_detik: data.durasi_detik 
+      // 1. RENTANG TANGGAL (Paling Atas)
+    Jadwal: Number(data.Jadwal), 
+    end_date: Number(data.end_date),
+
+    // 2. JADWAL PAGI
+    jam_pagi: Number(data.jam_pagi), 
+    menit_pagi: Number(data.menit_pagi),
+
+    // 3. JADWAL SORE
+    jam_sore: Number(data.jam_sore), 
+    menit_sore: Number(data.menit_sore),
+
+    // 4. DURASI
+    durasi_detik: Number(data.durasi_detik)
     }).then(() => alert("✅ Pengaturan Pakan Diperbarui!"));
   };
 
@@ -330,11 +341,25 @@ function App() {
               <div style={formContainer}>
                 <h2 style={{ color: '#38bdf8', textAlign: 'center' }}>⚙️ Pengaturan Pakan</h2>
                 <div style={{marginBottom: '15px'}}>
+                 <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+              <input type="number" value={data.Jadwal} onChange={(e) => setData({...data, Jadwal: e.target.value})} style={inputStyle} />
+              <input type="number" value={data.end_date} onChange={(e) => setData({...data, end_date: e.target.value})} style={inputStyle} />
+            </div> 
                    <label style={labelStyle}>JAM PAGI (JAM)</label>
                    <input type="number" value={data.jam_pagi} onChange={(e)=>setData({...data, jam_pagi: parseInt(e.target.value)})} style={inputStyle} />
                 </div>
                 <div style={{marginBottom: '15px'}}>
                    <label style={labelStyle}>MENIT PAGI (MENIT)</label>
+                   <input type="number" value={data.menit_pagi} onChange={(e)=>setData({...data, menit_pagi: parseInt(e.target.value)})} style={inputStyle} />
+                </div>
+                <h2 style={{ color: '#38bdf8', textAlign: 'center' }}>⚙️ Pengaturan Pakan</h2>
+                <div style={{marginBottom: '15px'}}>
+                   <label style={labelStyle}>JAM SORE (JAM)</label>
+                   <input type="number" value={data.jam_pagi} onChange={(e)=>setData({...data, jam_pagi: parseInt(e.target.value)})} style={inputStyle} />
+                </div>
+                <div style={{marginBottom: '15px'}}>
+                   <label style={labelStyle}>MENIT SORE (MENIT)</label>
                    <input type="number" value={data.menit_pagi} onChange={(e)=>setData({...data, menit_pagi: parseInt(e.target.value)})} style={inputStyle} />
                 </div>
                 <div style={{marginBottom: '15px'}}>
