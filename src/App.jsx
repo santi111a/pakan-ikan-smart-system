@@ -82,7 +82,8 @@ function App() {
       wifi_ssid: wifiInput.ssid, 
       wifi_pass: wifiInput.pass 
     }).then(() => {
-      alert("✅ Kredensial WiFi Berhasil Dikirim ke Alat!");
+      alert("✅ Kredensial WiFi Terkirim! ESP32 akan mencoba menyambung ulang.");
+      
       setWifiInput({ ssid: '', pass: '' });
     }).catch((err) => alert("Gagal: " + err.message));
   };
