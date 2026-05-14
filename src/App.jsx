@@ -353,7 +353,6 @@ function App() {
                    <label style={labelStyle}>MENIT PAGI (MENIT)</label>
                    <input type="number" value={data.menit_pagi} onChange={(e)=>setData({...data, menit_pagi: parseInt(e.target.value)})} style={inputStyle} />
                 </div>
-                <h2 style={{ color: '#38bdf8', textAlign: 'center' }}>⚙️ Pengaturan Pakan</h2>
                 <div style={{marginBottom: '15px'}}>
                    <label style={labelStyle}>JAM SORE (JAM)</label>
                    <input type="number" value={data.jam_pagi} onChange={(e)=>setData({...data, jam_pagi: parseInt(e.target.value)})} style={inputStyle} />
