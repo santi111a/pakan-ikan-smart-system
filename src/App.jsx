@@ -355,11 +355,11 @@ function App() {
                 </div>
                 <div style={{marginBottom: '15px'}}>
                    <label style={labelStyle}>JAM SORE (JAM)</label>
-                   <input type="number" value={data.jam_pagi} onChange={(e)=>setData({...data, jam_pagi: parseInt(e.target.value)})} style={inputStyle} />
+                   <input type="number" value={data.jam_sore} onChange={(e)=>setData({...data, jam_sore: parseInt(e.target.value)})} style={inputStyle} />
                 </div>
                 <div style={{marginBottom: '15px'}}>
                    <label style={labelStyle}>MENIT SORE (MENIT)</label>
-                   <input type="number" value={data.menit_pagi} onChange={(e)=>setData({...data, menit_pagi: parseInt(e.target.value)})} style={inputStyle} />
+                   <input type="number" value={data.menit_sore} onChange={(e)=>setData({...data, menit_sore: parseInt(e.target.value)})} style={inputStyle} />
                 </div>
                 <div style={{marginBottom: '15px'}}>
                    <label style={labelStyle}>DURASI (DETIK)</label>
