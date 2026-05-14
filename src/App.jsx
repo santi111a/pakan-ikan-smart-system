@@ -337,36 +337,48 @@ function App() {
               </>
             )}
 
-            {halaman === 'pakan' && (
-              <div style={formContainer}>
-                <h2 style={{ color: '#38bdf8', textAlign: 'center' }}>⚙️ Pengaturan Pakan</h2>
-                <div style={{marginBottom: '15px'}}>
-                 <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
-              <input type="number" value={data.Jadwal} onChange={(e) => setData({...data, Jadwal: e.target.value})} style={inputStyle} />
-              <input type="number" value={data.end_date} onChange={(e) => setData({...data, end_date: e.target.value})} style={inputStyle} />
-            </div> 
-                   <label style={labelStyle}>JAM PAGI (JAM)</label>
-                   <input type="number" value={data.jam_pagi} onChange={(e)=>setData({...data, jam_pagi: parseInt(e.target.value)})} style={inputStyle} />
-                </div>
-                <div style={{marginBottom: '15px'}}>
-                   <label style={labelStyle}>MENIT PAGI (MENIT)</label>
-                   <input type="number" value={data.menit_pagi} onChange={(e)=>setData({...data, menit_pagi: parseInt(e.target.value)})} style={inputStyle} />
-                </div>
-                <div style={{marginBottom: '15px'}}>
-                   <label style={labelStyle}>JAM SORE (JAM)</label>
-                   <input type="number" value={data.jam_sore} onChange={(e)=>setData({...data, jam_sore: parseInt(e.target.value)})} style={inputStyle} />
-                </div>
-                <div style={{marginBottom: '15px'}}>
-                   <label style={labelStyle}>MENIT SORE (MENIT)</label>
-                   <input type="number" value={data.menit_sore} onChange={(e)=>setData({...data, menit_sore: parseInt(e.target.value)})} style={inputStyle} />
-                </div>
-                <div style={{marginBottom: '15px'}}>
-                   <label style={labelStyle}>DURASI (DETIK)</label>
-                   <input type="number" value={data.durasi_detik} onChange={(e)=>setData({...data, durasi_detik: parseInt(e.target.value)})} style={inputStyle} />
-                </div>
-                <button onClick={handleUpdatePakan} style={updateBtnStyle}>UPDATE JADWAL</button>
-              </div>
+{halaman === 'pakan' && (
+  <div style={formContainer}>
+    <h2 style={{ color: '#38bdf8', textAlign: 'center', marginBottom: '25px' }}>⚙️ Pengaturan Pakan</h2>
+
+    {/* RENTANG TANGGAL */}
+    <div style={{ marginBottom: '20px' }}>
+      <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
+      <div style={{ display: 'flex', gap: '15px' }}>
+        <input type="number" placeholder="Mulai" value={data.Jadwal} onChange={(e) => setData({ ...data, Jadwal: e.target.value })} style={inputStyle} />
+        <input type="number" placeholder="Selesai" value={data.end_date} onChange={(e) => setData({ ...data, end_date: e.target.value })} style={inputStyle} />
+      </div>
+    </div>
+
+    {/* JADWAL PAGI */}
+    <div style={{ marginBottom: '20px' }}>
+      <label style={labelStyle}>JADWAL PAGI (JAM : MENIT)</label>
+      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+        <input type="number" placeholder="Jam" value={data.jam_pagi} onChange={(e) => setData({ ...data, jam_pagi: parseInt(e.target.value) || 0 })} style={inputStyle} />
+        <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>:</span>
+        <input type="number" placeholder="Menit" value={data.menit_pagi} onChange={(e) => setData({ ...data, menit_pagi: parseInt(e.target.value) || 0 })} style={inputStyle} />
+      </div>
+    </div>
+
+    {/* JADWAL SORE */}
+    <div style={{ marginBottom: '20px' }}>
+      <label style={labelStyle}>JADWAL SORE (JAM : MENIT)</label>
+      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+        <input type="number" placeholder="Jam" value={data.jam_sore} onChange={(e) => setData({ ...data, jam_sore: parseInt(e.target.value) || 0 })} style={inputStyle} />
+        <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>:</span>
+        {/* PERBAIKAN: menit_soref diganti menjadi menit_sore */}
+        <input type="number" placeholder="Menit" value={data.menit_sore} onChange={(e) => setData({ ...data, menit_sore: parseInt(e.target.value) || 0 })} style={inputStyle} />
+      </div>
+    </div>
+
+    {/* DURASI */}
+    <div style={{ marginBottom: '25px' }}>
+      <label style={labelStyle}>DURASI (DETIK)</label>
+      <input type="number" value={data.durasi_detik} onChange={(e) => setData({ ...data, durasi_detik: parseInt(e.target.value) || 0 })} style={{ ...inputStyle, width: '100%' }} />
+    </div>
+
+    <button onClick={handleUpdatePakan} style={updateBtnStyle}>UPDATE JADWAL</button>
+  </div>
             )}
           </div>
         )}
