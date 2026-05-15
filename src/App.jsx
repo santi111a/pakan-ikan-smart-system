@@ -167,18 +167,6 @@ const handleUpdatePakan = () => {
                 <span style={subLabel}>{listHidro.length} Data</span>
               </div>
             </div>
-
-            <div style={kipasBox}>
-              <div>
-                <div style={{ fontWeight: 'bold' }}>Sirkulasi Kipas</div>
-                <div style={{ fontSize: '12px', color: data.kipas_on ? '#10b981' : '#ef4444' }}>
-                  {data.kipas_on ? '● Menyala' : '● Mati'}
-                </div>
-              </div>
-              <button onClick={handleToggleKipas} style={{ ...toggleBtn, background: data.kipas_on ? '#ef4444' : '#10b981' }}>
-                {data.kipas_on ? 'OFF' : 'ON'}
-              </button>
-            </div>
           </div>
         )}
 
