@@ -9,7 +9,6 @@ function App() {
   const [data, setData] = useState({
     Jadwal: 0, end_date: 0, jam_pagi: 0, menit_pagi: 0,
     jam_sore: 0, menit_sore: 0, durasi_detik: 0, kipas_on: false,
-    kipas_status: 0, // <--- Ginta kipas_on jadi kipas_status
     wifi_ssid: '', wifi_pass: '' // State baru untuk membaca data wifi dari DB
   });
 
@@ -56,19 +55,10 @@ function App() {
   }, []);
 
   // --- FUNGSI SIMPAN & UPDATE ---
-  const handleToggleKipas = () => {
-  // Logika: Jika 1 jadi 0, jika 0 jadi 1
-  const statusNext = data.kipas_status === 1 ? 0 : 1;
-
-  update(ref(db, '/'), {
-    kipas_status: statusNext
-  }).catch((err) => alert("Gagal Update Kipas: " + err.message));
-};
-
  // 2. Fungsi khusus Update Jadwal Pakan
 const handleUpdatePakan = () => {
   update(ref(db, '/'), {
-    
+
       // 1. RENTANG TANGGAL (Paling Atas)
     Jadwal: Number(data.Jadwal), 
     end_date: Number(data.end_date),
