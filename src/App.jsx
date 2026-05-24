@@ -120,9 +120,19 @@ const handleUpdatePakan = () => {
     });
   };
 
+  // Tambahkan fungsi ini
+const handleManualPakan = () => {
+  // Mengirim perintah "ON" ke Firebase agar ESP32 membacanya
+  update(ref(db, 'manual'), {
+    status: 'ON'
+  }).then(() => {
+    alert("✅ Perintah Manual Dikirim!");
+  });
+};
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
-      
+  
       {/* --- HEADER --- */}
       <div style={headerStyle}>
         <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px', letterSpacing: '1px', textTransform: 'uppercase' }}>
@@ -165,8 +175,17 @@ const handleUpdatePakan = () => {
                 <div style={iconCircle}>🌱</div>
                 <span style={menuLabel}>Hidroponik</span>
                 <span style={subLabel}>{listHidro.length} Data</span>
-              </div>
+              </div>  
+               <div style={{ marginTop: '25px', padding: '20px', background:'#1e293b', borderRadius: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #334155'}}>
+                <div>
+                  <div style={{ fontWeight: 'bold' }}>Kontrol Pakan Manual</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8' }}>Klik untuk beri pakan sekarang</div>
             </div>
+            <button onClick={handleManualPakan} style={{ border: 'none', color: 'white', padding: '10px 15px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', background: '#f59e0b' }}>
+              BERI PAKAN
+              </button>
+          </div>
+          </div>
           </div>
         )}
 
@@ -398,5 +417,5 @@ const trHead = { borderBottom: '2px solid #334155', textAlign: 'left' };
 const thStyle = { padding: '12px', color: '#94a3b8', fontSize: '12px', textTransform: 'uppercase' };
 const trBody = { borderBottom: '1px solid #334155' };
 const tdStyle = { padding: '12px', fontSize: '14px', color: '#e2e8f0' };
-
+const pakanManualBox = {marginTop: '25px',padding: '20px',background: '#1e293b',borderRadius: '15px',display: 'flex',justifyContent: 'space-between',alignItems: 'center',border: '1px solid #334155'};
 export default App;
