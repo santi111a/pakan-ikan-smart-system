@@ -33,10 +33,9 @@ function App() {
   // --- AMBIL DATA REALTIME DARI FIREBASE ---
   useEffect(() => {
     const dbRef = ref(db, '/'); 
-    onValue(dbRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const result = snapshot.val();
-        setData(prev => ({ ...prev, ...result }));
+    onValu(ref(db, '/kipas_status'), (snapshot) => {
+      const val = snapshot.val();
+   setData(prev => ({ ...prev, kipas_status: val }));
         
         if (result.jurnal_harian) {
           setListJurnal(Object.keys(result.jurnal_harian).map(key => ({ id: key, ...result.jurnal_harian[key] })).reverse());
@@ -51,7 +50,7 @@ function App() {
           setListPakan(Object.keys(result.jurnal_pakan).map(key => ({ id: key, ...result.jurnal_pakan[key] })).reverse());
         }
       }
-    });
+    );
   }, []);
 
   // --- FUNGSI SIMPAN & UPDATE ---
