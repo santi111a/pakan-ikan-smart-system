@@ -121,12 +121,14 @@ const handleUpdatePakan = () => {
   };
 
   // Tambahkan fungsi ini
-const handleManualPakan = () => {
-  // Mengirim perintah "ON" ke Firebase agar ESP32 membacanya
-  update(ref(db, 'manual'), {
-    status: 'ON'
+const handleToggleKipas = () => {
+  // Ambil status saat ini, jika 0 jadi 1, jika 1 jadi 0
+  const statusBaru = data.kipas_status === 1 ? 0 : 1;
+  
+  update(ref(db, '/'), {
+    kipas_status: statusBaru
   }).then(() => {
-    alert("✅ Perintah Manual Dikirim!");
+    console.log("Status kipas diupdate ke: " + statusBaru);
   });
 };
 
@@ -180,11 +182,22 @@ const handleManualPakan = () => {
                 <div>
                   <div style={{ fontWeight: 'bold' }}>Kontrol Pakan Manual</div>
                   <div style={{ fontSize: '12px', color: '#94a3b8' }}>Klik untuk beri pakan sekarang</div>
+                    Status: {data.kipas_status === 1 ? <span style={{color: '#10b981'}}>AKTIF</span> : <span style={{color: '#ef4444'}}>OFF</span>}
+                  </div>
             </div>
-            <button onClick={handleManualPakan} style={{ border: 'none', color: 'white', padding: '10px 15px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', background: '#f59e0b' }}>
-              BERI PAKAN
-              </button>
-          </div>
+            <button 
+            onClick={handleToggleKipas} 
+    style={{ 
+      border: 'none', 
+      color: 'white', 
+      padding: '10px 15px', 
+      borderRadius: '8px', 
+      fontWeight: 'bold', 
+      cursor: 'pointer', 
+      background: data.kipas_status === 1 ? '#ef4444' : '#f59e0b' 
+    }}>
+    {data.kipas_status === 1 ? 'MATIKAN' : 'HIDUPKAN'}
+    </button>
           </div>
           </div>
         )}
