@@ -125,10 +125,15 @@ const handleToggleKipas = () => {
   // Ambil status saat ini, jika 0 jadi 1, jika 1 jadi 0
   const statusBaru = data.kipas_status === 1 ? 0 : 1;
   
+  // 2. Update state lokal SEGERA agar tampilan berubah instan
+  setData(prev => ({ ...prev, kipas_status: statusBaru }));
+
   update(ref(db, '/'), {
     kipas_status: statusBaru
-  }).then(() => {
-    console.log("Status kipas diupdate ke: " + statusBaru);
+  }).catch((error) => {
+    console.error("Gagal update:", error);
+    // Jika gagal, kembalikan ke status lama
+    setData(prev => ({ ...prev, kipas_status: data.kipas_status }));
   });
 };
 
