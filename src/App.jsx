@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { FaFish, FaWifi, FaWater } from 'react-icons/fa';
 import { db } from './firebase'; 
 import { ref, onValue, update, push } from "firebase/database";
 
@@ -140,7 +139,7 @@ const handleToggleKipas = () => {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
-    <div className="dashboard-container"></div>
+  
       {/* --- HEADER --- */}
       <div style={headerStyle}>
         <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px', letterSpacing: '1px', textTransform: 'uppercase' }}>
