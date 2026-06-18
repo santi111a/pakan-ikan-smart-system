@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { db } from './firebase'; 
-import { ref, onValue, update, push } from "firebase/database";
+import { supabase } from './supabaseClient'; // Import supabase
+
 
 function App() {
   const [halaman, setHalaman] = useState('beranda');
@@ -30,111 +30,160 @@ function App() {
   // STATE KHUSUS PENGATURAN WIFI
   const [wifiInput, setWifiInput] = useState({ ssid: '', pass: '' });
 
-  // --- AMBIL DATA REALTIME DARI FIREBASE ---
-  useEffect(() => {
-    const dbRef = ref(db, '/'); 
-    onValue(dbRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const result = snapshot.val();
-        setData(prev => ({ ...prev, ...result }));
+  /// --- AMBIL DATA DARI SUPABASE ---
+useEffect(() => {
+    const fetchData = async () => {
+    // 1. Ambil data Pengaturan (asumsi tabelnya bernama 'pengaturan')
+    const { data: config } = await supabase.from('pengaturan').select('*').single();
+    if (config) setData(prev => ({ ...prev, ...config }));
+
+        // 2. Ambil data Jurnal Harian
+    const { data: jurnal } = await supabase.from('jurnal_harian').select('*').order('id', { ascending: false });
+    if (jurnal) setListJurnal(jurnal);
         
-        if (result.jurnal_harian) {
-          setListJurnal(Object.keys(result.jurnal_harian).map(key => ({ id: key, ...result.jurnal_harian[key] })).reverse());
-        }
-        if (result.log_pengurasan) {
-          setListAir(Object.keys(result.log_pengurasan).map(key => ({ id: key, ...result.log_pengurasan[key] })).reverse());
-        }
-        if (result.jurnal_hidroponik) {
-          setListHidro(Object.keys(result.jurnal_hidroponik).map(key => ({ id: key, ...result.jurnal_hidroponik[key] })).reverse());
-        }
-        if (result.jurnal_pakan) {
-          setListPakan(Object.keys(result.jurnal_pakan).map(key => ({ id: key, ...result.jurnal_pakan[key] })).reverse());
-        }
-      }
-    });
+      // 3. Ambil data Log Pengurasan
+    const { data: air } = await supabase.from('log_pengurasan').select('*').order('id', { ascending: false });
+    if (air) setListAir(air);
+
+       // 4. Ambil data Jurnal Hidroponik
+    const { data: hidro } = await supabase.from('jurnal_hidroponik').select('*').order('id', { ascending: false });
+    if (hidro) setListHidro(hidro);
+
+        // 5. Ambil data Jurnal Pakan
+    const { data: pakan } = await supabase.from('jurnal_pakan').select('*').order('id', { ascending: false });
+    if (pakan) setListPakan(pakan);
+    };
+    fetchData();
   }, []);
 
-  // --- FUNGSI SIMPAN & UPDATE ---
- // 2. Fungsi khusus Update Jadwal Pakan
-const handleUpdatePakan = () => {
-  update(ref(db, '/'), {
+  // Fungsi untuk memperbarui Jadwal Pakan di Supabase
+const handleUpdatePakan = async () => {
+  // Pastikan Anda sudah memiliki tabel bernama 'pengaturan'
+  // dan sudah ada 1 baris data dengan id = 1
+  const { error } = await supabase
+    .from('pengaturan')
+    .update({
+      Jadwal: Number(data.Jadwal),
+      end_date: Number(data.end_date),
+      jam_pagi: Number(data.jam_pagi),
+      menit_pagi: Number(data.menit_pagi),
+      jam_sore: Number(data.jam_sore),
+      menit_sore: Number(data.menit_sore),
+      durasi_detik: Number(data.durasi_detik)
+    })
+    .eq('id', 1); // Ini memberitahu Supabase untuk update baris dengan id = 1
 
-      // 1. RENTANG TANGGAL (Paling Atas)
-    Jadwal: Number(data.Jadwal), 
-    end_date: Number(data.end_date),
-
-    // 2. JADWAL PAGI
-    jam_pagi: Number(data.jam_pagi), 
-    menit_pagi: Number(data.menit_pagi),
-
-    // 3. JADWAL SORE
-    jam_sore: Number(data.jam_sore), 
-    menit_sore: Number(data.menit_sore),
-
-    // 4. DURASI
-    durasi_detik: Number(data.durasi_detik)
-    }).then(() => alert("✅ Pengaturan Pakan Diperbarui!"));
-  };
+  if (error) {
+    console.error("Gagal update:", error);
+    alert("❌ Gagal memperbarui: " + error.message);
+  } else {
+    alert("✅ Pengaturan Pakan Diperbarui!");
+  }
+};
 
   const handleUpdateWifi = () => {
     if (!wifiInput.ssid || !wifiInput.pass) return alert("Isi SSID dan Password WiFi!");
-    update(ref(db, '/'), { 
+    
+    const { error } = await supabase
+    .from('pengaturan')
+    .update({ 
       wifi_ssid: wifiInput.ssid, 
       wifi_pass: wifiInput.pass 
-    }).then(() => {
+    })
+    .eq('id', 1);
+
       alert("✅ Kredensial WiFi Terkirim! ESP32 akan mencoba menyambung ulang.");
 
-      setWifiInput({ ssid: '', pass: '' });
-    }).catch((err) => alert("Gagal: " + err.message));
-  };
+      if (error) {
+    alert("Gagal: " + error.message);
+  } else {
+    alert("✅ Kredensial WiFi Terkirim! ESP32 akan mencoba menyambung ulang.");
+    setWifiInput({ ssid: '', pass: '' });
+    // Opsional: panggil fetchData() lagi untuk memperbarui tampilan
+  }
+};
 
-  const handleSimpanJurnalIkan = () => {
-    if (!jurnalInput.tglBibit) return alert("Pilih tanggal!");
-    push(ref(db, 'jurnal_harian'), jurnalInput).then(() => {
-      alert("✅ Jurnal Ikan Tersimpan!");
-      setJurnalInput({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
-    });
-  };
+  // 1. Simpan Jurnal Ikan
+const handleSimpanJurnalIkan = async () => {
+  if (!jurnalInput.tglBibit) return alert("Pilih tanggal!");
+  
+  const { error } = await supabase.from('jurnal_harian').insert([jurnalInput]);
+  
+  if (error) {
+    alert("Gagal: " + error.message);
+  } else {
+    alert("✅ Jurnal Ikan Tersimpan!");
+    setJurnalInput({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
+    fetchData(); // Memperbarui daftar data di layar
+  }
+};
 
-  const handleSimpanAir = () => {
-    if (!airInput.tglKuras) return alert("Pilih tanggal!");
-    push(ref(db, 'log_pengurasan'), airInput).then(() => {
-      alert("✅ Log Air Tersimpan!");
-      setAirInput({ tglKuras: '', kondisiAir: '', keterangan: '' });
-    });
-  };
+// 2. Simpan Log Air
+const handleSimpanAir = async () => {
+  if (!airInput.tglKuras) return alert("Pilih tanggal!");
+  
+  const { error } = await supabase.from('log_pengurasan').insert([airInput]);
+  
+  if (error) {
+    alert("Gagal: " + error.message);
+  } else {
+    alert("✅ Log Air Tersimpan!");
+    setAirInput({ tglKuras: '', kondisiAir: '', keterangan: '' });
+    fetchData(); 
+  }
+};
 
-  const handleSimpanHidro = () => {
-    if (!hidroInput.tglTanam || !hidroInput.namaTanaman) return alert("Isi tanggal dan nama tanaman!");
-    push(ref(db, 'jurnal_hidroponik'), hidroInput).then(() => {
-      alert("✅ Data Hidroponik Tersimpan!");
-      setHidroInput({ tglTanam: '', namaTanaman: '', jumlahPanen: '', hargaJual: '' });
-    });
-  };
+ // 3. Simpan Hidroponik
+const handleSimpanHidro = async () => {
+  if (!hidroInput.tglTanam || !hidroInput.namaTanaman) return alert("Isi tanggal dan nama tanaman!");
+  
+  const { error } = await supabase.from('jurnal_hidroponik').insert([hidroInput]);
+  
+  if (error) {
+    alert("Gagal: " + error.message);
+  } else {
+    alert("✅ Data Hidroponik Tersimpan!");
+    setHidroInput({ tglTanam: '', namaTanaman: '', jumlahPanen: '', hargaJual: '' });
+    fetchData();
+  }
+};
 
-  const handleSimpanTakaranPakan = () => {
-    if (!pakanInput.namaIkan || !pakanInput.takaranPakan) return alert("Lengkapi data pakan!");
-    push(ref(db, 'jurnal_pakan'), pakanInput).then(() => {
-      alert("✅ Jurnal Takaran Pakan Tersimpan!");
-      setPakanInput({ namaIkan: '', usiaIkan: '', ukuranIkan: '', takaranPakan: '', durasiKipas: '', durasiGanti: '' });
-    });
-  };
+  // 4. Simpan Takaran Pakan
+const handleSimpanTakaranPakan = async () => {
+  if (!pakanInput.namaIkan || !pakanInput.takaranPakan) return alert("Lengkapi data pakan!");
+  
+  const { error } = await supabase.from('jurnal_pakan').insert([pakanInput]);
+  
+  if (error) {
+    alert("Gagal: " + error.message);
+  } else {
+    alert("✅ Jurnal Takaran Pakan Tersimpan!");
+    setPakanInput({ namaIkan: '', usiaIkan: '', ukuranIkan: '', takaranPakan: '', durasiKipas: '', durasiGanti: '' });
+    fetchData();
+  }
+};
 
   // Tambahkan fungsi ini
-const handleToggleKipas = () => {
-  // Ambil status saat ini, jika 0 jadi 1, jika 1 jadi 0
+const handleToggleKipas = async () => {
+  // 1. Ambil status saat ini
   const statusBaru = data.kipas_status === 1 ? 0 : 1;
   
-  // 2. Update state lokal SEGERA agar tampilan berubah instan
+  // 2. Update state lokal SEGERA agar tampilan berubah instan di web
   setData(prev => ({ ...prev, kipas_status: statusBaru }));
 
-  update(ref(db, '/'), {
-    kipas_status: statusBaru
-  }).catch((error) => {
+  // 3. Update ke Database Supabase
+  const { error } = await supabase
+    .from('pengaturan')
+    .update({ kipas_status: statusBaru })
+    .eq('id', 1); // Memastikan baris data yang diupdate adalah baris pertama
+
+  if (error) {
     console.error("Gagal update:", error);
-    // Jika gagal, kembalikan ke status lama
+    alert("❌ Gagal mengubah status kipas: " + error.message);
+    
+    // Jika gagal, kembalikan state lokal ke status lama
     setData(prev => ({ ...prev, kipas_status: data.kipas_status }));
-  });
+  }
 };
 
   return (
