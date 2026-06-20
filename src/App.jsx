@@ -81,7 +81,7 @@ const handleUpdatePakan = async () => {
   }
 };
 
-  const handleUpdateWifi = () => {
+  const handleUpdateWifi = async () => {
     if (!wifiInput.ssid || !wifiInput.pass) return alert("Isi SSID dan Password WiFi!");
     
     const { error } = await supabase
