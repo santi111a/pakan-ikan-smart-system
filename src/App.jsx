@@ -61,21 +61,17 @@ const handleUpdatePakan = async () => {
   const { error } = await supabase
     .from('pengaturan')
     .update({
-      Jadwal: Number(data.Jadwal),
-      end_date: Number(data.end_date),
-      jam_pagi: Number(data.jam_pagi),
-      menit_pagi: Number(data.menit_pagi),
-      jam_sore: Number(data.jam_sore),
-      menit_sore: Number(data.menit_sore),
-      durasi_detik: Number(data.durasi_detik)
+      jadwal_pagi: jamPagi, // pastikan variabel ini punya nilai
+        jadwal_sore: jamSore,
+        durasi: durasiPakan
     })
     .eq('id', 1); // Ini memberitahu Supabase untuk update baris dengan id = 1
 
-  if (error) {
-    console.error("Gagal update:", error);
-    alert("❌ Gagal memperbarui: " + error.message);
-  } else {
-    alert("✅ Pengaturan Pakan Diperbarui!");
+  if (error) throw error;
+    alert("Berhasil diperbarui!");
+  } catch (err) {
+    console.error("Error Detail:", err); // Pesan detail akan muncul di Console
+    alert("Gagal memperbarui: " + err.message);
   window.location.reload();
   }
 };
