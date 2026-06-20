@@ -68,16 +68,14 @@ function App() {
         })
         .eq('id', 1);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
-      alert("Berhasil diperbarui!");
+      alert("✅ Pengaturan Pakan Diperbarui!");
       window.location.reload();
 
     } catch (err) {
       console.error("Error Detail:", err);
-      alert("Gagal memperbarui: " + err.message);
+      alert("❌ Gagal memperbarui: " + err.message);
     }
   };
 
