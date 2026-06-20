@@ -58,8 +58,6 @@ useEffect(() => {
 
   // Fungsi untuk memperbarui Jadwal Pakan di Supabase
 const handleUpdatePakan = async () => {
-  // Pastikan Anda sudah memiliki tabel bernama 'pengaturan'
-  // dan sudah ada 1 baris data dengan id = 1
   const { error } = await supabase
     .from('pengaturan')
     .update({
@@ -78,6 +76,7 @@ const handleUpdatePakan = async () => {
     alert("❌ Gagal memperbarui: " + error.message);
   } else {
     alert("✅ Pengaturan Pakan Diperbarui!");
+  window.location.reload();
   }
 };
 
