@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Pastikan URL dan KEY benar
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_key_anda');
 
 function App() {
@@ -13,12 +12,14 @@ function App() {
   });
   const [loading, setLoading] = useState(true);
 
+  // Efek untuk mengubah warna latar belakang seluruh halaman
   useEffect(() => {
+    document.body.style.backgroundColor = '#0f172a'; // Warna background luar
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const { data: dbData, error } = await supabase
+    const { data: dbData } = await supabase
       .from('jadwal_pakan')
       .select('*')
       .eq('pengenal', 1)
@@ -26,12 +27,9 @@ function App() {
 
     if (dbData) {
       setData({
-        tglMulai: dbData.tgl_mulai,
-        tglSelesai: dbData.tgl_selesai,
-        jamPagi: dbData.jam_pagi,
-        menitPagi: dbData.menit_pagi,
-        jamSore: dbData.jam_sore,
-        menitSore: dbData.menit_sore,
+        tglMulai: dbData.tgl_mulai, tglSelesai: dbData.tgl_selesai,
+        jamPagi: dbData.jam_pagi, menitPagi: dbData.menit_pagi,
+        jamSore: dbData.jam_sore, menitSore: dbData.menit_sore,
         durasi: dbData.durasi_detik
       });
     }
@@ -43,12 +41,9 @@ function App() {
     const { error } = await supabase
       .from('jadwal_pakan')
       .update({
-        tgl_mulai: parseInt(data.tglMulai),
-        tgl_selesai: parseInt(data.tglSelesai),
-        jam_pagi: parseInt(data.jamPagi),
-        menit_pagi: parseInt(data.menitPagi),
-        jam_sore: parseInt(data.jamSore),
-        menit_sore: parseInt(data.menitSore),
+        tgl_mulai: parseInt(data.tglMulai), tgl_selesai: parseInt(data.tglSelesai),
+        jam_pagi: parseInt(data.jamPagi), menit_pagi: parseInt(data.menitPagi),
+        jam_sore: parseInt(data.jamSore), menit_sore: parseInt(data.menitSore),
         durasi_detik: parseInt(data.durasi)
       })
       .eq('pengenal', 1);
@@ -58,20 +53,11 @@ function App() {
     setLoading(false);
   };
 
-  // Styling Elegan (Dark & Forest Green Theme)
-  const containerStyle = { 
-    fontFamily: "'Segoe UI', sans-serif", 
-    maxWidth: '400px', 
-    margin: '40px auto', 
-    padding: '30px', 
-    backgroundColor: '#1e293b', // Warna gelap elegan
-    borderRadius: '20px', 
-    boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-    color: '#f1f5f9'
-  };
-  const labelStyle = { display: 'block', marginBottom: '8px', fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold', letterSpacing: '1px' };
+  const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '40px auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
   const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', boxSizing: 'border-box', backgroundColor: '#0f172a', color: '#fff' };
-  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px', transition: '0.3s' };
+  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' };
+
+  if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
 
   return (
     <div style={containerStyle}>
@@ -79,64 +65,41 @@ function App() {
         <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
       </div>
-      
-      {/* ... (bagian input tetap sama, namun gunakan variable style di atas) */}
-      
-      <div style={inputGroupStyle}>
-        <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
+
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>RENTANG TANGGAL</label>
         <div style={{ display: 'flex', gap: '10px' }}>
           <input type="number" style={inputStyle} value={data.tglMulai} onChange={(e) => setData({...data, tglMulai: e.target.value})} />
           <input type="number" style={inputStyle} value={data.tglSelesai} onChange={(e) => setData({...data, tglSelesai: e.target.value})} />
         </div>
       </div>
 
-      {/* Gunakan pola yang sama untuk Jadwal Pagi, Sore, dan Durasi */}
-
-      <button style={buttonStyle} onMouseOver={(e) => e.target.style.backgroundColor='#047857'} onMouseOut={(e) => e.target.style.backgroundColor='#059669'} onClick={handleUpdate} disabled={loading}>
-        {loading ? 'MENYIMPAN...' : 'SIMPAN PENGATURAN'}
-      </button>
-    </div>
-  );
-  
-  return (
-    <div style={containerStyle}>
-      <h2 style={{ textAlign: 'center', marginBottom: '25px', color: '#1e293b' }}>⚙️ Pengaturan Pakan</h2>
-      
-      <div style={inputGroupStyle}>
-        <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input type="number" style={inputStyle} value={data.tglMulai} onChange={(e) => setData({...data, tglMulai: e.target.value})} />
-          <input type="number" style={inputStyle} value={data.tglSelesai} onChange={(e) => setData({...data, tglSelesai: e.target.value})} />
-        </div>
-      </div>
-
-      <div style={inputGroupStyle}>
-        <label style={labelStyle}>JADWAL PAGI (HH : MM)</label>
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL PAGI</label>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <input type="number" style={inputStyle} value={data.jamPagi} onChange={(e) => setData({...data, jamPagi: e.target.value})} />
-          <span style={{ fontWeight: 'bold' }}>:</span>
+          <span>:</span>
           <input type="number" style={inputStyle} value={data.menitPagi} onChange={(e) => setData({...data, menitPagi: e.target.value})} />
         </div>
       </div>
 
-      <div style={inputGroupStyle}>
-        <label style={labelStyle}>JADWAL SORE (HH : MM)</label>
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL SORE</label>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <input type="number" style={inputStyle} value={data.jamSore} onChange={(e) => setData({...data, jamSore: e.target.value})} />
-          <span style={{ fontWeight: 'bold' }}>:</span>
+          <span>:</span>
           <input type="number" style={inputStyle} value={data.menitSore} onChange={(e) => setData({...data, menitSore: e.target.value})} />
         </div>
       </div>
 
-      <div style={inputGroupStyle}>
-        <label style={labelStyle}>DURASI PAKAN (DETIK)</label>
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>DURASI (DETIK)</label>
         <input type="number" style={inputStyle} value={data.durasi} onChange={(e) => setData({...data, durasi: e.target.value})} />
       </div>
 
-      <button style={buttonStyle} onClick={handleUpdate} disabled={loading}>
-        {loading ? 'Menyimpan...' : 'SIMPAN PENGATURAN'}
-      </button>
+      <button style={buttonStyle} onClick={handleUpdate}>SIMPAN PENGATURAN</button>
     </div>
   );
 }
+
 export default App;
