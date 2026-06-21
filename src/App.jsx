@@ -58,15 +58,46 @@ function App() {
     setLoading(false);
   };
 
-  // Styling (tetap sama)
-  const containerStyle = { fontFamily: 'sans-serif', maxWidth: '400px', margin: '40px auto', padding: '30px', backgroundColor: '#ffffff', borderRadius: '15px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' };
-  const inputGroupStyle = { marginBottom: '20px' };
-  const labelStyle = { display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#64748b', fontWeight: 'bold' };
-  const inputStyle = { width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '1rem', boxSizing: 'border-box' };
-  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
+  // Styling Elegan (Dark & Forest Green Theme)
+  const containerStyle = { 
+    fontFamily: "'Segoe UI', sans-serif", 
+    maxWidth: '400px', 
+    margin: '40px auto', 
+    padding: '30px', 
+    backgroundColor: '#1e293b', // Warna gelap elegan
+    borderRadius: '20px', 
+    boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+    color: '#f1f5f9'
+  };
+  const labelStyle = { display: 'block', marginBottom: '8px', fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold', letterSpacing: '1px' };
+  const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', boxSizing: 'border-box', backgroundColor: '#0f172a', color: '#fff' };
+  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px', transition: '0.3s' };
 
-  if (loading) return <div style={{ textAlign: 'center', marginTop: '50px' }}>Memuat data...</div>;
+  return (
+    <div style={containerStyle}>
+      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
+        <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
+      </div>
+      
+      {/* ... (bagian input tetap sama, namun gunakan variable style di atas) */}
+      
+      <div style={inputGroupStyle}>
+        <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input type="number" style={inputStyle} value={data.tglMulai} onChange={(e) => setData({...data, tglMulai: e.target.value})} />
+          <input type="number" style={inputStyle} value={data.tglSelesai} onChange={(e) => setData({...data, tglSelesai: e.target.value})} />
+        </div>
+      </div>
 
+      {/* Gunakan pola yang sama untuk Jadwal Pagi, Sore, dan Durasi */}
+
+      <button style={buttonStyle} onMouseOver={(e) => e.target.style.backgroundColor='#047857'} onMouseOut={(e) => e.target.style.backgroundColor='#059669'} onClick={handleUpdate} disabled={loading}>
+        {loading ? 'MENYIMPAN...' : 'SIMPAN PENGATURAN'}
+      </button>
+    </div>
+  );
+  
   return (
     <div style={containerStyle}>
       <h2 style={{ textAlign: 'center', marginBottom: '25px', color: '#1e293b' }}>⚙️ Pengaturan Pakan</h2>
