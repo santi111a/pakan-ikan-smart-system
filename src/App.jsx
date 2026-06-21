@@ -44,12 +44,22 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '20px', background: '#0f172a', minHeight: '100vh', color: 'white' }}>
-      <h1>Pengaturan Pakan</h1>
-      <input type="number" value={jamPagi} onChange={(e) => setJamPagi(e.target.value)} />
-      <input type="number" value={jamSore} onChange={(e) => setJamSore(e.target.value)} />
-      <input type="number" value={durasiPakan} onChange={(e) => setDurasiPakan(e.target.value)} />
-      <button onClick={handleUpdate}>SIMPAN</button>
+    <div style={{ padding: '20px', color: 'white', background: '#0f172a', minHeight: '100vh', fontFamily: 'Arial' }}>
+      <h1 style={{ textAlign: 'center' }}>Pengaturan Pakan</h1>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '300px', margin: '0 auto' }}>
+        <label>Jam Pagi:</label>
+        <input type="number" value={jamPagi} onChange={(e) => setJamPagi(e.target.value)} style={{ padding: '8px' }} />
+        
+        <label>Jam Sore:</label>
+        <input type="number" value={jamSore} onChange={(e) => setJamSore(e.target.value)} style={{ padding: '8px' }} />
+        
+        <label>Durasi (Detik):</label>
+        <input type="number" value={durasiPakan} onChange={(e) => setDurasiPakan(e.target.value)} style={{ padding: '8px' }} />
+        
+        <button onClick={handleUpdate} style={{ padding: '10px', background: '#0ea5e9', color: 'white', border: 'none', cursor: 'pointer', marginTop: '10px' }}>
+          SIMPAN PERUBAHAN
+        </button>
+      </div>
     </div>
   );
 }
