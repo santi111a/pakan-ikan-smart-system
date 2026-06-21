@@ -6,10 +6,16 @@ function App() {
   const [jamSore, setJamSore] = useState(0);
   const [durasiPakan, setDurasiPakan] = useState(0);
 
-  // Ambil data
+  // Fungsi untuk mengambil data dari Supabase
   useEffect(() => {
     async function fetchData() {
-      const { data } = await supabase.from('jadwal_pakan').select('*').eq('id', 1).single();
+      // Pastikan nama tabel di sini sama persis dengan di Supabase: 'jadwal_pakan'
+      const { data, error } = await supabase
+        .from('jadwal_pakan')
+        .select('*')
+        .eq('id', 1)
+        .single();
+        
       if (data) {
         setJamPagi(data.jam_pagi);
         setJamSore(data.jam_sore);
@@ -19,19 +25,26 @@ function App() {
     fetchData();
   }, []);
 
-  // Update data
+  // Fungsi untuk memperbarui data
   const handleUpdate = async () => {
     const { error } = await supabase
       .from('jadwal_pakan')
-      .update({ jam_pagi: jamPagi, jam_sore: jamSore, durasi_detik: durasiPakan })
+      .update({ 
+        jam_pagi: parseInt(jamPagi), 
+        jam_sore: parseInt(jamSore), 
+        durasi_detik: parseInt(durasiPakan) 
+      })
       .eq('id', 1);
     
-    if (error) alert("Gagal: " + error.message);
-    else alert("Berhasil diperbarui!");
+    if (error) {
+      alert("Gagal memperbarui: " + error.message);
+    } else {
+      alert("Berhasil diperbarui!");
+    }
   };
 
   return (
-    <div style={{ padding: '20px', color: 'white', background: '#0f172a', minHeight: '100vh' }}>
+    <div style={{ padding: '20px', background: '#0f172a', minHeight: '100vh', color: 'white' }}>
       <h1>Pengaturan Pakan</h1>
       <input type="number" value={jamPagi} onChange={(e) => setJamPagi(e.target.value)} />
       <input type="number" value={jamSore} onChange={(e) => setJamSore(e.target.value)} />
@@ -41,4 +54,5 @@ function App() {
   );
 }
 
-export default App; // <--- HANYA BOLEH ADA DI SINI, DI PALING BAWAH
+// Export diletakkan di paling bawah dan hanya satu kali
+export default App;
