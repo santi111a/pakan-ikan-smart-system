@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_key_anda');
+const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
 function App() {
   const [data, setData] = useState({
