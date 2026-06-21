@@ -181,9 +181,7 @@ function App() {
 
       // Jika gagal, kembalikan state lokal ke status lama
       setData(prev => ({ ...prev, kipas_status: data.kipas_status }));
-    }
-  };
-
+  
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
 
@@ -458,6 +456,8 @@ function App() {
       </div>
     </div>
   );
+}
+  };
 
   // --- CSS-IN-JS STYLES ---
   const headerStyle = { padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a', position: 'sticky', top: 0, zIndex: 10 };
@@ -483,4 +483,4 @@ function App() {
   const tdStyle = { padding: '12px', fontSize: '14px', color: '#e2e8f0' };
   const pakanManualBox = { marginTop: '25px', padding: '20px', background: '#1e293b', borderRadius: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #334155' };
   export default App;
-};
+}
