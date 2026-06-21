@@ -1,38 +1,39 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Ganti dengan URL dan KEY Supabase Anda
-const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.coL', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
+// Pastikan URL dan KEY benar
+const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_key_anda');
 
 function App() {
+  const [data, setData] = useState({
+    tglMulai: 1, tglSelesai: 30, 
+    jamPagi: 8, menitPagi: 0, 
+    jamSore: 17, menitSore: 0, 
+    durasi: 5
+  });
   const [loading, setLoading] = useState(true);
-  const [tglMulai, setTglMulai] = useState(0);
-  const [tglSelesai, setTglSelesai] = useState(0);
-  const [jamPagi, setJamPagi] = useState(0);
-  const [menitPagi, setMenitPagi] = useState(0);
-  const [jamSore, setJamSore] = useState(0);
-  const [menitSore, setMenitSore] = useState(0);
-  const [durasi, setDurasi] = useState(0);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const { data, error } = await supabase
+    const { data: dbData, error } = await supabase
       .from('jadwal_pakan')
       .select('*')
       .eq('pengenal', 1)
       .single();
 
-    if (data) {
-      setTglMulai(data.tgl_mulai);
-      setTglSelesai(data.tgl_selesai);
-      setJamPagi(data.jam_pagi);
-      setMenitPagi(data.menit_pagi);
-      setJamSore(data.jam_sore);
-      setMenitSore(data.menit_sore);
-      setDurasi(data.durasi_detik);
+    if (dbData) {
+      setData({
+        tglMulai: dbData.tgl_mulai,
+        tglSelesai: dbData.tgl_selesai,
+        jamPagi: dbData.jam_pagi,
+        menitPagi: dbData.menit_pagi,
+        jamSore: dbData.jam_sore,
+        menitSore: dbData.menit_sore,
+        durasi: dbData.durasi_detik
+      });
     }
     setLoading(false);
   };
@@ -42,13 +43,13 @@ function App() {
     const { error } = await supabase
       .from('jadwal_pakan')
       .update({
-        tgl_mulai: parseInt(tglMulai),
-        tgl_selesai: parseInt(tglSelesai),
-        jam_pagi: parseInt(jamPagi),
-        menit_pagi: parseInt(menitPagi),
-        jam_sore: parseInt(jamSore),
-        menit_sore: parseInt(menitSore),
-        durasi_detik: parseInt(durasi)
+        tgl_mulai: parseInt(data.tglMulai),
+        tgl_selesai: parseInt(data.tglSelesai),
+        jam_pagi: parseInt(data.jamPagi),
+        menit_pagi: parseInt(data.menitPagi),
+        jam_sore: parseInt(data.jamSore),
+        menit_sore: parseInt(data.menitSore),
+        durasi_detik: parseInt(data.durasi)
       })
       .eq('pengenal', 1);
 
@@ -57,40 +58,54 @@ function App() {
     setLoading(false);
   };
 
-  if (loading) return <div>Memuat data...</div>;
+  // Styling (tetap sama)
+  const containerStyle = { fontFamily: 'sans-serif', maxWidth: '400px', margin: '40px auto', padding: '30px', backgroundColor: '#ffffff', borderRadius: '15px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' };
+  const inputGroupStyle = { marginBottom: '20px' };
+  const labelStyle = { display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#64748b', fontWeight: 'bold' };
+  const inputStyle = { width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '1rem', boxSizing: 'border-box' };
+  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
+
+  if (loading) return <div style={{ textAlign: 'center', marginTop: '50px' }}>Memuat data...</div>;
 
   return (
-    <div style={{ padding: '20px', backgroundColor: '#0f172a', color: 'white', minHeight: '100vh' }}>
-      <h1>Pengaturan Pakan</h1>
+    <div style={containerStyle}>
+      <h2 style={{ textAlign: 'center', marginBottom: '25px', color: '#1e293b' }}>⚙️ Pengaturan Pakan</h2>
       
-      <label>RENTANG TANGGAL (MULAI - SELESAI)</label>
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-        <input type="number" value={tglMulai} onChange={(e) => setTglMulai(e.target.value)} />
-        <input type="number" value={tglSelesai} onChange={(e) => setTglSelesai(e.target.value)} />
+      <div style={inputGroupStyle}>
+        <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input type="number" style={inputStyle} value={data.tglMulai} onChange={(e) => setData({...data, tglMulai: e.target.value})} />
+          <input type="number" style={inputStyle} value={data.tglSelesai} onChange={(e) => setData({...data, tglSelesai: e.target.value})} />
+        </div>
       </div>
 
-      <label>JADWAL PAGI (JAM : MENIT)</label>
-      <div style={{ display: 'flex', gap: '5px', marginBottom: '15px' }}>
-        <input type="number" value={jamPagi} onChange={(e) => setJamPagi(e.target.value)} />
-        <span>:</span>
-        <input type="number" value={menitPagi} onChange={(e) => setMenitPagi(e.target.value)} />
+      <div style={inputGroupStyle}>
+        <label style={labelStyle}>JADWAL PAGI (HH : MM)</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input type="number" style={inputStyle} value={data.jamPagi} onChange={(e) => setData({...data, jamPagi: e.target.value})} />
+          <span style={{ fontWeight: 'bold' }}>:</span>
+          <input type="number" style={inputStyle} value={data.menitPagi} onChange={(e) => setData({...data, menitPagi: e.target.value})} />
+        </div>
       </div>
 
-      <label>JADWAL SORE (JAM : MENIT)</label>
-      <div style={{ display: 'flex', gap: '5px', marginBottom: '15px' }}>
-        <input type="number" value={jamSore} onChange={(e) => setJamSore(e.target.value)} />
-        <span>:</span>
-        <input type="number" value={menitSore} onChange={(e) => setMenitSore(e.target.value)} />
+      <div style={inputGroupStyle}>
+        <label style={labelStyle}>JADWAL SORE (HH : MM)</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input type="number" style={inputStyle} value={data.jamSore} onChange={(e) => setData({...data, jamSore: e.target.value})} />
+          <span style={{ fontWeight: 'bold' }}>:</span>
+          <input type="number" style={inputStyle} value={data.menitSore} onChange={(e) => setData({...data, menitSore: e.target.value})} />
+        </div>
       </div>
 
-      <label>DURASI PAKAN (DETIK)</label>
-      <input type="number" value={durasi} onChange={(e) => setDurasi(e.target.value)} style={{ display: 'block', marginBottom: '20px' }} />
+      <div style={inputGroupStyle}>
+        <label style={labelStyle}>DURASI PAKAN (DETIK)</label>
+        <input type="number" style={inputStyle} value={data.durasi} onChange={(e) => setData({...data, durasi: e.target.value})} />
+      </div>
 
-      <button onClick={handleUpdate} style={{ padding: '10px 20px', backgroundColor: '#0ea5e9', border: 'none', color: 'white', cursor: 'pointer' }}>
-        PERBARUI DATA & AKTIFKAN
+      <button style={buttonStyle} onClick={handleUpdate} disabled={loading}>
+        {loading ? 'Menyimpan...' : 'SIMPAN PENGATURAN'}
       </button>
     </div>
   );
 }
-
 export default App;
