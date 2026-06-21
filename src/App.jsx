@@ -37,21 +37,26 @@ function App() {
   };
 
   const handleUpdate = async () => {
-    setLoading(true);
-    const { error } = await supabase
-      .from('jadwal_pakan')
-      .update({
-        tgl_mulai: parseInt(data.tglMulai), tgl_selesai: parseInt(data.tglSelesai),
-        jam_pagi: parseInt(data.jamPagi), menit_pagi: parseInt(data.menitPagi),
-        jam_sore: parseInt(data.jamSore), menit_sore: parseInt(data.menitSore),
-        durasi_detik: parseInt(data.durasi)
-      })
-      .eq('pengenal', 1);
+  setLoading(true);
+  // Kita update langsung ke baris dengan pengenal: 1
+  const { error } = await supabase
+    .from('jadwal_pakan')
+    .update({
+      jam_pagi: parseInt(data.jamPagi),
+      menit_pagi: parseInt(data.menitPagi),
+      jam_sore: parseInt(data.jamSore),
+      menit_sore: parseInt(data.menitSore),
+      durasi_detik: parseInt(data.durasi)
+    })
+    .eq('pengenal', 1); // <--- KUNCI: Harus sama dengan di Arduino
 
-    if (error) alert("Gagal: " + error.message);
-    else alert("Data berhasil diperbarui!");
-    setLoading(false);
-  };
+  if (error) {
+    alert("Gagal update: " + error.message);
+  } else {
+    alert("Data berhasil dikirim ke alat!");
+  }
+  setLoading(false);
+};
 
   const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '40px auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
   const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', boxSizing: 'border-box', backgroundColor: '#0f172a', color: '#fff' };
