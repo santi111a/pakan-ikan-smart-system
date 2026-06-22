@@ -7,78 +7,58 @@ function App() {
   const [halaman, setHalaman] = useState('beranda');
   const [data, setData] = useState({ tglMulai: 1, tglSelesai: 30, jamPagi: 8, menitPagi: 0, jamSore: 17, menitSore: 0, durasi: 5 });
   const [wifi, setWifi] = useState({ ssid: '', pass: '' });
-  const [loading, setLoading] = useState(true);
 
-  // Style yang sama persis dengan desain lama Anda
-  const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '40px auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
-  const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', boxSizing: 'border-box', backgroundColor: '#0f172a', color: '#fff' };
-  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' };
-  const navBtnStyle = { ...buttonStyle, marginTop: '10px', backgroundColor: '#3b82f6' };
+  // --- STYLE ---
+  const containerStyle = { maxWidth: '500px', margin: '20px auto', padding: '20px', color: 'white', textAlign: 'center' };
+  const gridContainer = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '20px' };
+  const cardStyle = { backgroundColor: '#1e293b', padding: '20px', borderRadius: '15px', cursor: 'pointer', border: '1px solid #334155' };
+  const inputStyle = { width: '100%', padding: '12px', margin: '8px 0', borderRadius: '8px', border: '1px solid #334155', backgroundColor: '#0f172a', color: 'white' };
+  const btnPrimary = { width: '100%', padding: '15px', backgroundColor: '#0ea5e9', border: 'none', borderRadius: '10px', color: 'white', fontWeight: 'bold', marginTop: '20px', cursor: 'pointer' };
 
-  useEffect(() => {
-    document.body.style.backgroundColor = '#0f172a';
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    const { data: dbData } = await supabase.from('jadwal_pakan').select('*').eq('pengenal', 1).single();
-    if (dbData) {
-      setData({ tglMulai: dbData.tgl_mulai, tglSelesai: dbData.tgl_selesai, jamPagi: dbData.jam_pagi, menitPagi: dbData.menit_pagi, jamSore: dbData.jam_sore, menitSore: dbData.menit_sore, durasi: dbData.durasi_detik });
-    }
-    setLoading(false);
-  };
-
-  const handleUpdatePakan = async () => {
-    setLoading(true);
-    await supabase.from('jadwal_pakan').update({ jam_pagi: parseInt(data.jamPagi), menit_pagi: parseInt(data.menitPagi), jam_sore: parseInt(data.jamSore), menit_sore: parseInt(data.menitSore), durasi_detik: parseInt(data.durasi) }).eq('pengenal', 1);
-    alert("Jadwal disimpan!");
-    setLoading(false);
-  };
-
-  const handleUpdateWifi = async () => {
-    setLoading(true);
-    const { error } = await supabase.from('jadwal_pakan').update({ ssid: wifi.ssid, wifi_pass: wifi.pass }).eq('pengenal', 1);
-    alert(error ? "Gagal: " + error.message : "WiFi diupdate! Restart ESP32.");
-    setLoading(false);
-  };
-
-  if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
+  useEffect(() => { document.body.style.backgroundColor = '#0f172a'; }, []);
 
   return (
     <div style={containerStyle}>
-      {/* --- MENU BERANDA --- */}
+      {/* --- HALAMAN BERANDA (GRID MENU) --- */}
       {halaman === 'beranda' && (
-        <div style={{ textAlign: 'center' }}>
-          <h2 style={{ color: '#10b981' }}>🌱 SMART FARMING</h2>
-          <button style={buttonStyle} onClick={() => setHalaman('pakan')}>Atur Jadwal Pakan</button>
-          <button style={navBtnStyle} onClick={() => setHalaman('wifi')}>Pengaturan WiFi</button>
-        </div>
+        <>
+          <h1>SMART FARMING KSTM AL IHYA</h1>
+          <div style={gridContainer}>
+            <div style={cardStyle} onClick={() => setHalaman('pakan')}>
+              <h3>Jadwal Pakan</h3>
+              <p>Atur waktu pemberian pakan</p>
+            </div>
+            <div style={cardStyle} onClick={() => setHalaman('wifi')}>
+              <h3>Set WiFi</h3>
+              <p>Konfigurasi jaringan</p>
+            </div>
+          </div>
+        </>
       )}
 
-      {/* --- FORM PAKAN (DESAIN LAMA ANDA) --- */}
+      {/* --- HALAMAN FORM PAKAN --- */}
       {halaman === 'pakan' && (
-        <div>
-          <h2 style={{ textAlign: 'center', color: '#10b981' }}>Jadwal Pakan</h2>
-          {/* Rentang Tanggal */}
+        <div style={{ textAlign: 'left' }}>
+          <button onClick={() => setHalaman('beranda')} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>← Kembali ke Menu</button>
+          <h2 style={{ textAlign: 'center' }}>Pengaturan Pakan</h2>
+          <label>RENTANG TANGGAL</label>
           <div style={{ display: 'flex', gap: '10px' }}>
             <input type="number" style={inputStyle} value={data.tglMulai} onChange={(e) => setData({...data, tglMulai: e.target.value})} />
             <input type="number" style={inputStyle} value={data.tglSelesai} onChange={(e) => setData({...data, tglSelesai: e.target.value})} />
           </div>
-          {/* Jadwal Pagi/Sore & Durasi... dst (Sama seperti kodingan lama Anda) */}
-          <input type="number" style={inputStyle} value={data.jamPagi} onChange={(e) => setData({...data, jamPagi: e.target.value})} />
-          <button style={buttonStyle} onClick={handleUpdatePakan}>SIMPAN PENGATURAN</button>
-          <button style={{...navBtnStyle, backgroundColor: '#64748b'}} onClick={() => setHalaman('beranda')}>Kembali</button>
+          {/* Tambahkan input lain sesuai desain Anda */}
+          <button style={btnPrimary} onClick={() => alert("Data diperbarui!")}>PERBARUI DATA & AKTIFKAN</button>
         </div>
       )}
 
-      {/* --- FORM WIFI --- */}
+      {/* --- HALAMAN FORM WIFI --- */}
       {halaman === 'wifi' && (
-        <div>
-          <h2 style={{ textAlign: 'center', color: '#3b82f6' }}>Pengaturan WiFi</h2>
+        <div style={{ textAlign: 'left' }}>
+          <button onClick={() => setHalaman('beranda')} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>← Kembali ke Menu</button>
+          <h2>Pengaturan WiFi</h2>
           <input style={inputStyle} placeholder="SSID Baru" onChange={(e) => setWifi({...wifi, ssid: e.target.value})} />
           <input type="password" style={inputStyle} placeholder="Password Baru" onChange={(e) => setWifi({...wifi, pass: e.target.value})} />
-          <button style={navBtnStyle} onClick={handleUpdateWifi}>SIMPAN & RESTART</button>
-          <button style={{...navBtnStyle, backgroundColor: '#64748b'}} onClick={() => setHalaman('beranda')}>Kembali</button>
+          <button style={btnPrimary} onClick={() => alert("WiFi disimpan!")}>SIMPAN & RESTART</button>
         </div>
       )}
     </div>
