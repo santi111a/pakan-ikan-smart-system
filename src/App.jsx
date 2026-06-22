@@ -13,19 +13,7 @@ function App() {
   const containerStyle = { maxWidth: '400px', margin: '40px auto', padding: '20px', backgroundColor: '#1e293b', borderRadius: '20px', color: '#f1f5f9', textAlign: 'center' };
   const inputStyle = { width: '100%', padding: '12px', margin: '10px 0', borderRadius: '10px', border: '1px solid #334155', backgroundColor: '#0f172a', color: 'white', boxSizing: 'border-box' };
   const btnStyle = { width: '100%', padding: '15px', marginTop: '10px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem' };
-
-  const handleUpdatePakan = async () => {
-    setLoading(true);
-    await supabase.from('jadwal_pakan').update({
-      jam_pagi: parseInt(data.jamPagi), menit_pagi: parseInt(data.menitPagi),
-      jam_sore: parseInt(data.jamSore), menit_sore: parseInt(data.menitSore),
-      durasi_detik: parseInt(data.durasi)
-    }).eq('pengenal', 1);
-    alert("Jadwal Pakan Tersimpan!");
-    setLoading(false);
-    };
-
-    
+  
   // Efek untuk mengubah warna latar belakang seluruh halaman
   useEffect(() => {
     document.body.style.backgroundColor = '#0f172a'; // Warna background luar
@@ -72,6 +60,17 @@ function App() {
   setLoading(false);
 };
 
+const handleUpdatePakan = async () => {
+    setLoading(true);
+    await supabase.from('jadwal_pakan').update({
+      jam_pagi: parseInt(data.jamPagi), menit_pagi: parseInt(data.menitPagi),
+      jam_sore: parseInt(data.jamSore), menit_sore: parseInt(data.menitSore),
+      durasi_detik: parseInt(data.durasi)
+    }).eq('pengenal', 1);
+    alert("Jadwal Pakan Tersimpan!");
+    setLoading(false);
+    };
+
 const handleUpdateWifi = async () => {
     setLoading(true);
     // Mengirim SSID dan Password baru ke database
@@ -85,12 +84,13 @@ const handleUpdateWifi = async () => {
     setLoading(false);
   }
 
+// Styles
   const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '40px auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
   const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', boxSizing: 'border-box', backgroundColor: '#0f172a', color: '#fff' };
   const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' };
 
   if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
-
+return (
   <div style={containerStyle}>
       {/* --- HALAMAN BERANDA --- */}
       {halaman === 'beranda' && (
@@ -123,6 +123,7 @@ const handleUpdateWifi = async () => {
         </>
       )}
     </div>
+);
 }
 
 export default App;
