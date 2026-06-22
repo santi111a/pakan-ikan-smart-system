@@ -54,12 +54,14 @@ function App() {
 
        <div style={{ marginBottom: '20px' }}>
         <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>DURASI (DETIK)</label>
+        <div style={{ display: 'flex', gap: '10px' }}>
         <input 
     type="number" 
-    style={{ ...inputStyle, width: '100px' }} 
+    style={{ ...inputStyle, flex: 1 }} 
     value={data.durasi} 
     onChange={(e) => setData({...data, durasi: e.target.value})} 
   />
+</div>
 </div>
 
           <button style={buttonStyle} onClick={() => alert("Data Tersimpan!")}>SIMPAN DATA</button>
