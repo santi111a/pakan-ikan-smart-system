@@ -67,9 +67,8 @@ function App() {
   if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
 
   return (
-    <div style={containerStyle}>
-
-{/* 1. HALAMAN BERANDA */}
+  <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white' }}>
+    {/* 1. HALAMAN BERANDA */}
       {halaman === 'beranda' && (
         <div style={{ textAlign: 'center' }}>
           <h2 style={{ color: '#10b981' }}>🌱 SMART FARMING</h2>
@@ -125,7 +124,7 @@ function App() {
 
       <button style={buttonStyle} onClick={handleUpdate}>SIMPAN PENGATURAN</button>
     </div>
-  );
-}
-
-export default App;
+    )};
+</div>
+)}
+ export default App;
