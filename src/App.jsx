@@ -57,17 +57,6 @@ function App() {
         <input type="number" style={inputStyle} value={data.durasi} onChange={(e) => setData({...data, durasi: e.target.value})} />
       </div>
 
-
-     <div style={{ marginBottom: '20px' }}>
-        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL SORE</label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <input type="number" style={inputStyle} value={data.jamSore} onChange={(e) => setData({...data, jamSore: e.target.value})} />
-          <span>:</span>
-          <input type="number" style={inputStyle} value={data.menitSore} onChange={(e) => setData({...data, menitSore: e.target.value})} />
-        </div>
-      </div>
-
-          
           <button style={buttonStyle} onClick={() => alert("Data Tersimpan!")}>SIMPAN DATA</button>
         </div>
       )}
