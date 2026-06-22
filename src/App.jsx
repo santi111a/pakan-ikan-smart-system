@@ -42,11 +42,13 @@ function App() {
   const { error } = await supabase
     .from('jadwal_pakan')
     .update({
-      jam_pagi: parseInt(data.jamPagi),
-      menit_pagi: parseInt(data.menitPagi),
-      jam_sore: parseInt(data.jamSore),
-      menit_sore: parseInt(data.menitSore),
-      durasi_detik: parseInt(data.durasi)
+     tgl_mulai: parseInt(data.tglMulai),
+        tgl_selesai: parseInt(data.tglSelesai),
+        jam_pagi: parseInt(data.jamPagi),
+        menit_pagi: parseInt(data.menitPagi),
+        jam_sore: parseInt(data.jamSore),
+        menit_sore: parseInt(data.menitSore),
+        durasi_detik: parseInt(data.durasi)
     })
     .eq('pengenal', 1); // <--- KUNCI: Harus sama dengan di Arduino
 
@@ -66,6 +68,25 @@ function App() {
 
   return (
     <div style={containerStyle}>
+
+{/* 1. HALAMAN BERANDA */}
+      {halaman === 'beranda' && (
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ color: '#10b981' }}>🌱 SMART FARMING</h2>
+          <p>KSTM AL IHYA</p>
+          
+          <button style={buttonStyle} onClick={() => setHalaman('pakan')}>
+            PENGATURAN PAKAN
+          </button>
+        </div>
+      )}
+
+  {/* 2. HALAMAN PENGATURAN PAKAN */}
+      {halaman === 'pakan' && (
+        <div>
+          <button style={{...buttonStyle, backgroundColor: '#475569', marginTop: 0}} onClick={() => setHalaman('beranda')}>
+            ← KEMBALI KE BERANDA
+          </button>
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
         <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
