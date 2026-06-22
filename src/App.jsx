@@ -90,37 +90,42 @@ const handleUpdateWifi = async () => {
   const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' };
 
   if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
-return (
-  <div style={containerStyle}>
+
+  return (
+    
+  <div style={{padding: '20px', textAlign: 'center'}}>
+
       {/* --- HALAMAN BERANDA --- */}
       {halaman === 'beranda' && (
-        <>
+        <div style={{ marginTop: '50px' }}>
           <h1>Smart Farming</h1>
           <button style={{...btnStyle, backgroundColor: '#10b981'}} onClick={() => setHalaman('pakan')}>Atur Jadwal Pakan</button>
           <button style={{...btnStyle, backgroundColor: '#3b82f6'}} onClick={() => setHalaman('wifi')}>Pengaturan WiFi</button>
-        </>
+        </div>
       )}
 
       {/* --- HALAMAN PAKAN --- */}
       {halaman === 'pakan' && (
-        <>
+        <div>
           <h2>Jadwal Pakan</h2>
           <input style={inputStyle} type="number" placeholder="Jam Pagi" onChange={(e) => setData({...data, jamPagi: e.target.value})} />
           <input style={inputStyle} type="number" placeholder="Menit Pagi" onChange={(e) => setData({...data, menitPagi: e.target.value})} />
           <button style={{...btnStyle, backgroundColor: '#10b981'}} onClick={handleUpdatePakan}>Simpan Jadwal</button>
           <button style={{...btnStyle, backgroundColor: '#64748b'}} onClick={() => setHalaman('beranda')}>Kembali</button>
-        </>
+        <button onClick={() => setHalaman('beranda')}>Kembali</button>
+        </div>
       )}
 
       {/* --- HALAMAN WIFI --- */}
       {halaman === 'wifi' && (
-        <>
+        <div>
           <h2>Pengaturan WiFi</h2>
           <input style={inputStyle} placeholder="SSID Baru" onChange={(e) => setWifi({...wifi, ssid: e.target.value})} />
           <input style={inputStyle} type="password" placeholder="Password Baru" onChange={(e) => setWifi({...wifi, pass: e.target.value})} />
           <button style={{...btnStyle, backgroundColor: '#3b82f6'}} onClick={handleUpdateWifi}>Simpan & Restart</button>
           <button style={{...btnStyle, backgroundColor: '#64748b'}} onClick={() => setHalaman('beranda')}>Kembali</button>
-        </>
+        <button onClick={() => setHalaman('beranda')}>Kembali</button>
+        </div>
       )}
     </div>
 );
