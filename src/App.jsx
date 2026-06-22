@@ -25,11 +25,38 @@ function App() {
           <button style={{...buttonStyle, backgroundColor: '#475569'}} onClick={() => setHalaman('beranda')}>← KEMBALI</button>
           <h3 style={{ textAlign: 'center' }}>Pengaturan Pakan</h3>
           
-          <label>JADWAL PAGI</label>
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-            <input type="number" style={inputStyle} value={data.jamPagi} onChange={(e) => setData({...data, jamPagi: e.target.value})} />
-            <input type="number" style={inputStyle} value={data.menitPagi} onChange={(e) => setData({...data, menitPagi: e.target.value})} />
-          </div>
+         <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>RENTANG TANGGAL</label>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input type="number" style={inputStyle} value={data.tglMulai} onChange={(e) => setData({...data, tglMulai: e.target.value})} />
+          <input type="number" style={inputStyle} value={data.tglSelesai} onChange={(e) => setData({...data, tglSelesai: e.target.value})} />
+        </div>
+      </div>
+
+       <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL PAGI</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input type="number" style={inputStyle} value={data.jamPagi} onChange={(e) => setData({...data, jamPagi: e.target.value})} />
+          <span>:</span>
+          <input type="number" style={inputStyle} value={data.menitPagi} onChange={(e) => setData({...data, menitPagi: e.target.value})} />
+        </div>
+      </div>
+
+       <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>DURASI (DETIK)</label>
+        <input type="number" style={inputStyle} value={data.durasi} onChange={(e) => setData({...data, durasi: e.target.value})} />
+      </div>
+
+
+     <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL SORE</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input type="number" style={inputStyle} value={data.jamSore} onChange={(e) => setData({...data, jamSore: e.target.value})} />
+          <span>:</span>
+          <input type="number" style={inputStyle} value={data.menitSore} onChange={(e) => setData({...data, menitSore: e.target.value})} />
+        </div>
+      </div>
+
           
           <button style={buttonStyle} onClick={() => alert("Data Tersimpan!")}>SIMPAN DATA</button>
         </div>
