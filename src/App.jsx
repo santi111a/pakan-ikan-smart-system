@@ -9,56 +9,24 @@ function App() {
   const [wifi, setWifi] = useState({ ssid: '', pass: '' });
   const [loading, setLoading] = useState(false);
 
-  // Styling agar rapi
-  const containerStyle = { maxWidth: '400px', margin: '40px auto', padding: '20px', backgroundColor: '#1e293b', borderRadius: '20px', color: '#f1f5f9', textAlign: 'center' };
+  // KUMPULAN STYLE (Pastikan ini dipakai di div utama)
+  const containerStyle = { 
+    fontFamily: "'Segoe UI', sans-serif", 
+    maxWidth: '400px', 
+    margin: '40px auto', 
+    padding: '30px', 
+    backgroundColor: '#1e293b', 
+    borderRadius: '20px', 
+    boxShadow: '0 20px 40px rgba(0,0,0,0.3)', 
+    color: '#f1f5f9' 
+  };
+
   const inputStyle = { width: '100%', padding: '12px', margin: '10px 0', borderRadius: '10px', border: '1px solid #334155', backgroundColor: '#0f172a', color: 'white', boxSizing: 'border-box' };
   const btnStyle = { width: '100%', padding: '15px', marginTop: '10px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem' };
   
-  // Efek untuk mengubah warna latar belakang seluruh halaman
-  useEffect(() => {
-    document.body.style.backgroundColor = '#0f172a'; // Warna background luar
-    fetchData();
+useEffect(() => {
+    document.body.style.backgroundColor = '#0f172a';
   }, []);
-
-  const fetchData = async () => {
-    const { data: dbData } = await supabase
-      .from('jadwal_pakan')
-      .select('*')
-      .eq('pengenal', 1)
-      .single();
-
-    if (dbData) {
-      setData({
-        tglMulai: dbData.tgl_mulai, tglSelesai: dbData.tgl_selesai,
-        jamPagi: dbData.jam_pagi, menitPagi: dbData.menit_pagi,
-        jamSore: dbData.jam_sore, menitSore: dbData.menit_sore,
-        durasi: dbData.durasi_detik
-      });
-    }
-    setLoading(false);
-  };
-
-  const handleUpdate = async () => {
-  setLoading(true);
-  // Kita update langsung ke baris dengan pengenal: 1
-  const { error } = await supabase
-    .from('jadwal_pakan')
-    .update({
-      jam_pagi: parseInt(data.jamPagi),
-      menit_pagi: parseInt(data.menitPagi),
-      jam_sore: parseInt(data.jamSore),
-      menit_sore: parseInt(data.menitSore),
-      durasi_detik: parseInt(data.durasi)
-    })
-    .eq('pengenal', 1); // <--- KUNCI: Harus sama dengan di Arduino
-
-  if (error) {
-    alert("Gagal update: " + error.message);
-  } else {
-    alert("Data berhasil dikirim ke alat!");
-  }
-  setLoading(false);
-};
 
 const handleUpdatePakan = async () => {
     setLoading(true);
@@ -84,21 +52,14 @@ const handleUpdateWifi = async () => {
     setLoading(false);
   }
 
-// Styles
-  const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '40px auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
-  const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', boxSizing: 'border-box', backgroundColor: '#0f172a', color: '#fff' };
-  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' };
-
-  if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
 
   return (
-    
-  <div style={{padding: '20px', textAlign: 'center'}}>
-
-      {/* --- HALAMAN BERANDA --- */}
+  <div style={containerStyle}>
+      
       {halaman === 'beranda' && (
-        <div style={{ marginTop: '50px' }}>
-          <h1>Smart Farming</h1>
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ color: '#10b981' }}>🌱 SMART FARMING</h2>
+          <p>KSTM AL IHYA</p>
           <button style={{...btnStyle, backgroundColor: '#10b981'}} onClick={() => setHalaman('pakan')}>Atur Jadwal Pakan</button>
           <button style={{...btnStyle, backgroundColor: '#3b82f6'}} onClick={() => setHalaman('wifi')}>Pengaturan WiFi</button>
         </div>
