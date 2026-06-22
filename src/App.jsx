@@ -4,14 +4,28 @@ import { createClient } from '@supabase/supabase-js';
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
 function App() {
-  const [data, setData] = useState({
-    tglMulai: 1, tglSelesai: 30, 
-    jamPagi: 8, menitPagi: 0, 
-    jamSore: 17, menitSore: 0, 
-    durasi: 5
-  });
-  const [loading, setLoading] = useState(true);
+  const [halaman, setHalaman] = useState('beranda');
+  const [data, setData] = useState({ jamPagi: 8, menitPagi: 0, jamSore: 17, menitSore: 0, durasi: 5 });
+  const [wifi, setWifi] = useState({ ssid: '', pass: '' });
+  const [loading, setLoading] = useState(false);
 
+  // Styling agar rapi
+  const containerStyle = { maxWidth: '400px', margin: '40px auto', padding: '20px', backgroundColor: '#1e293b', borderRadius: '20px', color: '#f1f5f9', textAlign: 'center' };
+  const inputStyle = { width: '100%', padding: '12px', margin: '10px 0', borderRadius: '10px', border: '1px solid #334155', backgroundColor: '#0f172a', color: 'white', boxSizing: 'border-box' };
+  const btnStyle = { width: '100%', padding: '15px', marginTop: '10px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem' };
+
+  const handleUpdatePakan = async () => {
+    setLoading(true);
+    await supabase.from('jadwal_pakan').update({
+      jam_pagi: parseInt(data.jamPagi), menit_pagi: parseInt(data.menitPagi),
+      jam_sore: parseInt(data.jamSore), menit_sore: parseInt(data.menitSore),
+      durasi_detik: parseInt(data.durasi)
+    }).eq('pengenal', 1);
+    alert("Jadwal Pakan Tersimpan!");
+    setLoading(false);
+    };
+
+    
   // Efek untuk mengubah warna latar belakang seluruh halaman
   useEffect(() => {
     document.body.style.backgroundColor = '#0f172a'; // Warna background luar
@@ -58,53 +72,57 @@ function App() {
   setLoading(false);
 };
 
+const handleUpdateWifi = async () => {
+    setLoading(true);
+    // Mengirim SSID dan Password baru ke database
+    const { error } = await supabase.from('jadwal_pakan').update({ 
+        ssid: wifi.ssid, 
+        wifi_pass: wifi.pass 
+    }).eq('pengenal', 1);
+    
+    if (error) alert("Gagal update WiFi: " + error.message);
+    else alert("WiFi diupdate! ESP32 akan restart otomatis.");
+    setLoading(false);
+  }
+
   const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '40px auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
   const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', boxSizing: 'border-box', backgroundColor: '#0f172a', color: '#fff' };
   const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' };
 
   if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
 
-  return (
-    <div style={containerStyle}>
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
-        <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
-      </div>
+  <div style={containerStyle}>
+      {/* --- HALAMAN BERANDA --- */}
+      {halaman === 'beranda' && (
+        <>
+          <h1>Smart Farming</h1>
+          <button style={{...btnStyle, backgroundColor: '#10b981'}} onClick={() => setHalaman('pakan')}>Atur Jadwal Pakan</button>
+          <button style={{...btnStyle, backgroundColor: '#3b82f6'}} onClick={() => setHalaman('wifi')}>Pengaturan WiFi</button>
+        </>
+      )}
 
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>RENTANG TANGGAL</label>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input type="number" style={inputStyle} value={data.tglMulai} onChange={(e) => setData({...data, tglMulai: e.target.value})} />
-          <input type="number" style={inputStyle} value={data.tglSelesai} onChange={(e) => setData({...data, tglSelesai: e.target.value})} />
-        </div>
-      </div>
+      {/* --- HALAMAN PAKAN --- */}
+      {halaman === 'pakan' && (
+        <>
+          <h2>Jadwal Pakan</h2>
+          <input style={inputStyle} type="number" placeholder="Jam Pagi" onChange={(e) => setData({...data, jamPagi: e.target.value})} />
+          <input style={inputStyle} type="number" placeholder="Menit Pagi" onChange={(e) => setData({...data, menitPagi: e.target.value})} />
+          <button style={{...btnStyle, backgroundColor: '#10b981'}} onClick={handleUpdatePakan}>Simpan Jadwal</button>
+          <button style={{...btnStyle, backgroundColor: '#64748b'}} onClick={() => setHalaman('beranda')}>Kembali</button>
+        </>
+      )}
 
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL PAGI</label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <input type="number" style={inputStyle} value={data.jamPagi} onChange={(e) => setData({...data, jamPagi: e.target.value})} />
-          <span>:</span>
-          <input type="number" style={inputStyle} value={data.menitPagi} onChange={(e) => setData({...data, menitPagi: e.target.value})} />
-        </div>
-      </div>
-
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL SORE</label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <input type="number" style={inputStyle} value={data.jamSore} onChange={(e) => setData({...data, jamSore: e.target.value})} />
-          <span>:</span>
-          <input type="number" style={inputStyle} value={data.menitSore} onChange={(e) => setData({...data, menitSore: e.target.value})} />
-        </div>
-      </div>
-
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>DURASI (DETIK)</label>
-        <input type="number" style={inputStyle} value={data.durasi} onChange={(e) => setData({...data, durasi: e.target.value})} />
-      </div>
-
-      <button style={buttonStyle} onClick={handleUpdate}>SIMPAN PENGATURAN</button>
+      {/* --- HALAMAN WIFI --- */}
+      {halaman === 'wifi' && (
+        <>
+          <h2>Pengaturan WiFi</h2>
+          <input style={inputStyle} placeholder="SSID Baru" onChange={(e) => setWifi({...wifi, ssid: e.target.value})} />
+          <input style={inputStyle} type="password" placeholder="Password Baru" onChange={(e) => setWifi({...wifi, pass: e.target.value})} />
+          <button style={{...btnStyle, backgroundColor: '#3b82f6'}} onClick={handleUpdateWifi}>Simpan & Restart</button>
+          <button style={{...btnStyle, backgroundColor: '#64748b'}} onClick={() => setHalaman('beranda')}>Kembali</button>
+        </>
+      )}
     </div>
-  );
 }
 
 export default App;
