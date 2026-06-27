@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
 function App() {
+  const [activePage, setActivePage] = useState('beranda');
   const [data, setData] = useState({
     tglMulai: 1, tglSelesai: 30, 
     jamPagi: 8, menitPagi: 0, 
@@ -66,7 +67,29 @@ function App() {
   if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
 
   return (
-    <div style={containerStyle}>
+<div style={containerStyle}>
+      {/* HEADER */}
+      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
+        <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
+      </div>
+
+      {/* MENU NAVIGASI */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
+        <button style={navButtonStyle('beranda')} onClick={() => setActivePage('beranda')}>BERANDA</button>
+        <button style={navButtonStyle('pengaturan')} onClick={() => setActivePage('pengaturan')}>PENGATURAN</button>
+      </div>
+
+      {/* KONTEN BERDASARKAN HALAMAN */}
+      {activePage === 'beranda' ? (
+        <div style={{ textAlign: 'center', padding: '20px' }}>
+          <h3 style={{ color: '#fff' }}>Selamat Datang!</h3>
+          <p style={{ color: '#94a3b8' }}>Sistem pemberi pakan otomatis Anda dalam kondisi siap beroperasi.</p>
+          <div style={{ fontSize: '50px', marginTop: '20px' }}>✅</div>
+        </div>
+      ) : (
+        /* KODINGAN LAMA ANDA DI BAWAH INI */
+    <div>
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
         <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
@@ -102,9 +125,10 @@ function App() {
         <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>DURASI (DETIK)</label>
         <input type="number" style={inputStyle} value={data.durasi} onChange={(e) => setData({...data, durasi: e.target.value})} />
       </div>
-
       <button style={buttonStyle} onClick={handleUpdate}>SIMPAN PENGATURAN</button>
     </div>
+      )}
+      </div>
   );
 }
 
