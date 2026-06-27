@@ -100,6 +100,7 @@ function App() {
   >
     ← Kembali ke Menu
   </button>
+    <h2 style={{ color: '#38BDF8', textAlign: 'center' }}>Pengaturan Pakan</h2>
           
   {/* KOTAK UTAMA */}
   <div style={{ 
