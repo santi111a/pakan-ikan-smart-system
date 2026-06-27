@@ -78,37 +78,61 @@ function App() {
       </div>
 
  {activePage === 'beranda' ? (
-        /* HALAMAN BERANDA */
-<div>
-          <h3 style={{ textAlign: 'center' }}>Halo!</h3>
-          <div style={menuCardStyle} onClick={() => setActivePage('pengaturan')}>
-            <div style={{ fontSize: '30px' }}>🐟</div>
-            <div style={{ fontWeight: 'bold', marginTop: '10px' }}>MENU PAKAN</div>
-            <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Atur jadwal & durasi</div>
-          </div>
-        </div>
-      ) : (
+  /* HALAMAN BERANDA */
+  <div>...</div>
+) : (
+  
+  /* HALAMAN PENGATURAN (DI DALAM KOTAK) */
+  <div style={{
+    position: 'relative', // Membuat kotak ini menjadi jangkar untuk posisi tombol
+    backgroundColor: '#1E293B', // Warna background kotak utama (dari gambar)
+    padding: '40px 20px', // Ruang di dalam kotak, padding atas agak besar untuk memberi ruang bagi tombol
+    borderRadius: '16px', // Sudut tumpul kotak (dari gambar)
+    maxWidth: '600px', // Atur lebar maksimal kotak (sesuaikan dengan desain Anda)
+    margin: '20px auto', // Mengatur kotak agar berada di tengah halaman
+    color: '#F8FAFC', // Warna teks umum di dalam kotak
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' // Sedikit bayangan (optional, agar lebih terlihat)
+  }}>
 
-     /* HALAMAN PENGATURAN PAKAN */
-      <div>
-          <button 
-  style={{ 
-    ...buttonStyle, 
-    position: 'absolute', 
-    top: '20px', 
-    left: '20px', 
-    padding: '5px 15px', // Membuatnya lebih kecil
-    fontSize: '12px',
-    backgroundColor: '#475569',
-    width: 'auto' // Agar ukuran tombol mengikuti teks
-  }} 
-  onClick={() => setActivePage('beranda')}
->
-  ← KEMBALI
-</button>
+   {/* TOMBOL KEMBALI DI DALAM KOTAK */}
+    <button 
+      style={{ 
+        ...buttonStyle, // Asumsi ini adalah style dasar tombol Anda
+        position: 'absolute', // Menempatkan tombol secara presisi
+        top: '20px', // Jarak dari atas di dalam kotak
+        left: '20px', // Jarak dari kiri di dalam kotak
+        padding: '5px 15px', // Membuat tombol lebih kecil (compact)
+        fontSize: '12px', // Ukuran teks tombol lebih kecil
+        backgroundColor: '#475569', // Warna tombol (dari gambar)
+        color: '#F8FAFC', // Warna teks tombol
+        border: 'none', // Tanpa border
+        borderRadius: '8px', // Sudut tombol agak tumpul
+        width: 'auto', // Lebar tombol sesuai konten
+        cursor: 'pointer', // Mengubah kursor saat melintas
+        zIndex: '10' // Memastikan tombol di atas elemen lain
+      }} 
+      onClick={() => setActivePage('beranda')}
+    >
+      ← KEMBALI
+    </button>
           
-          <h3 style={{ color: '#10b981', textAlign: 'center' }}>PENGATURAN PAKAN</h3>
+      {/* KONTEN UTAMA DI DALAM KOTAK */}
+    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+      <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>PERTANIAN CERDAS</h2>
+      <p style={{ fontSize: '0.8rem', color: '#94A3B8' }}>KSTM AL IHYA</p>
+    </div>
 
+    <h2 style={{ 
+      textAlign: 'center', 
+      marginTop: '10px', 
+      marginBottom: '30px', 
+      color: '#10B981', // Warna hijau (dari gambar)
+      fontSize: '1.5rem',
+      fontWeight: 'bold'
+    }}>
+
+      PENGATURAN PAKAN
+    </h2>
       <div style={{ marginBottom: '20px' }}>
         <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>RENTANG TANGGAL</label>
         <div style={{ display: 'flex', gap: '10px' }}>
@@ -143,7 +167,7 @@ function App() {
     </div>
       )}
       </div>
-  );
-}
+    )
+  };
 
 export default App;
