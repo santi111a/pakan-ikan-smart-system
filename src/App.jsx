@@ -99,14 +99,9 @@ function App() {
       {/* --- MENU NAVIGASI --- */}
 <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
   <button 
-    style={navButtonStyle('beranda')} 
-    onClick={() => setActivePage('beranda')} // Tetap untuk Beranda
-  >BERANDA</button>
-  
-  <button 
-    style={navButtonStyle('pengaturan')} 
-    onClick={() => setActivePage('pengaturan')} // Untuk Pengaturan
-  >PENGATURAN</button>
+    style={navButtonStyle('MENU PAKAN ')} 
+    onClick={() => setActivePage('MENU PAKAN')} // Untuk Pengaturan
+  >MENU PAKAN</button>
 </div>
 
       {/* KONTEN BERDASARKAN HALAMAN */}
