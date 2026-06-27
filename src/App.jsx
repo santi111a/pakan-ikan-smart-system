@@ -14,13 +14,17 @@ function App() {
     durasi_detik: 0 
   });
 
-  // 3. Fungsi handle
+  // Tambahkan state loading agar tidak error
+  const [loading, setLoading] = useState(false);
+
+  // 2. Fungsi handle
   const handleUpdatePakan = async () => {
     setLoading(true);
-    // Sekarang 'data' di bawah ini sudah dikenal oleh JavaScript
     console.log("Data yang dikirim:", data); 
-    // ... sisa kode Anda
+    // Di sini nanti Anda isi logika Supabase
+    setLoading(false); // Jangan lupa matikan loading setelah selesai
   };
+}
 
 return (
   <div style={styles.container}>
@@ -36,7 +40,7 @@ return (
     </main>
   </div>
 );
-}
+
 // 1. Definisikan konfigurasi menu di luar komponen atau di bagian atas
 const menuItems = [
   { id: 'pakan', label: 'Jadwal Pakan', icon: '🐟', sub: `Pagi ${data.jam_pagi}:${data.menit_pagi}` },
