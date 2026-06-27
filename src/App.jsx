@@ -77,10 +77,13 @@ function App() {
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
       </div>
 
- {activePage === 'beranda' ? (
-  /* HALAMAN BERANDA */
-  <div>...</div>
-) : (
+ {/* KONDISI HALAMAN */}
+      {activePage === 'beranda' ? (
+        /* HALAMAN BERANDA */
+        <div>
+           {/* Konten Beranda Anda */}
+        </div>
+      ) : (
   
   /* HALAMAN PENGATURAN (DI DALAM KOTAK) */
   <div style={{
@@ -167,7 +170,7 @@ function App() {
     </div>
       )}
       </div>
-    )
-  };
+    );
+  }
 
 export default App;
