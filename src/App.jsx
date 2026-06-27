@@ -76,7 +76,16 @@ function App() {
   
   const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', boxSizing: 'border-box', backgroundColor: '#0f172a', color: '#fff' };
   const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' };
-
+   const navButtonStyle = (page) => ({ 
+    flex: 1, 
+    padding: '10px', 
+    backgroundColor: activePage === page ? '#10b981' : '#334155', 
+    color: 'white', 
+    border: 'none', 
+    borderRadius: '10px', 
+    cursor: 'pointer' 
+  });
+  
   if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
 
   return (
