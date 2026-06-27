@@ -82,7 +82,7 @@ function App() {
 <div>
           <h3 style={{ textAlign: 'center' }}>Halo!</h3>
           <div style={menuCardStyle} onClick={() => setActivePage('pengaturan')}>
-            <div style={{ fontSize: '30px' }}>🥗</div>
+            <div style={{ fontSize: '30px' }}>🐟</div>
             <div style={{ fontWeight: 'bold', marginTop: '10px' }}>MENU PAKAN</div>
             <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Atur jadwal & durasi</div>
           </div>
@@ -91,9 +91,21 @@ function App() {
 
      /* HALAMAN PENGATURAN PAKAN */
       <div>
-          <button style={{ ...buttonStyle, backgroundColor: '#475569', marginBottom: '20px' }} onClick={() => setActivePage('beranda')}>
-            ← KEMBALI
-          </button>
+          <button 
+  style={{ 
+    ...buttonStyle, 
+    position: 'absolute', 
+    top: '20px', 
+    left: '20px', 
+    padding: '5px 15px', // Membuatnya lebih kecil
+    fontSize: '12px',
+    backgroundColor: '#475569',
+    width: 'auto' // Agar ukuran tombol mengikuti teks
+  }} 
+  onClick={() => setActivePage('beranda')}
+>
+  ← KEMBALI
+</button>
           
           <h3 style={{ color: '#10b981', textAlign: 'center' }}>PENGATURAN PAKAN</h3>
 
