@@ -17,14 +17,12 @@ function App() {
   // Tambahkan state loading agar tidak error
   const [loading, setLoading] = useState(false);
 
+ const [halaman, setHalaman] = useState('pakan'); // Contoh state halaman
+
   // 2. Fungsi handle
-  const handleUpdatePakan = async () => {
-    setLoading(true);
-    console.log("Data yang dikirim:", data); 
-    // Di sini nanti Anda isi logika Supabase
-    setLoading(false); // Jangan lupa matikan loading setelah selesai
+  const handleUpdatePakan = async () => { /* ... */ };
   };
-}
+
 
 return (
   <div style={styles.container}>
