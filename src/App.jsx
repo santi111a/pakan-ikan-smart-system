@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -11,7 +12,6 @@ function App() {
     durasi: 5
   });
   const [loading, setLoading] = useState(true);
- 
 
   // Efek untuk mengubah warna latar belakang seluruh halaman
   useEffect(() => {
@@ -66,25 +66,12 @@ function App() {
   if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
 
   return (
-<div style={containerStyle}>
-    {/* 1. HEADER & NAVIGASI */}
-    <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-      <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
-      <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
-    </div>
-
-    {/* 2. KONTEN BERDASARKAN HALAMAN AKTIF */}
-    {activePage === 'beranda' ? (
-      <div style={{ textAlign: 'center', padding: '20px', color: '#f1f5f9' }}>
-        <h3>Status Alat</h3>
-        <p>Sistem dalam kondisi: <span style={{color: '#10b981'}}>Online</span></p>
-        <div style={{ fontSize: '3rem', marginTop: '20px' }}>🏠</div>
-        <p style={{ fontSize: '0.9rem', color: '#94a3b8' }}>Selamat datang di dashboard Smart Farming. Gunakan menu pengaturan untuk mengubah jadwal pakan.</p>
+    <div style={containerStyle}>
+      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
+        <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
       </div>
-    ) : (
 
-/* --- INI ADALAH FORM PENGATURAN ANDA --- */
-      <div>
       <div style={{ marginBottom: '20px' }}>
         <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>RENTANG TANGGAL</label>
         <div style={{ display: 'flex', gap: '10px' }}>
@@ -118,8 +105,7 @@ function App() {
 
       <button style={buttonStyle} onClick={handleUpdate}>SIMPAN PENGATURAN</button>
     </div>
-    )}
-    </div>
-    );
-  }
+  );
+}
+
 export default App;
