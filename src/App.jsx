@@ -3,8 +3,23 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
-const handleUpdatePakan = async () => {
-    setLoading(true);
+function App() {
+  // 2. Definisikan semua State di sini agar tidak "Undefined"
+  const [data, setData] = useState({ 
+    Jadwal: '', end_date: '', jam_pagi: 0, menit_pagi: 0, 
+    jam_sore: 0, menit_sore: 0, durasi_detik: 0, wifi_ssid: '' 
+  });
+  const [listPakan, setListPakan] = useState([]);
+  const [listJurnal, setListJurnal] = useState([]);
+  const [listAir, setListAir] = useState([]);
+  const [listHidro, setListHidro] = useState([]);
+  const [halaman, setHalaman] = useState('beranda');
+  const [loading, setLoading] = useState(false);
+
+  // 3. Tambahkan fungsi handle di sini
+  const handleUpdatePakan = async () => {
+    // ... logika update Supabase Anda
+  };
 
   try {
     // 1. Mapping state ke nama kolom di Supabase
