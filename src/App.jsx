@@ -9,6 +9,28 @@ function App() {
   const [data, setData] = useState({ tglMulai: 1, tglSelesai: 30, jamPagi: 8, menitPagi: 0, jamSore: 17, menitSore: 0, durasi: 5 });
   const [loading, setLoading] = useState(false);
 
+  // --- LETAKKAN handleSimpan DI SINI ---
+  const handleSimpan = async () => {
+    setLoading(true);
+    const { error } = await supabase
+      .from('jadwal_pakan')
+      .update({ 
+        jam_pagi: parseInt(data.jamPagi), 
+        menit_pagi: parseInt(data.menitPagi),
+        jam_sore: parseInt(data.jamSore),
+        menit_sore: parseInt(data.menitSore),
+        durasi_detik: parseInt(data.durasi)
+      })
+      .eq('pengenal', 1);
+
+    if (error) {
+      alert("Gagal simpan: " + error.message);
+    } else {
+      alert("Data berhasil tersimpan di Cloud!");
+    }
+    setLoading(false);
+  };
+  
   // Styling
   const containerStyle = { maxWidth: '400px', margin: '20px auto', padding: '20px', backgroundColor: '#1e293b', borderRadius: '20px', color: '#f1f5f9' };
   const inputStyle = { width: '100%', padding: '12px', borderRadius: '10px', backgroundColor: '#0f172a', color: '#fff', border: '1px solid #334155' };
