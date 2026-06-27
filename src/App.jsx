@@ -13,14 +13,6 @@ function App() {
     menit_sore: 0, 
     durasi_detik: 0 
   });
-  
-  // 2. SEMUA State harus di dalam App()
-  const [listPakan, setListPakan] = useState([]);
-  const [listJurnal, setListJurnal] = useState([]);
-  const [listAir, setListAir] = useState([]);
-  const [listHidro, setListHidro] = useState([]);
-  const [halaman, setHalaman] = useState('beranda');
-  const [data, setData] = useState({ jam_pagi: 0 }); 
 
   // 3. Fungsi handle
   const handleUpdatePakan = async () => {
