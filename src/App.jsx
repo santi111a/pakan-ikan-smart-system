@@ -85,7 +85,7 @@ function App() {
     borderRadius: '10px', 
     cursor: 'pointer' 
   });
-  
+
   if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
 
   return (
@@ -96,11 +96,18 @@ function App() {
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
       </div>
 
-      {/* MENU NAVIGASI */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
-        <button style={navButtonStyle('beranda')} onClick={() => setActivePage('beranda')}>BERANDA</button>
-        <button style={navButtonStyle('pengaturan')} onClick={() => setActivePage('pengaturan')}>PENGATURAN</button>
-      </div>
+      {/* --- MENU NAVIGASI --- */}
+<div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
+  <button 
+    style={navButtonStyle('beranda')} 
+    onClick={() => setActivePage('beranda')} // Tetap untuk Beranda
+  >BERANDA</button>
+  
+  <button 
+    style={navButtonStyle('pengaturan')} 
+    onClick={() => setActivePage('pengaturan')} // Untuk Pengaturan
+  >PENGATURAN</button>
+</div>
 
       {/* KONTEN BERDASARKAN HALAMAN */}
       {activePage === 'beranda' ? (
