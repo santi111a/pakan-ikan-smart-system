@@ -4,6 +4,16 @@ import { createClient } from '@supabase/supabase-js';
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
 function App() {
+  const [data, setData] = useState({ 
+    Jadwal: '', 
+    end_date: '', 
+    jam_pagi: 0, 
+    menit_pagi: 0, 
+    jam_sore: 0, 
+    menit_sore: 0, 
+    durasi_detik: 0 
+  });
+  
   // 2. SEMUA State harus di dalam App()
   const [listPakan, setListPakan] = useState([]);
   const [listJurnal, setListJurnal] = useState([]);
@@ -14,7 +24,10 @@ function App() {
 
   // 3. Fungsi handle
   const handleUpdatePakan = async () => {
-    // isi fungsi anda
+    setLoading(true);
+    // Sekarang 'data' di bawah ini sudah dikenal oleh JavaScript
+    console.log("Data yang dikirim:", data); 
+    // ... sisa kode Anda
   };
 
 return (
