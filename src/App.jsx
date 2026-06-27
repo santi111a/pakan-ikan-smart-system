@@ -3,6 +3,56 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
+const styles = {
+  header: { 
+    padding: '20px', 
+    borderBottom: '1px solid #1e293b', 
+    textAlign: 'center', 
+    background: '#0f172a', 
+    position: 'sticky', 
+    top: 0, 
+    zIndex: 10 
+  },
+  dashboardContainer: { maxWidth: '500px', margin: '0 auto', padding: '15px' },
+  menuGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' },
+  menuCard: { 
+    background: '#1e293b', 
+    padding: '20px', 
+    borderRadius: '20px', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center', 
+    cursor: 'pointer', 
+    border: '1px solid #334155', 
+    transition: '0.2s' 
+  },
+  iconCircle: { fontSize: '32px', marginBottom: '10px' },
+  menuLabel: { fontSize: '14px', fontWeight: 'bold' },
+  subLabel: { fontSize: '11px', color: '#94a3b8', marginTop: '5px' },
+  
+  // Form & Inputs
+  formContainer: { background: '#1e293b', padding: '25px', borderRadius: '20px', maxWidth: '400px', margin: '0 auto' },
+  inputStyle: { 
+    background: '#0f172a', 
+    border: '1px solid #334155', 
+    padding: '12px', 
+    borderRadius: '8px', 
+    color: '#38bdf8', 
+    width: '100%', 
+    boxSizing: 'border-box' // Penting untuk layout
+  },
+  labelStyle: { fontSize: '11px', color: '#64748b', fontWeight: 'bold', display: 'block', marginBottom: '5px' },
+  updateBtnStyle: { width: '100%', background: '#0ea5e9', color: 'white', border: 'none', padding: '14px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' },
+  backBtnStyle: { background: '#1e293b', border: '1px solid #334155', color: '#38bdf8', padding: '12px', borderRadius: '10px', marginBottom: '20px', cursor: 'pointer', width: '100%' },
+  
+  // Data Presentation
+  jurnalBox: { background: '#1e293b', padding: '25px', borderRadius: '20px', marginBottom: '20px' },
+  historyBox: { background: '#1e293b', padding: '15px', borderRadius: '20px', overflowX: 'auto' },
+  tableStyle: { width: '100%', borderCollapse: 'collapse' },
+  thStyle: { padding: '12px', color: '#94a3b8', fontSize: '12px', textTransform: 'uppercase', textAlign: 'left' },
+  tdStyle: { padding: '12px', fontSize: '14px', color: '#e2e8f0', borderBottom: '1px solid #334155' }
+};
+
 function App() {
   const [data, setData] = useState({ 
     Jadwal: '', 
@@ -14,6 +64,7 @@ function App() {
     durasi_detik: 0 
   });
 
+const [wifiInput, setWifiInput] = useState({ ssid: '', pass: '' });
   const [listPakan, setListPakan] = useState([]);
   const [listJurnal, setListJurnal] = useState([]);
   const [listAir, setListAir] = useState([]);
@@ -21,12 +72,24 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [halaman, setHalaman] = useState('beranda');
 
-  // 2. FUNGSI LOGIKA (Contoh)
-  const handleUpdatePakan = async () => {
+  // --- LOGIKA ---
+  const handleUpdateWifi = async () => {
     setLoading(true);
-    // Masukkan logika supabase di sini
+    // Masukkan aksi Supabase Anda di sini
+    setData(prev => ({ ...prev, wifi_ssid: wifiInput.ssid }));
+    alert("WiFi Berhasil Diperbarui!");
     setLoading(false);
   };
+
+  const menuItems = [
+    { id: 'pakan', label: 'Jadwal Pakan', icon: '🐟', sub: `Pagi ${data.jam_pagi}:${data.menit_pagi}` },
+    { id: 'takaran', label: 'Takaran Pakan', icon: '⚖️', sub: `${listPakan.length} Log` },
+    { id: 'wifi', label: 'Set WiFi', icon: '📶', sub: data.wifi_ssid || 'Belum Set' },
+    { id: 'log', label: 'Jurnal Ikan', icon: '📓', sub: `${listJurnal.length} Catatan` },
+    { id: 'air', label: 'Log Air', icon: '💧', sub: listAir[0]?.kondisiAir || 'N/A' },
+    { id: 'hidroponik', label: 'Hidroponik', icon: '🌱', sub: `${listHidro.length} Data` },
+  ];
+
 
 return (
   <div style={styles.container}>
@@ -38,10 +101,20 @@ return (
     </header>
 
     <main style={styles.mainContent}>
-      {/* Konten dashboard Anda (tabel/form) akan diletakkan di sini */}
-    </main>
-  </div>
-);
+        {halaman === 'beranda' && (
+          <div style={styles.dashboardContainer}>
+            <div style={styles.menuGrid}>
+              {menuItems.map((item) => (
+                <div key={item.id} onClick={() => setHalaman(item.id)} style={styles.menuCard}>
+                  <div style={{ fontSize: '30px' }}>{item.icon}</div>
+                  <div style={{ fontWeight: 'bold' }}>{item.label}</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8' }}>{item.sub}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        </main>
 
 // 1. Definisikan konfigurasi menu di luar komponen atau di bagian atas
 
@@ -131,6 +204,7 @@ return (
     </div>
   </div>
 )}
+
           {halaman === 'takaran' && (
   <div style={styles.detailContainer}>
     <h2 style={{ color: '#38bdf8', marginBottom: '20px', textAlign: 'center' }}>
@@ -446,56 +520,7 @@ return (
     </button>
   </div>
 )}
-
-const styles = {
-  header: { 
-    padding: '20px', 
-    borderBottom: '1px solid #1e293b', 
-    textAlign: 'center', 
-    background: '#0f172a', 
-    position: 'sticky', 
-    top: 0, 
-    zIndex: 10 
-  },
-  dashboardContainer: { maxWidth: '500px', margin: '0 auto', padding: '15px' },
-  menuGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' },
-  menuCard: { 
-    background: '#1e293b', 
-    padding: '20px', 
-    borderRadius: '20px', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    alignItems: 'center', 
-    cursor: 'pointer', 
-    border: '1px solid #334155', 
-    transition: '0.2s' 
-  },
-  iconCircle: { fontSize: '32px', marginBottom: '10px' },
-  menuLabel: { fontSize: '14px', fontWeight: 'bold' },
-  subLabel: { fontSize: '11px', color: '#94a3b8', marginTop: '5px' },
-  
-  // Form & Inputs
-  formContainer: { background: '#1e293b', padding: '25px', borderRadius: '20px', maxWidth: '400px', margin: '0 auto' },
-  inputStyle: { 
-    background: '#0f172a', 
-    border: '1px solid #334155', 
-    padding: '12px', 
-    borderRadius: '8px', 
-    color: '#38bdf8', 
-    width: '100%', 
-    boxSizing: 'border-box' // Penting untuk layout
-  },
-  labelStyle: { fontSize: '11px', color: '#64748b', fontWeight: 'bold', display: 'block', marginBottom: '5px' },
-  updateBtnStyle: { width: '100%', background: '#0ea5e9', color: 'white', border: 'none', padding: '14px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' },
-  backBtnStyle: { background: '#1e293b', border: '1px solid #334155', color: '#38bdf8', padding: '12px', borderRadius: '10px', marginBottom: '20px', cursor: 'pointer', width: '100%' },
-  
-  // Data Presentation
-  jurnalBox: { background: '#1e293b', padding: '25px', borderRadius: '20px', marginBottom: '20px' },
-  historyBox: { background: '#1e293b', padding: '15px', borderRadius: '20px', overflowX: 'auto' },
-  tableStyle: { width: '100%', borderCollapse: 'collapse' },
-  thStyle: { padding: '12px', color: '#94a3b8', fontSize: '12px', textTransform: 'uppercase', textAlign: 'left' },
-  tdStyle: { padding: '12px', fontSize: '14px', color: '#e2e8f0', borderBottom: '1px solid #334155' }
-};
-};
-
+  </div>
+);
+}
 export default styles;
