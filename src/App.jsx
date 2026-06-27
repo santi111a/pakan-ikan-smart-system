@@ -4,49 +4,26 @@ import { createClient } from '@supabase/supabase-js';
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
 function App() {
-  // 1. DEFINISIKAN SEMUA STATE DI SINI
-  const [halaman, setHalaman] = useState('beranda');
-  const [data, setData] = useState({ /* ... inisialisasi data Anda ... */ });
-  const [loading, setLoading] = useState(false);
-  
-  // Variabel yang menyebabkan error harus didefinisikan di sini!
-  const [listPakan, setListPakan] = useState([]);
+  // 1. Definisikan SEMUA state di sini
+  const [listPakan, setListPakan] = useState([]); // <--- INI YANG KURANG
   const [listJurnal, setListJurnal] = useState([]);
   const [listAir, setListAir] = useState([]);
   const [listHidro, setListHidro] = useState([]);
-  const [wifiInput, setWifiInput] = useState({ ssid: '', pass: '' });
-  const [pakanInput, setPakanInput] = useState({ namaIkan: '', usiaIkan: '', ukuranIkan: '', takaranPakan: '', durasiKipas: '', durasiGanti: '' });
+  const [halaman, setHalaman] = useState('beranda');
+  const [data, setData] = useState({ /* ... data Anda ... */ });
+  // ... state lainnya
 
-  // 2. FUNGSI HANDLE DI SINI
-  const handleUpdatePakan = async () => { /* ... */ };
-  const handleSimpanTakaranPakan = async () => { /* ... */ };
-// 1. Definisikan style di luar fungsi komponen agar bersih
-const styles = {
-  detailContainer: {
-    animation: 'fadeIn 0.3s ease-in-out',
-    maxWidth: '600px', // Dibatasi agar tidak terlalu lebar di layar besar
-    margin: '0 auto',
-    padding: '20px',
+  // 2. Jika Anda memanggil data dari Supabase, pastikan ada useEffect
+  useEffect(() => {
+    // Contoh cara mengisi listPakan dari database
+    const fetchData = async () => {
+      const { data, error } = await supabase.from('nama_tabel_pakan').select('*');
+      if (data) setListPakan(data);
+    };
+    fetchData();
   },
-  backBtn: {
-    background: 'transparent',
-    color: '#38bdf8',
-    border: '1px solid #38bdf8',
-    padding: '8px 16px',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    marginBottom: '20px',
-    fontWeight: 'bold',
-    transition: 'all 0.2s',
-  },
-  contentArea: {
-    backgroundColor: '#1e293b', // Warna background card yang sedikit lebih terang
-    padding: '20px',
-    borderRadius: '12px',
-    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-  }
+  []);
 }
-};
 
   
   // 2. Implementasi dalam return
