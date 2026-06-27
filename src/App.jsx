@@ -4,29 +4,19 @@ import { createClient } from '@supabase/supabase-js';
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
 function App() {
-  // 1. Definisikan SEMUA state di sini
-  const [listPakan, setListPakan] = useState([]); // <--- INI YANG KURANG
+  // 2. SEMUA State harus di dalam App()
+  const [listPakan, setListPakan] = useState([]);
   const [listJurnal, setListJurnal] = useState([]);
   const [listAir, setListAir] = useState([]);
   const [listHidro, setListHidro] = useState([]);
   const [halaman, setHalaman] = useState('beranda');
-  const [data, setData] = useState({ /* ... data Anda ... */ });
-  // ... state lainnya
+  const [data, setData] = useState({ jam_pagi: 0 }); 
 
-  // 2. Jika Anda memanggil data dari Supabase, pastikan ada useEffect
-  useEffect(() => {
-    // Contoh cara mengisi listPakan dari database
-    const fetchData = async () => {
-      const { data, error } = await supabase.from('nama_tabel_pakan').select('*');
-      if (data) setListPakan(data);
-    };
-    fetchData();
-  },
-  []);
-}
+  // 3. Fungsi handle
+  const handleUpdatePakan = async () => {
+    // isi fungsi anda
+  };
 
-  
-  // 2. Implementasi dalam return
 return (
   <div style={styles.container}>
     {/* --- HEADER --- */}
@@ -41,6 +31,7 @@ return (
     </main>
   </div>
 );
+}
 // 1. Definisikan konfigurasi menu di luar komponen atau di bagian atas
 const menuItems = [
   { id: 'pakan', label: 'Jadwal Pakan', icon: '🐟', sub: `Pagi ${data.jam_pagi}:${data.menit_pagi}` },
