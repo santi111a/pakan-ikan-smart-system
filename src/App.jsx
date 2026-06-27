@@ -112,7 +112,6 @@ function App() {
     color: '#38BDF8' // Warna biru muda sesuai gambar
   }}>
 
-      PENGATURAN PAKAN
     <h2 style={{ marginBottom: '25px' }}>Pengaturan Pakan</h2>
 
     {/* Rentang Tanggal */}
