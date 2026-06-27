@@ -3,370 +3,760 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
-function App() {
-  const [halaman, setHalaman] = useState('beranda');
-  const [data, setData] = useState({ tglMulai: 1, tglSelesai: 30, jamPagi: 8, menitPagi: 0, jamSore: 17, menitSore: 0, durasi: 5 });
-  const [loading, setLoading] = useState(false);
+const handleUpdatePakan = async () => {
+    setLoading(true);
 
-   // --- FUNGSI SIMPAN & UPDATE ---
- // 2. Fungsi khusus Update Jadwal Pakan
-const handleUpdatePakan = () => {
-  update(ref(db, '/'), {
+  try {
+    // 1. Mapping state ke nama kolom di Supabase
+    const payload = {
+      jadwal: Number(data.tglMulai),       // sesuaikan dengan nama kolom di DB
+      end_date: Number(data.tglSelesai),
+      jam_pagi: Number(data.jamPagi),
+      menit_pagi: Number(data.menitPagi),
+      jam_sore: Number(data.jamSore),
+      menit_sore: Number(data.menitSore),
+      durasi_detik: Number(data.durasi),
+    };
 
-      // 1. RENTANG TANGGAL (Paling Atas)
-    Jadwal: Number(data.Jadwal), 
-    end_date: Number(data.end_date),
+    // 2. Kirim ke Supabase
+    // Asumsi: Tabel bernama 'pengaturan_pakan' dan kita update baris dengan ID 1
+    const { error } = await supabase
+      .from('pengaturan_pakan') 
+      .update(payload)
+      .eq('id', 1); // Ganti dengan ID atau kondisi yang sesuai
 
-    // 2. JADWAL PAGI
-    jam_pagi: Number(data.jam_pagi), 
-    menit_pagi: Number(data.menit_pagi),
+    if (error) throw error;
 
-    // 3. JADWAL SORE
-    jam_sore: Number(data.jam_sore), 
-    menit_sore: Number(data.menit_sore),
-
-    // 4. DURASI
-    durasi_detik: Number(data.durasi_detik)
-    }).then(() => alert("✅ Pengaturan Pakan Diperbarui!"));
-  };
-
- const handleUpdateWifi = () => {
-    if (!wifiInput.ssid || !wifiInput.pass) return alert("Isi SSID dan Password WiFi!");
-    update(ref(db, '/'), { 
-      wifi_ssid: wifiInput.ssid, 
-      wifi_pass: wifiInput.pass 
-    }).then(() => {
-      alert("✅ Kredensial WiFi Terkirim! ESP32 akan mencoba menyambung ulang.");
-
-      setWifiInput({ ssid: '', pass: '' });
-    }).catch((err) => alert("Gagal: " + err.message));
-  };
-
-  const handleSimpanJurnalIkan = () => {
-    if (!jurnalInput.tglBibit) return alert("Pilih tanggal!");
-    push(ref(db, 'jurnal_harian'), jurnalInput).then(() => {
-      alert("✅ Jurnal Ikan Tersimpan!");
-      setJurnalInput({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
-    });
-  };
-
-const handleSimpanAir = () => {
-    if (!airInput.tglKuras) return alert("Pilih tanggal!");
-    push(ref(db, 'log_pengurasan'), airInput).then(() => {
-      alert("✅ Log Air Tersimpan!");
-      setAirInput({ tglKuras: '', kondisiAir: '', keterangan: '' });
-    });
-  };
-
-  const handleSimpanHidro = () => {
-    if (!hidroInput.tglTanam || !hidroInput.namaTanaman) return alert("Isi tanggal dan nama tanaman!");
-    push(ref(db, 'jurnal_hidroponik'), hidroInput).then(() => {
-      alert("✅ Data Hidroponik Tersimpan!");
-      setHidroInput({ tglTanam: '', namaTanaman: '', jumlahPanen: '', hargaJual: '' });
-    });
-  };
-
-  const handleSimpanTakaranPakan = () => {
-    if (!pakanInput.namaIkan || !pakanInput.takaranPakan) return alert("Lengkapi data pakan!");
-    push(ref(db, 'jurnal_pakan'), pakanInput).then(() => {
-      alert("✅ Jurnal Takaran Pakan Tersimpan!");
-      setPakanInput({ namaIkan: '', usiaIkan: '', ukuranIkan: '', takaranPakan: '', durasiKipas: '', durasiGanti: '' });
-    });
-  };
-
-  // Tambahkan fungsi ini
-const handleManualPakan = () => {
-  // Mengirim perintah "ON" ke Firebase agar ESP32 membacanya
-  update(ref(db, 'manual'), {
-    status: 'ON'
-  }).then(() => {
-    alert("✅ Perintah Manual Dikirim!");
-  });
+    alert("✅ Pengaturan Pakan Diperbarui!");
+    
+  } catch (error) {
+    console.error("Error:", error.message);
+    alert("❌ Gagal memperbarui: " + error.message);
+  } finally {
+    setLoading(false);
+  }
 };
 
+ const handleUpdateWifi = async () => {
+  // 1. Validasi input
+  if (!wifiInput.ssid || !wifiInput.pass) {
+    return alert("Isi SSID dan Password WiFi!");
+  }
 
-  // Styling
-  const containerStyle = { maxWidth: '400px', margin: '20px auto', padding: '20px', backgroundColor: '#1e293b', borderRadius: '20px', color: '#f1f5f9' };
-  const inputStyle = { width: '100%', padding: '12px', borderRadius: '10px', backgroundColor: '#0f172a', color: '#fff', border: '1px solid #334155' };
-  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', marginTop: '10px', cursor: 'pointer' };
+  setLoading(true); // Pastikan ada state loading untuk UI
 
-  return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: 'white', fontFamily: 'sans-serif' }}>
-      
-      {/* --- HEADER --- */}
-      <div style={headerStyle}>
-        <h2 style={{ color: '#38bdf8', margin: 0, fontSize: '20px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-          Smart Farming KSTM AL IHYA
-        </h2>
-      </div>
+  try {
+    // 2. Kirim ke Supabase
+    // Asumsi: Nama tabel Anda adalah 'pengaturan_wifi'
+    const { error } = await supabase
+      .from('pengaturan_wifi')
+      .update({
+        wifi_ssid: wifiInput.ssid,
+        wifi_pass: wifiInput.pass
+      })
+      .eq('id', 1); // Wajib ada filter/kondisi baris mana yang diupdate
 
-      <div style={{ padding: '15px' }}>
-        
+    if (error) throw error;
+
+    // 3. Jika berhasil
+    alert("✅ Kredensial WiFi Terkirim! ESP32 akan mencoba menyambung ulang.");
+    setWifiInput({ ssid: '', pass: '' });
+
+  } catch (err) {
+    console.error("Error updating WiFi:", err.message);
+    alert("❌ Gagal memperbarui WiFi: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+ const handleSimpanJurnalIkan = async () => {
+  // 1. Validasi input
+  if (!jurnalInput.tglBibit) {
+    return alert("Pilih tanggal!");
+  }
+
+  setLoading(true); // Aktifkan indikator loading
+
+  try {
+    // 2. Kirim data ke Supabase
+    // Asumsi: Nama tabel Anda adalah 'jurnal_harian'
+    const { error } = await supabase
+      .from('jurnal_harian')
+      .insert([
+        {
+          tgl_bibit: jurnalInput.tglBibit,
+          jumlah_ikan: Number(jurnalInput.jumlahIkan),
+          ukuran_bibit: Number(jurnalInput.ukuranBibit),
+          tgl_sortir: jurnalInput.tglSortir
+        }
+      ]);
+
+    if (error) throw error;
+
+    // 3. Jika berhasil
+    alert("✅ Jurnal Ikan Tersimpan!");
+    setJurnalInput({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
+
+  } catch (err) {
+    console.error("Error menyimpan jurnal:", err.message);
+    alert("❌ Gagal menyimpan: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleSimpanAir = async () => {
+  // 1. Validasi input
+  if (!airInput.tglKuras) {
+    return alert("Pilih tanggal!");
+  }
+
+  setLoading(true);
+
+  try {
+    // 2. Kirim data ke tabel 'log_pengurasan'
+    const { error } = await supabase
+      .from('log_pengurasan')
+      .insert([
+        {
+          tgl_kuras: airInput.tglKuras,
+          kondisi_air: airInput.kondisiAir,
+          keterangan: airInput.keterangan
+        }
+      ]);
+
+    if (error) throw error;
+
+    // 3. Jika berhasil
+    alert("✅ Log Air Tersimpan!");
+    setAirInput({ tglKuras: '', kondisiAir: '', keterangan: '' });
+    
+  } catch (err) {
+    console.error("Error menyimpan log air:", err.message);
+    alert("❌ Gagal menyimpan log: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+ const handleSimpanHidro = async () => {
+  // 1. Validasi input
+  if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
+    return alert("Isi tanggal dan nama tanaman!");
+  }
+
+  setLoading(true);
+
+  try {
+    // 2. Kirim data ke tabel 'jurnal_hidroponik'
+    const { error } = await supabase
+      .from('jurnal_hidroponik')
+      .insert([
+        {
+          tgl_tanam: hidroInput.tglTanam,
+          nama_tanaman: hidroInput.namaTanaman,
+          jumlah_panen: Number(hidroInput.jumlahPanen),
+          harga_jual: Number(hidroInput.hargaJual)
+        }
+      ]);
+
+    if (error) throw error;
+
+    // 3. Jika berhasil
+    alert("✅ Data Hidroponik Tersimpan!");
+    setHidroInput({ 
+      tglTanam: '', 
+      namaTanaman: '', 
+      jumlahPanen: '', 
+      hargaJual: '' 
+    });
+
+  } catch (err) {
+    console.error("Error menyimpan hidroponik:", err.message);
+    alert("❌ Gagal menyimpan: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const handleSimpanTakaranPakan = async () => {
+  // 1. Validasi Input
+  if (!pakanInput.namaIkan || !pakanInput.takaranPakan) {
+    return alert("Lengkapi data pakan!");
+  }
+
+  setLoading(true);
+
+  try {
+    // 2. Kirim data ke Supabase
+    // Pastikan nama kolom di bawah sesuai dengan yang ada di tabel 'jurnal_pakan'
+    const { error } = await supabase
+      .from('jurnal_pakan')
+      .insert([
+        {
+          nama_ikan: pakanInput.namaIkan,
+          usia_ikan: Number(pakanInput.usiaIkan),
+          ukuran_ikan: Number(pakanInput.ukuranIkan),
+          takaran_pakan: Number(pakanInput.takaranPakan),
+          durasi_kipas: Number(pakanInput.durasiKipas),
+          durasi_ganti: Number(pakanInput.durasiGanti),
+          created_at: new Date() // Opsional: untuk mencatat waktu input
+        }
+      ]);
+
+    if (error) throw error;
+
+    // 3. Jika berhasil
+    alert("✅ Jurnal Takaran Pakan Tersimpan!");
+    
+    // Reset state input
+    setPakanInput({ 
+      namaIkan: '', 
+      usiaIkan: '', 
+      ukuranIkan: '', 
+      takaranPakan: '', 
+      durasiKipas: '', 
+      durasiGanti: '' 
+    });
+
+  } catch (err) {
+    console.error("Error menyimpan ke Supabase:", err.message);
+    alert("❌ Gagal menyimpan data: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+ const handleManualPakan = async () => {
+  setLoading(true);
+
+  try {
+    // Mengupdate status menjadi 'ON' di tabel 'kontrol_manual'
+    // Asumsi: Kita memiliki tabel bernama 'kontrol_manual' dengan ID 1
+    const { error } = await supabase
+      .from('kontrol_manual')
+      .update({ status: 'ON' })
+      .eq('id', 1);
+
+    if (error) throw error;
+
+    alert("✅ Perintah Manual Dikirim!");
+
+    // Opsional: Jika ingin status kembali ke 'OFF' otomatis setelah 2 detik
+    // setTimeout(() => {
+    //   supabase.from('kontrol_manual').update({ status: 'OFF' }).eq('id', 1);
+    // }, 2000);
+
+  } catch (err) {
+    console.error("Error mengirim perintah:", err.message);
+    alert("❌ Gagal mengirim perintah: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+// 1. Definisikan style di luar fungsi komponen agar bersih
+const styles = {
+  detailContainer: {
+    animation: 'fadeIn 0.3s ease-in-out',
+    maxWidth: '600px', // Dibatasi agar tidak terlalu lebar di layar besar
+    margin: '0 auto',
+    padding: '20px',
+  },
+  backBtn: {
+    background: 'transparent',
+    color: '#38bdf8',
+    border: '1px solid #38bdf8',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    marginBottom: '20px',
+    fontWeight: 'bold',
+    transition: 'all 0.2s',
+  },
+  contentArea: {
+    backgroundColor: '#1e293b', // Warna background card yang sedikit lebih terang
+    padding: '20px',
+    borderRadius: '12px',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+  }
+};
+
+  
+  // 2. Implementasi dalam return
+return (
+  <div style={styles.container}>
+    {/* --- HEADER --- */}
+    <header style={styles.header}>
+      <h2 style={styles.headerTitle}>
+        Smart Farming KSTM AL IHYA
+      </h2>
+    </header>
+
+    <main style={styles.mainContent}>
+      {/* Konten dashboard Anda (tabel/form) akan diletakkan di sini */}
+    </main>
+  </div>
+);
+// 1. Definisikan konfigurasi menu di luar komponen atau di bagian atas
+const menuItems = [
+  { id: 'pakan', label: 'Jadwal Pakan', icon: '🐟', sub: `Pagi ${data.jam_pagi}:${data.menit_pagi}` },
+  { id: 'takaran', label: 'Takaran Pakan', icon: '⚖️', sub: `${listPakan.length} Log` },
+  { id: 'wifi', label: 'Set WiFi', icon: '📶', sub: data.wifi_ssid || 'Belum Set' },
+  { id: 'log', label: 'Jurnal Ikan', icon: '📓', sub: `${listJurnal.length} Catatan` },
+  { id: 'air', label: 'Log Air', icon: '💧', sub: listAir[0]?.kondisiAir || 'N/A' },
+  { id: 'hidroponik', label: 'Hidroponik', icon: '🌱', sub: `${listHidro.length} Data` },
+];
         {/* --- DASHBOARD UTAMA --- */}
         {halaman === 'beranda' && (
           <div style={dashboardContainer}>
-            <div style={menuGrid}>
-              <div onClick={() => setHalaman('pakan')} style={menuCard}>
-                <div style={iconCircle}>🐟</div>
-                <span style={menuLabel}>Jadwal Pakan</span>
-                <span style={subLabel}>Pagi {data.jam_pagi}:{data.menit_pagi}</span>
-              </div>
-              <div onClick={() => setHalaman('takaran')} style={menuCard}>
-                <div style={iconCircle}>⚖️</div>
-                <span style={menuLabel}>Takaran Pakan</span>
-                <span style={subLabel}>{listPakan.length} Log</span>
-              </div>
-              <div onClick={() => setHalaman('wifi')} style={menuCard}>
-                <div style={iconCircle}>📶</div>
-                <span style={menuLabel}>Set WiFi</span>
-                <span style={subLabel}>{data.wifi_ssid || 'Belum Set'}</span>
-              </div>
-              <div onClick={() => setHalaman('log')} style={menuCard}>
-                <div style={iconCircle}>📓</div>
-                <span style={menuLabel}>Jurnal Ikan</span>
-                <span style={subLabel}>{listJurnal.length} Catatan</span>
-              </div>
-              <div onClick={() => setHalaman('air')} style={menuCard}>
-                <div style={iconCircle}>💧</div>
-                <span style={menuLabel}>Log Air</span>
-                <span style={subLabel}>{listAir[0]?.kondisiAir || 'N/A'}</span>
-              </div>
-              <div onClick={() => setHalaman('hidroponik')} style={menuCard}>
-                <div style={iconCircle}>🌱</div>
-                <span style={menuLabel}>Hidroponik</span>
-                <span style={subLabel}>{listHidro.length} Data</span>
-              </div>
-            </div>
-          </div>
-        )}
+    <div style={menuGrid}>
+      {menuItems.map((item) => (
+        <div 
+          key={item.id} 
+          onClick={() => setHalaman(item.id)} 
+          style={menuCard}
+        >
+          <div style={iconCircle}>{item.icon}</div>
+          <span style={menuLabel}>{item.label}</span>
+          <span style={subLabel}>{item.sub}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
         {/* --- AREA HALAMAN DETAIL --- */}
-        {halaman !== 'beranda' && (
-          <div style={{ animation: 'fadeIn 0.3s', maxWidth: '900px', margin: '0 auto' }}>
-            <button onClick={() => setHalaman('beranda')} style={backBtnStyle}>⬅ Kembali ke Dashboard</button>
+{halaman !== 'beranda' && (
+  <div style={styles.detailContainer}>
+    <button 
+      onClick={() => setHalaman('beranda')} 
+      style={styles.backBtn}
+    >
+      ⬅ Kembali ke Dashboard
+    </button>
+
+    <div style={styles.contentArea}>
+      {/* Di sini Anda bisa memanggil komponen berdasarkan 'halaman', 
+        contoh: halaman === 'pakan' && <FormPakan /> 
+      */}
+      <h2>Halaman {halaman.charAt(0).toUpperCase() + halaman.slice(1)}</h2>
+    </div>
+  </div>
+)}
+
 
             {/* HALAMAN PENGATURAN WIFI */}
-            {halaman === 'wifi' && (
-              <div style={formContainer}>
-                <h2 style={{ color: '#38bdf8', textAlign: 'center' }}>📶 Pengaturan WiFi Alat</h2>
-                <p style={{ fontSize: '12px', color: '#94a3b8', textAlign: 'center', marginBottom: '20px' }}>
-                  Update SSID dan Password agar alat (ESP32) dapat terhubung ke internet.
-                </p>
-                <div style={{marginBottom: '15px'}}>
-                   <label style={labelStyle}>NAMA WIFI (SSID)</label>
-                   <input type="text" placeholder="Masukkan SSID" value={wifiInput.ssid} onChange={(e)=>setWifiInput({...wifiInput, ssid: e.target.value})} style={inputStyle} />
-                </div>
-                <div style={{marginBottom: '15px'}}>
-                   <label style={labelStyle}>PASSWORD WIFI</label>
-                   <input type="password" placeholder="Masukkan Password" value={wifiInput.pass} onChange={(e)=>setWifiInput({...wifiInput, pass: e.target.value})} style={inputStyle} />
-                </div>
-                <button onClick={handleUpdateWifi} style={{...updateBtnStyle, background: '#10b981'}}>KIRIM KE ALAT</button>
-                <div style={{marginTop: '20px', padding: '10px', background: '#0f172a', borderRadius: '8px', textAlign: 'center'}}>
-                   <small style={{color: '#64748b'}}>SSID Saat Ini: </small>
-                   <span style={{color: '#38bdf8', fontWeight: 'bold'}}>{data.wifi_ssid || '-'}</span>
-                </div>
-              </div>
-            )}
+ {halaman === 'wifi' && (
+  <div style={styles.formContainer}>
+    <h2 style={{ color: '#38bdf8', textAlign: 'center', marginBottom: '10px' }}>
+      📶 Pengaturan WiFi Alat
+    </h2>
+    <p style={{ fontSize: '14px', color: '#94a3b8', textAlign: 'center', marginBottom: '25px' }}>
+      Update SSID dan Password agar alat (ESP32) dapat terhubung ke internet.
+    </p>
+    
+    {/* Menggunakan fungsi helper untuk input agar kode lebih bersih */}
+    <div style={styles.inputGroup}>
+      <label style={styles.labelStyle}>NAMA WIFI (SSID)</label>
+      <input 
+        type="text" 
+        name="ssid" 
+        placeholder="Masukkan SSID" 
+        value={wifiInput.ssid} 
+        onChange={(e) => setWifiInput(prev => ({ ...prev, ssid: e.target.value }))} 
+        style={styles.inputStyle} 
+      />
+    </div>
 
-            {/* HALAMAN TAKARAN PAKAN */}
-            {halaman === 'takaran' && (
-              <>
-                <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>⚖️ Jurnal Takaran Pakan</h2>
-                <div style={jurnalBox}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    <div><label style={labelStyle}>NAMA IKAN</label><input type="text" placeholder="Lele/Nila" value={pakanInput.namaIkan} onChange={(e) => setPakanInput({...pakanInput, namaIkan: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>USIA IKAN</label><input type="text" placeholder="Contoh: 2 Minggu" value={pakanInput.usiaIkan} onChange={(e) => setPakanInput({...pakanInput, usiaIkan: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>UKURAN IKAN (CM)</label><input type="text" placeholder="Contoh: 5-7 cm" value={pakanInput.ukuranIkan} onChange={(e) => setPakanInput({...pakanInput, ukuranIkan: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>TAKARAN PAKAN (GR/KG)</label><input type="text" placeholder="Contoh: 500 gr" value={pakanInput.takaranPakan} onChange={(e) => setPakanInput({...pakanInput, takaranPakan: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>DURASI KIPAS (DETIK)</label><input type="number" placeholder="Contoh: 30" value={pakanInput.durasiKipas} onChange={(e) => setPakanInput({...pakanInput, durasiKipas: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>DURASI GANTI TAKARAN</label><input type="text" placeholder="Contoh: 10 Hari Sekali" value={pakanInput.durasiGanti} onChange={(e) => setPakanInput({...pakanInput, durasiGanti: e.target.value})} style={inputStyle} /></div>
-                  </div>
-                  <button onClick={handleSimpanTakaranPakan} style={{...updateBtnStyle, background: '#10b981'}}>SIMPAN DATA TAKARAN</button>
-                </div>
-                <div style={historyBox}>
-                   <table style={tableStyle}>
-                     <thead><tr style={trHead}>
-                       <th style={thStyle}>Ikan</th>
-                       <th style={thStyle}>Usia/Size</th>
-                       <th style={thStyle}>Takaran</th>
-                       <th style={thStyle}>Kipas (Dtk)</th>
-                       <th style={thStyle}>Ganti Tiap</th>
-                     </tr></thead>
-                     <tbody>
-                       {listPakan.map((item) => (
-                         <tr key={item.id} style={trBody}>
-                           <td style={tdStyle}>{item.namaIkan}</td>
-                           <td style={tdStyle}>{item.usiaIkan} / {item.ukuranIkan}</td>
-                           <td style={tdStyle}>{item.takaranPakan}</td>
-                           <td style={tdStyle}>{item.durasiKipas}s</td>
-                           <td style={tdStyle}>{item.durasiGanti}</td>
-                         </tr>
-                       ))}
-                     </tbody>
-                   </table>
-                </div>
-              </>
-            )}
+    <div style={styles.inputGroup}>
+      <label style={styles.labelStyle}>PASSWORD WIFI</label>
+      <input 
+        type="password" 
+        placeholder="Masukkan Password" 
+        value={wifiInput.pass} 
+        onChange={(e) => setWifiInput(prev => ({ ...prev, pass: e.target.value }))} 
+        style={styles.inputStyle} 
+      />
+    </div>
 
-            {halaman === 'hidroponik' && (
-              <>
-                <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>🌱 Jurnal Hidroponik</h2>
-                <div style={jurnalBox}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px' }}>
-                    <div><label style={labelStyle}>TGL TANAM</label><input type="date" value={hidroInput.tglTanam} onChange={(e) => setHidroInput({...hidroInput, tglTanam: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>NAMA TANAMAN</label><input type="text" value={hidroInput.namaTanaman} onChange={(e) => setHidroInput({...hidroInput, namaTanaman: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>PANEN (KG)</label><input type="text" value={hidroInput.jumlahPanen} onChange={(e) => setHidroInput({...hidroInput, jumlahPanen: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>HARGA JUAL</label><input type="number" value={hidroInput.hargaJual} onChange={(e) => setHidroInput({...hidroInput, hargaJual: e.target.value})} style={inputStyle} /></div>
-                  </div>
-                  <button onClick={handleSimpanHidro} style={{...updateBtnStyle, background: '#10b981'}}>SIMPAN DATA HIDROPONIK</button>
-                </div>
-                <div style={historyBox}>
-                  <table style={tableStyle}>
-                    <thead><tr style={trHead}><th style={thStyle}>Tanggal</th><th style={thStyle}>Tanaman</th><th style={thStyle}>Panen</th><th style={thStyle}>Harga</th></tr></thead>
-                    <tbody>
-                      {listHidro.map((item) => (
-                        <tr key={item.id} style={trBody}>
-                          <td style={tdStyle}>{item.tglTanam}</td>
-                          <td style={tdStyle}>{item.namaTanaman}</td>
-                          <td style={tdStyle}>{item.jumlahPanen || '-'}</td>
-                          <td style={tdStyle}>{item.hargaJual ? `Rp ${Number(item.hargaJual).toLocaleString('id-ID')}` : '-'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
+    <button 
+      onClick={handleUpdateWifi} 
+      style={{ ...styles.updateBtnStyle, background: '#10b981', width: '100%', marginTop: '10px' }}
+    >
+      {loading ? "Menyimpan..." : "KIRIM KE ALAT"}
+    </button>
 
-            {halaman === 'air' && (
-              <>
-                <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>💧 Log Pengurasan Air</h2>
-                <div style={jurnalBox}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                    <div><label style={labelStyle}>TGL KURAS</label><input type="date" value={airInput.tglKuras} onChange={(e)=>setAirInput({...airInput, tglKuras: e.target.value})} style={inputStyle} /></div>
-                    <div><label style={labelStyle}>KONDISI</label><input type="text" placeholder="Hijau/Keruh" value={airInput.kondisiAir} onChange={(e)=>setAirInput({...airInput, kondisiAir: e.target.value})} style={inputStyle} /></div>
-                  </div>
-                  <div style={{marginTop: '15px'}}><label style={labelStyle}>KETERANGAN</label><input type="text" value={airInput.keterangan} onChange={(e)=>setAirInput({...airInput, keterangan: e.target.value})} style={inputStyle} /></div>
-                  <button onClick={handleSimpanAir} style={updateBtnStyle}>SIMPAN DATA AIR</button>
-                </div>
-                <div style={historyBox}>
-                   <table style={tableStyle}>
-                     <thead><tr style={trHead}><th style={thStyle}>Tanggal</th><th style={thStyle}>Kondisi</th><th style={thStyle}>Keterangan</th></tr></thead>
-                     <tbody>
-                       {listAir.map((item) => (
-                         <tr key={item.id} style={trBody}>
-                           <td style={tdStyle}>{item.tglKuras}</td>
-                           <td style={tdStyle}>{item.kondisiAir}</td>
-                           <td style={tdStyle}>{item.keterangan || '-'}</td>
-                         </tr>
-                       ))}
-                     </tbody>
-                   </table>
-                </div>
-              </>
-            )}
+    <div style={styles.infoBox}>
+      <small style={{ color: '#64748b' }}>SSID Saat Ini: </small>
+      <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>{data.wifi_ssid || 'Belum diatur'}</span>
+    </div>
+  </div>
+)}
+          {halaman === 'takaran' && (
+  <div style={styles.detailContainer}>
+    <h2 style={{ color: '#38bdf8', marginBottom: '20px', textAlign: 'center' }}>
+      ⚖️ Jurnal Takaran Pakan
+    </h2>
 
-            {halaman === 'log' && (
-              <>
-                <h2 style={{ color: '#38bdf8', marginBottom: '20px' }}>📝 Jurnal Budidaya Ikan</h2>
-                <div style={jurnalBox}>
-                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                     <div><label style={labelStyle}>TGL BIBIT</label><input type="date" value={jurnalInput.tglBibit} onChange={(e)=>setJurnalInput({...jurnalInput, tglBibit: e.target.value})} style={inputStyle} /></div>
-                     <div><label style={labelStyle}>JUMLAH</label><input type="number" value={jurnalInput.jumlahIkan} onChange={(e)=>setJurnalInput({...jurnalInput, jumlahIkan: e.target.value})} style={inputStyle} /></div>
-                     <div><label style={labelStyle}>UKURAN (CM)</label><input type="text" value={jurnalInput.ukuranBibit} onChange={(e)=>setJurnalInput({...jurnalInput, ukuranBibit: e.target.value})} style={inputStyle} /></div>
-                     <div><label style={labelStyle}>TGL SORTIR</label><input type="date" value={jurnalInput.tglSortir} onChange={(e)=>setJurnalInput({...jurnalInput, tglSortir: e.target.value})} style={inputStyle} /></div>
-                   </div>
-                   <button onClick={handleSimpanJurnalIkan} style={updateBtnStyle}>SIMPAN DATA IKAN</button>
-                </div>
-                <div style={historyBox}>
-                   <table style={tableStyle}>
-                     <thead><tr style={trHead}><th style={thStyle}>Tgl Bibit</th><th style={thStyle}>Jumlah</th><th style={thStyle}>Ukuran</th><th style={thStyle}>Tgl Sortir</th></tr></thead>
-                     <tbody>
-                       {listJurnal.map((item) => (
-                         <tr key={item.id} style={trBody}>
-                           <td style={tdStyle}>{item.tglBibit}</td>
-                           <td style={tdStyle}>{item.jumlahIkan}</td>
-                           <td style={tdStyle}>{item.ukuranBibit}</td>
-                           <td style={tdStyle}>{item.tglSortir}</td>
-                         </tr>
-                       ))}
-                     </tbody>
-                   </table>
-                </div>
-              </>
-            )}
+    {/* --- FORM INPUT --- */}
+    <div style={styles.jurnalBox}>
+      <div style={styles.inputGrid}>
+        {[
+          { label: 'NAMA IKAN', name: 'namaIkan', type: 'text', placeholder: 'Lele/Nila' },
+          { label: 'USIA IKAN', name: 'usiaIkan', type: 'text', placeholder: '2 Minggu' },
+          { label: 'UKURAN IKAN (CM)', name: 'ukuranIkan', type: 'text', placeholder: '5-7' },
+          { label: 'TAKARAN PAKAN (GR)', name: 'takaranPakan', type: 'number', placeholder: '500' },
+          { label: 'DURASI KIPAS (DETIK)', name: 'durasiKipas', type: 'number', placeholder: '30' },
+          { label: 'DURASI GANTI', name: 'durasiGanti', type: 'text', placeholder: '10 Hari' },
+        ].map((field) => (
+          <div key={field.name}>
+            <label style={styles.labelStyle}>{field.label}</label>
+            <input 
+              type={field.type} 
+              placeholder={field.placeholder} 
+              value={pakanInput[field.name]} 
+              onChange={(e) => setPakanInput(prev => ({ ...prev, [field.name]: e.target.value }))} 
+              style={styles.inputStyle} 
+            />
+          </div>
+        ))}
+      </div>
+      
+      <button 
+        onClick={handleSimpanTakaranPakan} 
+        style={{...styles.updateBtnStyle, background: '#10b981', marginTop: '20px', width: '100%'}}
+      >
+        {loading ? "Menyimpan..." : "SIMPAN DATA TAKARAN"}
+      </button>
+    </div>
+
+    {/* --- HISTORY TABLE --- */}
+    <div style={styles.historyBox}>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={styles.tableStyle}>
+          <thead>
+            <tr>
+              <th style={styles.thStyle}>Ikan</th>
+              <th style={styles.thStyle}>Usia/Size</th>
+              <th style={styles.thStyle}>Takaran</th>
+              <th style={styles.thStyle}>Kipas</th>
+              <th style={styles.thStyle}>Ganti</th>
+            </tr>
+          </thead>
+          <tbody>
+            {listPakan.map((item) => (
+              <tr key={item.id} style={styles.trBody}>
+                <td style={styles.tdStyle}>{item.nama_ikan}</td>
+                <td style={styles.tdStyle}>{item.usia_ikan} / {item.ukuran_ikan}cm</td>
+                <td style={styles.tdStyle}>{item.takaran_pakan}g</td>
+                <td style={styles.tdStyle}>{item.durasi_kipas}s</td>
+                <td style={styles.tdStyle}>{item.durasi_ganti}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+)}
+
+     {halaman === 'hidroponik' && (
+  <div style={styles.detailContainer}>
+    <h2 style={{ color: '#38bdf8', marginBottom: '20px', textAlign: 'center' }}>
+      🌱 Jurnal Hidroponik
+    </h2>
+
+    {/* --- FORM INPUT --- */}
+    <div style={styles.jurnalBox}>
+      <div style={styles.inputGrid}>
+        {[
+          { label: 'TGL TANAM', name: 'tglTanam', type: 'date' },
+          { label: 'NAMA TANAMAN', name: 'namaTanaman', type: 'text', placeholder: 'Contoh: Selada' },
+          { label: 'PANEN (KG)', name: 'jumlahPanen', type: 'number', placeholder: '0' },
+          { label: 'HARGA JUAL', name: 'hargaJual', type: 'number', placeholder: '0' },
+        ].map((field) => (
+          <div key={field.name}>
+            <label style={styles.labelStyle}>{field.label}</label>
+            <input 
+              type={field.type} 
+              placeholder={field.placeholder}
+              value={hidroInput[field.name]} 
+              onChange={(e) => setHidroInput(prev => ({ ...prev, [field.name]: e.target.value }))} 
+              style={styles.inputStyle} 
+            />
+          </div>
+        ))}
+      </div>
+      
+      <button 
+        onClick={handleSimpanHidro} 
+        style={{...styles.updateBtnStyle, background: '#10b981', marginTop: '20px', width: '100%'}}
+      >
+        {loading ? "Menyimpan..." : "SIMPAN DATA HIDROPONIK"}
+      </button>
+    </div>
+
+    {/* --- HISTORY TABLE --- */}
+    <div style={styles.historyBox}>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={styles.tableStyle}>
+          <thead>
+            <tr>
+              <th style={styles.thStyle}>Tanggal</th>
+              <th style={styles.thStyle}>Tanaman</th>
+              <th style={styles.thStyle}>Panen</th>
+              <th style={styles.thStyle}>Harga</th>
+            </tr>
+          </thead>
+          <tbody>
+            {listHidro.map((item) => (
+              <tr key={item.id} style={styles.trBody}>
+                <td style={styles.tdStyle}>{item.tgl_tanam}</td>
+                <td style={styles.tdStyle}>{item.nama_tanaman}</td>
+                <td style={styles.tdStyle}>{item.jumlah_panen || '-'} kg</td>
+                <td style={styles.tdStyle}>
+                  {item.harga_jual ? `Rp ${Number(item.harga_jual).toLocaleString('id-ID')}` : '-'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+)}
+
+          {halaman === 'air' && (
+  <div style={styles.detailContainer}>
+    <h2 style={{ color: '#38bdf8', marginBottom: '20px', textAlign: 'center' }}>
+      💧 Log Pengurasan Air
+    </h2>
+
+    {/* --- FORM INPUT --- */}
+    <div style={styles.jurnalBox}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+        <div>
+          <label style={styles.labelStyle}>TGL KURAS</label>
+          <input 
+            type="date" 
+            value={airInput.tglKuras} 
+            onChange={(e) => setAirInput(prev => ({ ...prev, tglKuras: e.target.value }))} 
+            style={styles.inputStyle} 
+          />
+        </div>
+        <div>
+          <label style={styles.labelStyle}>KONDISI</label>
+          <input 
+            type="text" 
+            placeholder="Hijau/Keruh" 
+            value={airInput.kondisiAir} 
+            onChange={(e) => setAirInput(prev => ({ ...prev, kondisiAir: e.target.value }))} 
+            style={styles.inputStyle} 
+          />
+        </div>
+      </div>
+      
+      <div style={{ marginBottom: '20px' }}>
+        <label style={styles.labelStyle}>KETERANGAN</label>
+        <input 
+          type="text" 
+          placeholder="Catatan tambahan..."
+          value={airInput.keterangan} 
+          onChange={(e) => setAirInput(prev => ({ ...prev, keterangan: e.target.value }))} 
+          style={styles.inputStyle} 
+        />
+      </div>
+
+      <button 
+        onClick={handleSimpanAir} 
+        style={{ ...styles.updateBtnStyle, background: '#10b981', width: '100%' }}
+      >
+        {loading ? "Menyimpan..." : "SIMPAN DATA AIR"}
+      </button>
+    </div>
+
+    {/* --- HISTORY TABLE --- */}
+    <div style={styles.historyBox}>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={styles.tableStyle}>
+          <thead>
+            <tr>
+              <th style={styles.thStyle}>Tanggal</th>
+              <th style={styles.thStyle}>Kondisi</th>
+              <th style={styles.thStyle}>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {listAir.map((item) => (
+              <tr key={item.id} style={styles.trBody}>
+                {/* Pastikan nama field di bawah sesuai dengan kolom di Supabase */}
+                <td style={styles.tdStyle}>{item.tgl_kuras}</td>
+                <td style={styles.tdStyle}>{item.kondisi_air}</td>
+                <td style={styles.tdStyle}>{item.keterangan || '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+)}
+           {halaman === 'log' && (
+  <div style={styles.detailContainer}>
+    <h2 style={{ color: '#38bdf8', marginBottom: '20px', textAlign: 'center' }}>
+      📝 Jurnal Budidaya Ikan
+    </h2>
+
+    {/* --- FORM INPUT --- */}
+    <div style={styles.jurnalBox}>
+      <div style={styles.inputGrid}>
+        {[
+          { label: 'TGL BIBIT', name: 'tglBibit', type: 'date' },
+          { label: 'JUMLAH', name: 'jumlahIkan', type: 'number', placeholder: 'Ekor' },
+          { label: 'UKURAN (CM)', name: 'ukuranBibit', type: 'text', placeholder: 'Contoh: 5-7' },
+          { label: 'TGL SORTIR', name: 'tglSortir', type: 'date' },
+        ].map((field) => (
+          <div key={field.name}>
+            <label style={styles.labelStyle}>{field.label}</label>
+            <input 
+              type={field.type} 
+              placeholder={field.placeholder}
+              value={jurnalInput[field.name]} 
+              onChange={(e) => setJurnalInput(prev => ({ ...prev, [field.name]: e.target.value }))} 
+              style={styles.inputStyle} 
+            />
+          </div>
+        ))}
+      </div>
+      
+      <button 
+        onClick={handleSimpanJurnalIkan} 
+        style={{...styles.updateBtnStyle, background: '#10b981', marginTop: '20px', width: '100%'}}
+      >
+        {loading ? "Menyimpan..." : "SIMPAN DATA IKAN"}
+      </button>
+    </div>
+
+    {/* --- HISTORY TABLE --- */}
+    <div style={styles.historyBox}>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={styles.tableStyle}>
+          <thead>
+            <tr>
+              <th style={styles.thStyle}>Tgl Bibit</th>
+              <th style={styles.thStyle}>Jumlah</th>
+              <th style={styles.thStyle}>Ukuran</th>
+              <th style={styles.thStyle}>Tgl Sortir</th>
+            </tr>
+          </thead>
+          <tbody>
+            {listJurnal.map((item) => (
+              <tr key={item.id} style={styles.trBody}>
+                {/* Pastikan nama field sesuai dengan kolom di tabel Supabase */}
+                <td style={styles.tdStyle}>{item.tgl_bibit}</td>
+                <td style={styles.tdStyle}>{item.jumlah_ikan}</td>
+                <td style={styles.tdStyle}>{item.ukuran_bibit} cm</td>
+                <td style={styles.tdStyle}>{item.tgl_sortir || '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+)}
 
 {halaman === 'pakan' && (
-  <div style={formContainer}>
-    <h2 style={{ color: '#38bdf8', textAlign: 'center', marginBottom: '25px' }}>⚙️ Pengaturan Pakan</h2>
+  <div style={styles.formContainer}>
+    <h2 style={{ color: '#38bdf8', textAlign: 'center', marginBottom: '25px' }}>
+      ⚙️ Pengaturan Pakan
+    </h2>
 
     {/* RENTANG TANGGAL */}
-    <div style={{ marginBottom: '20px' }}>
-      <label style={labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
+    <div style={styles.inputGroup}>
+      <label style={styles.labelStyle}>RENTANG TANGGAL (MULAI - SELESAI)</label>
       <div style={{ display: 'flex', gap: '15px' }}>
-        <input type="number" placeholder="Mulai" value={data.Jadwal} onChange={(e) => setData({ ...data, Jadwal: e.target.value })} style={inputStyle} />
-        <input type="number" placeholder="Selesai" value={data.end_date} onChange={(e) => setData({ ...data, end_date: e.target.value })} style={inputStyle} />
+        <input type="number" placeholder="Mulai" value={data.Jadwal} onChange={(e) => setData(p => ({ ...p, Jadwal: e.target.value }))} style={styles.inputStyle} />
+        <input type="number" placeholder="Selesai" value={data.end_date} onChange={(e) => setData(p => ({ ...p, end_date: e.target.value }))} style={styles.inputStyle} />
       </div>
     </div>
 
-    {/* JADWAL PAGI */}
-    <div style={{ marginBottom: '20px' }}>
-      <label style={labelStyle}>JADWAL PAGI (JAM : MENIT)</label>
-      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-        <input type="number" placeholder="Jam" value={data.jam_pagi} onChange={(e) => setData({ ...data, jam_pagi: parseInt(e.target.value) || 0 })} style={inputStyle} />
-        <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>:</span>
-        <input type="number" placeholder="Menit" value={data.menit_pagi} onChange={(e) => setData({ ...data, menit_pagi: parseInt(e.target.value) || 0 })} style={inputStyle} />
+    {/* JADWAL PAGI & SORE (Dibuat lebih ringkas) */}
+    {[
+      { label: 'JADWAL PAGI', jam: 'jam_pagi', menit: 'menit_pagi' },
+      { label: 'JADWAL SORE', jam: 'jam_sore', menit: 'menit_sore' }
+    ].map((item) => (
+      <div key={item.jam} style={styles.inputGroup}>
+        <label style={styles.labelStyle}>{item.label} (JAM : MENIT)</label>
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <input type="number" placeholder="Jam" value={data[item.jam]} onChange={(e) => setData(p => ({ ...p, [item.jam]: parseInt(e.target.value) || 0 }))} style={styles.inputStyle} />
+          <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>:</span>
+          <input type="number" placeholder="Menit" value={data[item.menit]} onChange={(e) => setData(p => ({ ...p, [item.menit]: parseInt(e.target.value) || 0 }))} style={styles.inputStyle} />
+        </div>
       </div>
-    </div>
-
-    {/* JADWAL SORE */}
-    <div style={{ marginBottom: '20px' }}>
-      <label style={labelStyle}>JADWAL SORE (JAM : MENIT)</label>
-      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-        <input type="number" placeholder="Jam" value={data.jam_sore} onChange={(e) => setData({ ...data, jam_sore: parseInt(e.target.value) || 0 })} style={inputStyle} />
-        <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>:</span>
-        {/* PERBAIKAN: menit_soref diganti menjadi menit_sore */}
-        <input type="number" placeholder="Menit" value={data.menit_sore} onChange={(e) => setData({ ...data, menit_sore: parseInt(e.target.value) || 0 })} style={inputStyle} />
-      </div>
-    </div>
+    ))}
 
     {/* DURASI */}
     <div style={{ marginBottom: '25px' }}>
-      <label style={labelStyle}>DURASI (DETIK)</label>
-      <input type="number" value={data.durasi_detik} onChange={(e) => setData({ ...data, durasi_detik: parseInt(e.target.value) || 0 })} style={{ ...inputStyle, width: '100%' }} />
+      <label style={styles.labelStyle}>DURASI (DETIK)</label>
+      <input type="number" value={data.durasi_detik} onChange={(e) => setData(p => ({ ...p, durasi_detik: parseInt(e.target.value) || 0 }))} style={{ ...styles.inputStyle, width: '100%' }} />
     </div>
 
-    <button onClick={handleUpdatePakan} style={updateBtnStyle}>UPDATE JADWAL</button>
+    <button onClick={handleUpdatePakan} style={{ ...styles.updateBtnStyle, width: '100%' }}>
+      {loading ? "Menyimpan..." : "UPDATE JADWAL"}
+    </button>
   </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+)}
 
-// --- CSS-IN-JS STYLES ---
-const headerStyle = { padding: '20px', borderBottom: '1px solid #1e293b', textAlign: 'center', background: '#0f172a', position: 'sticky', top: 0, zIndex: 10 };
-const dashboardContainer = { maxWidth: '500px', margin: '0 auto' };
-const menuGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' };
-const menuCard = { background: '#1e293b', padding: '20px', borderRadius: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', border: '1px solid #334155', transition: '0.2s' };
-const iconCircle = { fontSize: '32px', marginBottom: '10px' };
-const menuLabel = { fontSize: '14px', fontWeight: 'bold' };
-const subLabel = { fontSize: '11px', color: '#94a3b8', marginTop: '5px' };
-const kipasBox = { marginTop: '25px', padding: '20px', background: '#1e293b', borderRadius: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #334155' };
-const toggleBtn = { border: 'none', color: 'white', padding: '10px 15px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' };
-const formContainer = { background: '#1e293b', padding: '25px', borderRadius: '20px', maxWidth: '400px', margin: '0 auto' };
-const inputStyle = { background: '#0f172a', border: '1px solid #334155', padding: '12px', borderRadius: '8px', color: '#38bdf8', width: '100%', boxSizing: 'border-box' };
-const labelStyle = { fontSize: '11px', color: '#64748b', fontWeight: 'bold', display: 'block', marginBottom: '5px' };
-const updateBtnStyle = { width: '100%', background: '#0ea5e9', color: 'white', border: 'none', padding: '14px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
-const backBtnStyle = { background: '#1e293b', border: '1px solid #334155', color: '#38bdf8', padding: '12px', borderRadius: '10px', marginBottom: '20px', cursor: 'pointer', width: '100%' };
-const jurnalBox = { background: '#1e293b', padding: '25px', borderRadius: '20px', marginBottom: '20px' };
-const historyBox = { background: '#1e293b', padding: '15px', borderRadius: '20px', overflowX: 'auto' };
-const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const trHead = { borderBottom: '2px solid #334155', textAlign: 'left' };
-const thStyle = { padding: '12px', color: '#94a3b8', fontSize: '12px', textTransform: 'uppercase' };
-const trBody = { borderBottom: '1px solid #334155' };
-const tdStyle = { padding: '12px', fontSize: '14px', color: '#e2e8f0' };
+const styles = {
+  header: { 
+    padding: '20px', 
+    borderBottom: '1px solid #1e293b', 
+    textAlign: 'center', 
+    background: '#0f172a', 
+    position: 'sticky', 
+    top: 0, 
+    zIndex: 10 
+  },
+  dashboardContainer: { maxWidth: '500px', margin: '0 auto', padding: '15px' },
+  menuGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' },
+  menuCard: { 
+    background: '#1e293b', 
+    padding: '20px', 
+    borderRadius: '20px', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center', 
+    cursor: 'pointer', 
+    border: '1px solid #334155', 
+    transition: '0.2s' 
+  },
+  iconCircle: { fontSize: '32px', marginBottom: '10px' },
+  menuLabel: { fontSize: '14px', fontWeight: 'bold' },
+  subLabel: { fontSize: '11px', color: '#94a3b8', marginTop: '5px' },
+  
+  // Form & Inputs
+  formContainer: { background: '#1e293b', padding: '25px', borderRadius: '20px', maxWidth: '400px', margin: '0 auto' },
+  inputStyle: { 
+    background: '#0f172a', 
+    border: '1px solid #334155', 
+    padding: '12px', 
+    borderRadius: '8px', 
+    color: '#38bdf8', 
+    width: '100%', 
+    boxSizing: 'border-box' // Penting untuk layout
+  },
+  labelStyle: { fontSize: '11px', color: '#64748b', fontWeight: 'bold', display: 'block', marginBottom: '5px' },
+  updateBtnStyle: { width: '100%', background: '#0ea5e9', color: 'white', border: 'none', padding: '14px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' },
+  backBtnStyle: { background: '#1e293b', border: '1px solid #334155', color: '#38bdf8', padding: '12px', borderRadius: '10px', marginBottom: '20px', cursor: 'pointer', width: '100%' },
+  
+  // Data Presentation
+  jurnalBox: { background: '#1e293b', padding: '25px', borderRadius: '20px', marginBottom: '20px' },
+  historyBox: { background: '#1e293b', padding: '15px', borderRadius: '20px', overflowX: 'auto' },
+  tableStyle: { width: '100%', borderCollapse: 'collapse' },
+  thStyle: { padding: '12px', color: '#94a3b8', fontSize: '12px', textTransform: 'uppercase', textAlign: 'left' },
+  tdStyle: { padding: '12px', fontSize: '14px', color: '#e2e8f0', borderBottom: '1px solid #334155' }
+};
 
-export default App;
+export default styles;
