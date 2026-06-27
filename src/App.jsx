@@ -91,45 +91,16 @@ function App() {
 ) : (
   
   /* HALAMAN PENGATURAN (DI DALAM KOTAK) */
-  <div style={{
-    position: 'relative', // Membuat kotak ini menjadi jangkar untuk posisi tombol
-    backgroundColor: '#1E293B', // Warna background kotak utama (dari gambar)
-    padding: '40px 20px', // Ruang di dalam kotak, padding atas agak besar untuk memberi ruang bagi tombol
-    borderRadius: '16px', // Sudut tumpul kotak (dari gambar)
-    maxWidth: '600px', // Atur lebar maksimal kotak (sesuaikan dengan desain Anda)
-    margin: '20px auto', // Mengatur kotak agar berada di tengah halaman
-    color: '#F8FAFC', // Warna teks umum di dalam kotak
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' // Sedikit bayangan (optional, agar lebih terlihat)
-  }}>
-
-   {/* TOMBOL KEMBALI DI DALAM KOTAK */}
+  <div style={{ position: 'relative', backgroundColor: '#1E293B', padding: '40px 20px', borderRadius: '16px', maxWidth: '600px', margin: '0 auto' }}>
+    
     <button 
-      style={{ 
-        ...buttonStyle, // Asumsi ini adalah style dasar tombol Anda
-        position: 'absolute', // Menempatkan tombol secara presisi
-        top: '20px', // Jarak dari atas di dalam kotak
-        left: '20px', // Jarak dari kiri di dalam kotak
-        padding: '5px 15px', // Membuat tombol lebih kecil (compact)
-        fontSize: '12px', // Ukuran teks tombol lebih kecil
-        backgroundColor: '#475569', // Warna tombol (dari gambar)
-        color: '#F8FAFC', // Warna teks tombol
-        border: 'none', // Tanpa border
-        borderRadius: '8px', // Sudut tombol agak tumpul
-        width: 'auto', // Lebar tombol sesuai konten
-        cursor: 'pointer', // Mengubah kursor saat melintas
-        zIndex: '10' // Memastikan tombol di atas elemen lain
-      }} 
+      style={{ position: 'absolute', top: '10px', left: '10px', padding: '5px 10px', fontSize: '12px', backgroundColor: '#475569', color: 'white', border: 'none', borderRadius: '5px' }} 
       onClick={() => setActivePage('beranda')}
     >
       ← KEMBALI
     </button>
           
       {/* KONTEN UTAMA DI DALAM KOTAK */}
-    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-      <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>PERTANIAN CERDAS</h2>
-      <p style={{ fontSize: '0.8rem', color: '#94A3B8' }}>KSTM AL IHYA</p>
-    </div>
-
     <h2 style={{ 
       textAlign: 'center', 
       marginTop: '10px', 
