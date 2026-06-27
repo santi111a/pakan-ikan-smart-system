@@ -101,8 +101,8 @@ function App() {
     ← Kembali ke Menu
   </button>
           
-      {/* KONTEN UTAMA DI DALAM KOTAK */}
-    <div style={{ 
+  {/* KOTAK UTAMA */}
+  <div style={{ 
     backgroundColor: '#1E293B', 
     padding: '30px', 
     borderRadius: '16px', 
@@ -111,52 +111,50 @@ function App() {
     textAlign: 'center',
     color: '#38BDF8' // Warna biru muda sesuai gambar
   }}>
-
     <h2 style={{ marginBottom: '25px' }}>Pengaturan Pakan</h2>
-
-    {/* Rentang Tanggal */}
-    <div style={{ marginBottom: '15px' }}>
-      <label style={{ fontSize: '0.7rem', display: 'block', marginBottom: '5px' }}>RENTANG TANGGAL (MULAI - SELESAI)</label>
-      <div style={{ display: 'flex', gap: '10px' }}>
-        <input type="number" style={inputStyle} />
-        <input type="number" style={inputStyle} />
+     
+      {/* Rentang Tanggal */}
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>RENTANG TANGGAL</label>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input type="number" style={inputStyle} value={data.tglMulai} onChange={(e) => setData({...data, tglMulai: e.target.value})} />
+          <input type="number" style={inputStyle} value={data.tglSelesai} onChange={(e) => setData({...data, tglSelesai: e.target.value})} />
+        </div>
       </div>
-    </div>
 
     {/* Jadwal Pagi */}
-    <div style={{ marginBottom: '15px' }}>
-      <label style={{ fontSize: '0.7rem', display: 'block', marginBottom: '5px' }}>JADWAL PAGI (JAM : MENIT)</label>
-      <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-        <input type="number" style={inputStyle} />
-        <span>:</span>
-        <input type="number" style={inputStyle} />
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL PAGI</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input type="number" style={inputStyle} value={data.jamPagi} onChange={(e) => setData({...data, jamPagi: e.target.value})} />
+          <span>:</span>
+          <input type="number" style={inputStyle} value={data.menitPagi} onChange={(e) => setData({...data, menitPagi: e.target.value})} />
+        </div>
       </div>
-    </div>
 
-    {/* Jadwal Sore */}
-    <div style={{ marginBottom: '15px' }}>
-      <label style={{ fontSize: '0.7rem', display: 'block', marginBottom: '5px' }}>JADWAL SORE (JAM : MENIT)</label>
-      <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-        <input type="number" style={inputStyle} />
-        <span>:</span>
-        <input type="number" style={inputStyle} />
+
+      {/* Jadwal Sore */}
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL SORE</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input type="number" style={inputStyle} value={data.jamSore} onChange={(e) => setData({...data, jamSore: e.target.value})} />
+          <span>:</span>
+          <input type="number" style={inputStyle} value={data.menitSore} onChange={(e) => setData({...data, menitSore: e.target.value})} />
+        </div>
       </div>
-    </div>
 
-    {/* Durasi */}
-    <div style={{ marginBottom: '25px' }}>
-      <label style={{ fontSize: '0.7rem', display: 'block', marginBottom: '5px' }}>DURASI PAKAN (DETIK)</label>
-      <input type="number" style={inputStyle} />
-    </div>
 
-    <button style={{ ...buttonStyle, backgroundColor: '#0EA5E9', width: '100%' }}>
-      PERBARUI DATA & AKTIFKAN
-    </button>
-  </div>
+      {/* Durasi */}
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>DURASI (DETIK)</label>
+        <input type="number" style={inputStyle} value={data.durasi} onChange={(e) => setData({...data, durasi: e.target.value})} />
+      </div>
+
+      <button style={buttonStyle} onClick={handleUpdate}>PERBARUI DATA & AKTIFKAN</button>
+    </div>
+      </div>
+)};
 </div>
-      )}
-      </div>
-    );
-  }
-
+  )
+};
 export default App;
