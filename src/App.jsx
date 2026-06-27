@@ -81,15 +81,14 @@ const [wifiInput, setWifiInput] = useState({ ssid: '', pass: '' });
     setLoading(false);
   };
 
-  const menuItems = [
-    { id: 'pakan', label: 'Jadwal Pakan', icon: '🐟', sub: `Pagi ${data.jam_pagi}:${data.menit_pagi}` },
-    { id: 'takaran', label: 'Takaran Pakan', icon: '⚖️', sub: `${listPakan.length} Log` },
-    { id: 'wifi', label: 'Set WiFi', icon: '📶', sub: data.wifi_ssid || 'Belum Set' },
-    { id: 'log', label: 'Jurnal Ikan', icon: '📓', sub: `${listJurnal.length} Catatan` },
-    { id: 'air', label: 'Log Air', icon: '💧', sub: listAir[0]?.kondisiAir || 'N/A' },
-    { id: 'hidroponik', label: 'Hidroponik', icon: '🌱', sub: `${listHidro.length} Data` },
-  ];
-
+  {menuItems.map((item) => (
+  <div key={item.id} onClick={() => setHalaman(item.id)} style={styles.menuCard}>
+    {/* Gunakan .toString() untuk memastikan data jadi teks */}
+    <div style={{ fontSize: '30px' }}>{String(item.icon)}</div>
+    <div style={{ fontWeight: 'bold' }}>{String(item.label)}</div>
+    <div style={{ fontSize: '12px', color: '#94a3b8' }}>{String(item.sub)}</div>
+  </div>
+))}
 
 return (
   <div style={styles.container}>
