@@ -14,24 +14,19 @@ function App() {
     durasi_detik: 0 
   });
 
-  // Tambahkan state loading agar tidak error
+  const [listPakan, setListPakan] = useState([]);
+  const [listJurnal, setListJurnal] = useState([]);
+  const [listAir, setListAir] = useState([]);
+  const [listHidro, setListHidro] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [halaman, setHalaman] = useState('beranda');
 
- const [halaman, setHalaman] = useState('pakan'); // Contoh state halaman
-
-  // 2. Fungsi handle
-  const handleUpdatePakan = async () => { /* ... */ };
-
-  const menuItems = [
-  { id: 'pakan', label: 'Jadwal Pakan', icon: '🐟', sub: `Pagi ${data.jam_pagi}:${data.menit_pagi}` },
-  { id: 'takaran', label: 'Takaran Pakan', icon: '⚖️', sub: `${listPakan.length} Log` },
-  { id: 'wifi', label: 'Set WiFi', icon: '📶', sub: data.wifi_ssid || 'Belum Set' },
-  { id: 'log', label: 'Jurnal Ikan', icon: '📓', sub: `${listJurnal.length} Catatan` },
-  { id: 'air', label: 'Log Air', icon: '💧', sub: listAir[0]?.kondisiAir || 'N/A' },
-  { id: 'hidroponik', label: 'Hidroponik', icon: '🌱', sub: `${listHidro.length} Data` },
-  ]
-  
-
+  // 2. FUNGSI LOGIKA (Contoh)
+  const handleUpdatePakan = async () => {
+    setLoading(true);
+    // Masukkan logika supabase di sini
+    setLoading(false);
+  };
 
 return (
   <div style={styles.container}>
@@ -451,7 +446,6 @@ return (
     </button>
   </div>
 )}
-};
 
 const styles = {
   header: { 
@@ -501,6 +495,7 @@ const styles = {
   tableStyle: { width: '100%', borderCollapse: 'collapse' },
   thStyle: { padding: '12px', color: '#94a3b8', fontSize: '12px', textTransform: 'uppercase', textAlign: 'left' },
   tdStyle: { padding: '12px', fontSize: '14px', color: '#e2e8f0', borderBottom: '1px solid #334155' }
+};
 };
 
 export default styles;
