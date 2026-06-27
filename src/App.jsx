@@ -30,7 +30,7 @@ function App() {
   { id: 'air', label: 'Log Air', icon: '💧', sub: listAir[0]?.kondisiAir || 'N/A' },
   { id: 'hidroponik', label: 'Hidroponik', icon: '🌱', sub: `${listHidro.length} Data` },
   ]
-  };
+  
 
 
 return (
@@ -451,6 +451,7 @@ return (
     </button>
   </div>
 )}
+};
 
 const styles = {
   header: { 
