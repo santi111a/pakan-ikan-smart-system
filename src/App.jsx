@@ -16,9 +16,12 @@ function App() {
 
   // Efek untuk mengubah warna latar belakang seluruh halaman
   useEffect(() => {
-    document.body.style.backgroundColor = '#0f172a'; // Warna background luar
-    fetchData();
-  }, []);
+  document.body.style.backgroundColor = '#0f172a';
+  document.body.style.margin = '0';
+  document.body.style.padding = '20px';
+  document.body.style.minHeight = '100vh';
+  fetchData();
+}, []);
 
   const fetchData = async () => {
     const { data: dbData } = await supabase
@@ -60,7 +63,17 @@ function App() {
   setLoading(false);
 };
 
-  const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '40px auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
+  const containerStyle = { 
+  fontFamily: "'Segoe UI', sans-serif", 
+  maxWidth: '400px', 
+  margin: '0 auto', 
+  padding: '30px', 
+  backgroundColor: '#1e293b', // Warna kotak menu
+  borderRadius: '20px', 
+  boxShadow: '0 20px 40px rgba(0,0,0,0.3)', 
+  color: '#f1f5f9' // Warna teks putih/abu terang
+};
+  
   const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', boxSizing: 'border-box', backgroundColor: '#0f172a', color: '#fff' };
   const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' };
 
