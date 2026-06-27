@@ -91,59 +91,70 @@ function App() {
 ) : (
   
   /* HALAMAN PENGATURAN (DI DALAM KOTAK) */
-  <div style={{ position: 'relative', backgroundColor: '#1E293B', padding: '40px 20px', borderRadius: '16px', maxWidth: '600px', margin: '0 auto' }}>
-    
-    <button 
-      style={{ position: 'absolute', top: '10px', left: '10px', padding: '5px 10px', fontSize: '12px', backgroundColor: '#475569', color: 'white', border: 'none', borderRadius: '5px' }} 
-      onClick={() => setActivePage('beranda')}
-    >
-      ← KEMBALI
-    </button>
+ <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+  
+  {/* Tombol Kembali di atas kotak */}
+  <button 
+    style={{ ...buttonStyle, marginBottom: '20px', width: 'auto', padding: '8px 20px' }} 
+    onClick={() => setActivePage('beranda')}
+  >
+    ← Kembali ke Menu
+  </button>
           
       {/* KONTEN UTAMA DI DALAM KOTAK */}
-    <h2 style={{ 
-      textAlign: 'center', 
-      marginTop: '10px', 
-      marginBottom: '30px', 
-      color: '#10B981', // Warna hijau (dari gambar)
-      fontSize: '1.5rem',
-      fontWeight: 'bold'
-    }}>
+    <div style={{ 
+    backgroundColor: '#1E293B', 
+    padding: '30px', 
+    borderRadius: '16px', 
+    width: '90%', 
+    maxWidth: '400px',
+    textAlign: 'center',
+    color: '#38BDF8' // Warna biru muda sesuai gambar
+  }}>
 
       PENGATURAN PAKAN
-    </h2>
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>RENTANG TANGGAL</label>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input type="number" style={inputStyle} value={data.tglMulai} onChange={(e) => setData({...data, tglMulai: e.target.value})} />
-          <input type="number" style={inputStyle} value={data.tglSelesai} onChange={(e) => setData({...data, tglSelesai: e.target.value})} />
-        </div>
-      </div>
+    <h2 style={{ marginBottom: '25px' }}>Pengaturan Pakan</h2>
 
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL PAGI</label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <input type="number" style={inputStyle} value={data.jamPagi} onChange={(e) => setData({...data, jamPagi: e.target.value})} />
-          <span>:</span>
-          <input type="number" style={inputStyle} value={data.menitPagi} onChange={(e) => setData({...data, menitPagi: e.target.value})} />
-        </div>
+    {/* Rentang Tanggal */}
+    <div style={{ marginBottom: '15px' }}>
+      <label style={{ fontSize: '0.7rem', display: 'block', marginBottom: '5px' }}>RENTANG TANGGAL (MULAI - SELESAI)</label>
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <input type="number" style={inputStyle} />
+        <input type="number" style={inputStyle} />
       </div>
-
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JADWAL SORE</label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <input type="number" style={inputStyle} value={data.jamSore} onChange={(e) => setData({...data, jamSore: e.target.value})} />
-          <span>:</span>
-          <input type="number" style={inputStyle} value={data.menitSore} onChange={(e) => setData({...data, menitSore: e.target.value})} />
-        </div>
-      </div>
-
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>DURASI (DETIK)</label>
-        <input type="number" style={inputStyle} value={data.durasi} onChange={(e) => setData({...data, durasi: e.target.value})} />
-      </div>
-      <button style={buttonStyle} onClick={handleUpdate}>SIMPAN PENGATURAN</button>
     </div>
+
+    {/* Jadwal Pagi */}
+    <div style={{ marginBottom: '15px' }}>
+      <label style={{ fontSize: '0.7rem', display: 'block', marginBottom: '5px' }}>JADWAL PAGI (JAM : MENIT)</label>
+      <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+        <input type="number" style={inputStyle} />
+        <span>:</span>
+        <input type="number" style={inputStyle} />
+      </div>
+    </div>
+
+    {/* Jadwal Sore */}
+    <div style={{ marginBottom: '15px' }}>
+      <label style={{ fontSize: '0.7rem', display: 'block', marginBottom: '5px' }}>JADWAL SORE (JAM : MENIT)</label>
+      <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+        <input type="number" style={inputStyle} />
+        <span>:</span>
+        <input type="number" style={inputStyle} />
+      </div>
+    </div>
+
+    {/* Durasi */}
+    <div style={{ marginBottom: '25px' }}>
+      <label style={{ fontSize: '0.7rem', display: 'block', marginBottom: '5px' }}>DURASI PAKAN (DETIK)</label>
+      <input type="number" style={inputStyle} />
+    </div>
+
+    <button style={{ ...buttonStyle, backgroundColor: '#0EA5E9', width: '100%' }}>
+      PERBARUI DATA & AKTIFKAN
+    </button>
+  </div>
+</div>
       )}
       </div>
     );
