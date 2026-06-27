@@ -63,61 +63,39 @@ function App() {
   setLoading(false);
 };
 
-  const containerStyle = { 
-  fontFamily: "'Segoe UI', sans-serif", 
-  maxWidth: '400px', 
-  margin: '0 auto', 
-  padding: '30px', 
-  backgroundColor: '#1e293b', // Warna kotak menu
-  borderRadius: '20px', 
-  boxShadow: '0 20px 40px rgba(0,0,0,0.3)', 
-  color: '#f1f5f9' // Warna teks putih/abu terang
-};
+  const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '0 auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
+  const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', backgroundColor: '#0f172a', color: '#fff', boxSizing: 'border-box' };
+  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
+  const menuCardStyle = { padding: '20px', backgroundColor: '#334155', borderRadius: '15px', cursor: 'pointer', textAlign: 'center', transition: '0.3s' };
   
-  const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', boxSizing: 'border-box', backgroundColor: '#0f172a', color: '#fff' };
-  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' };
-   const navButtonStyle = (page) => ({ 
-    flex: 1, 
-    padding: '10px', 
-    backgroundColor: activePage === page ? '#10b981' : '#334155', 
-    color: 'white', 
-    border: 'none', 
-    borderRadius: '10px', 
-    cursor: 'pointer' 
-  });
-
   if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
 
   return (
 <div style={containerStyle}>
-      {/* HEADER */}
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
         <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
       </div>
 
-      {/* --- MENU NAVIGASI --- */}
-<div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
-  <button 
-    style={navButtonStyle('MENU PAKAN ')} 
-    onClick={() => setActivePage('MENU PAKAN')} // Untuk Pengaturan
-  >MENU PAKAN</button>
-</div>
-
-      {/* KONTEN BERDASARKAN HALAMAN */}
-      {activePage === 'beranda' ? (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-          <h3 style={{ color: '#fff' }}>Selamat Datang!</h3>
-          <p style={{ color: '#94a3b8' }}>Sistem pemberi pakan otomatis Anda dalam kondisi siap beroperasi.</p>
-          <div style={{ fontSize: '50px', marginTop: '20px' }}>✅</div>
+ {activePage === 'beranda' ? (
+        /* HALAMAN BERANDA */
+<div>
+          <h3 style={{ textAlign: 'center' }}>Halo!</h3>
+          <div style={menuCardStyle} onClick={() => setActivePage('pengaturan')}>
+            <div style={{ fontSize: '30px' }}>🥗</div>
+            <div style={{ fontWeight: 'bold', marginTop: '10px' }}>MENU PAKAN</div>
+            <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Atur jadwal & durasi</div>
+          </div>
         </div>
       ) : (
-        /* KODINGAN LAMA ANDA DI BAWAH INI */
-    <div>
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
-        <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
-      </div>
+
+     /* HALAMAN PENGATURAN PAKAN */
+      <div>
+          <button style={{ ...buttonStyle, backgroundColor: '#475569', marginBottom: '20px' }} onClick={() => setActivePage('beranda')}>
+            ← KEMBALI
+          </button>
+          
+          <h3 style={{ color: '#10b981', textAlign: 'center' }}>PENGATURAN PAKAN</h3>
 
       <div style={{ marginBottom: '20px' }}>
         <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>RENTANG TANGGAL</label>
