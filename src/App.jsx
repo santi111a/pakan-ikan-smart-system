@@ -4,272 +4,22 @@ import { createClient } from '@supabase/supabase-js';
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
 function App() {
-  // 2. Definisikan semua State di sini agar tidak "Undefined"
-  const [data, setData] = useState({ 
-    Jadwal: '', end_date: '', jam_pagi: 0, menit_pagi: 0, 
-    jam_sore: 0, menit_sore: 0, durasi_detik: 0, wifi_ssid: '' 
-  });
+  // 1. DEFINISIKAN SEMUA STATE DI SINI
+  const [halaman, setHalaman] = useState('beranda');
+  const [data, setData] = useState({ /* ... inisialisasi data Anda ... */ });
+  const [loading, setLoading] = useState(false);
+  
+  // Variabel yang menyebabkan error harus didefinisikan di sini!
   const [listPakan, setListPakan] = useState([]);
   const [listJurnal, setListJurnal] = useState([]);
   const [listAir, setListAir] = useState([]);
   const [listHidro, setListHidro] = useState([]);
-  const [halaman, setHalaman] = useState('beranda');
-  const [loading, setLoading] = useState(false);
+  const [wifiInput, setWifiInput] = useState({ ssid: '', pass: '' });
+  const [pakanInput, setPakanInput] = useState({ namaIkan: '', usiaIkan: '', ukuranIkan: '', takaranPakan: '', durasiKipas: '', durasiGanti: '' });
 
-  // 3. Tambahkan fungsi handle di sini
-  const handleUpdatePakan = async () => {
-    // ... logika update Supabase Anda
-  };
-
-  try {
-    // 1. Mapping state ke nama kolom di Supabase
-    const payload = {
-      jadwal: Number(data.tglMulai),       // sesuaikan dengan nama kolom di DB
-      end_date: Number(data.tglSelesai),
-      jam_pagi: Number(data.jamPagi),
-      menit_pagi: Number(data.menitPagi),
-      jam_sore: Number(data.jamSore),
-      menit_sore: Number(data.menitSore),
-      durasi_detik: Number(data.durasi),
-    };
-
-    // 2. Kirim ke Supabase
-    // Asumsi: Tabel bernama 'pengaturan_pakan' dan kita update baris dengan ID 1
-    const { error } = await supabase
-      .from('pengaturan_pakan') 
-      .update(payload)
-      .eq('id', 1); // Ganti dengan ID atau kondisi yang sesuai
-
-    if (error) throw error;
-
-    alert("✅ Pengaturan Pakan Diperbarui!");
-    
-  } catch (error) {
-    console.error("Error:", error.message);
-    alert("❌ Gagal memperbarui: " + error.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
- const handleUpdateWifi = async () => {
-  // 1. Validasi input
-  if (!wifiInput.ssid || !wifiInput.pass) {
-    return alert("Isi SSID dan Password WiFi!");
-  }
-
-  setLoading(true); // Pastikan ada state loading untuk UI
-
-  try {
-    // 2. Kirim ke Supabase
-    // Asumsi: Nama tabel Anda adalah 'pengaturan_wifi'
-    const { error } = await supabase
-      .from('pengaturan_wifi')
-      .update({
-        wifi_ssid: wifiInput.ssid,
-        wifi_pass: wifiInput.pass
-      })
-      .eq('id', 1); // Wajib ada filter/kondisi baris mana yang diupdate
-
-    if (error) throw error;
-
-    // 3. Jika berhasil
-    alert("✅ Kredensial WiFi Terkirim! ESP32 akan mencoba menyambung ulang.");
-    setWifiInput({ ssid: '', pass: '' });
-
-  } catch (err) {
-    console.error("Error updating WiFi:", err.message);
-    alert("❌ Gagal memperbarui WiFi: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
- const handleSimpanJurnalIkan = async () => {
-  // 1. Validasi input
-  if (!jurnalInput.tglBibit) {
-    return alert("Pilih tanggal!");
-  }
-
-  setLoading(true); // Aktifkan indikator loading
-
-  try {
-    // 2. Kirim data ke Supabase
-    // Asumsi: Nama tabel Anda adalah 'jurnal_harian'
-    const { error } = await supabase
-      .from('jurnal_harian')
-      .insert([
-        {
-          tgl_bibit: jurnalInput.tglBibit,
-          jumlah_ikan: Number(jurnalInput.jumlahIkan),
-          ukuran_bibit: Number(jurnalInput.ukuranBibit),
-          tgl_sortir: jurnalInput.tglSortir
-        }
-      ]);
-
-    if (error) throw error;
-
-    // 3. Jika berhasil
-    alert("✅ Jurnal Ikan Tersimpan!");
-    setJurnalInput({ tglBibit: '', jumlahIkan: '', ukuranBibit: '', tglSortir: '' });
-
-  } catch (err) {
-    console.error("Error menyimpan jurnal:", err.message);
-    alert("❌ Gagal menyimpan: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
-const handleSimpanAir = async () => {
-  // 1. Validasi input
-  if (!airInput.tglKuras) {
-    return alert("Pilih tanggal!");
-  }
-
-  setLoading(true);
-
-  try {
-    // 2. Kirim data ke tabel 'log_pengurasan'
-    const { error } = await supabase
-      .from('log_pengurasan')
-      .insert([
-        {
-          tgl_kuras: airInput.tglKuras,
-          kondisi_air: airInput.kondisiAir,
-          keterangan: airInput.keterangan
-        }
-      ]);
-
-    if (error) throw error;
-
-    // 3. Jika berhasil
-    alert("✅ Log Air Tersimpan!");
-    setAirInput({ tglKuras: '', kondisiAir: '', keterangan: '' });
-    
-  } catch (err) {
-    console.error("Error menyimpan log air:", err.message);
-    alert("❌ Gagal menyimpan log: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
- const handleSimpanHidro = async () => {
-  // 1. Validasi input
-  if (!hidroInput.tglTanam || !hidroInput.namaTanaman) {
-    return alert("Isi tanggal dan nama tanaman!");
-  }
-
-  setLoading(true);
-
-  try {
-    // 2. Kirim data ke tabel 'jurnal_hidroponik'
-    const { error } = await supabase
-      .from('jurnal_hidroponik')
-      .insert([
-        {
-          tgl_tanam: hidroInput.tglTanam,
-          nama_tanaman: hidroInput.namaTanaman,
-          jumlah_panen: Number(hidroInput.jumlahPanen),
-          harga_jual: Number(hidroInput.hargaJual)
-        }
-      ]);
-
-    if (error) throw error;
-
-    // 3. Jika berhasil
-    alert("✅ Data Hidroponik Tersimpan!");
-    setHidroInput({ 
-      tglTanam: '', 
-      namaTanaman: '', 
-      jumlahPanen: '', 
-      hargaJual: '' 
-    });
-
-  } catch (err) {
-    console.error("Error menyimpan hidroponik:", err.message);
-    alert("❌ Gagal menyimpan: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
-  const handleSimpanTakaranPakan = async () => {
-  // 1. Validasi Input
-  if (!pakanInput.namaIkan || !pakanInput.takaranPakan) {
-    return alert("Lengkapi data pakan!");
-  }
-
-  setLoading(true);
-
-  try {
-    // 2. Kirim data ke Supabase
-    // Pastikan nama kolom di bawah sesuai dengan yang ada di tabel 'jurnal_pakan'
-    const { error } = await supabase
-      .from('jurnal_pakan')
-      .insert([
-        {
-          nama_ikan: pakanInput.namaIkan,
-          usia_ikan: Number(pakanInput.usiaIkan),
-          ukuran_ikan: Number(pakanInput.ukuranIkan),
-          takaran_pakan: Number(pakanInput.takaranPakan),
-          durasi_kipas: Number(pakanInput.durasiKipas),
-          durasi_ganti: Number(pakanInput.durasiGanti),
-          created_at: new Date() // Opsional: untuk mencatat waktu input
-        }
-      ]);
-
-    if (error) throw error;
-
-    // 3. Jika berhasil
-    alert("✅ Jurnal Takaran Pakan Tersimpan!");
-    
-    // Reset state input
-    setPakanInput({ 
-      namaIkan: '', 
-      usiaIkan: '', 
-      ukuranIkan: '', 
-      takaranPakan: '', 
-      durasiKipas: '', 
-      durasiGanti: '' 
-    });
-
-  } catch (err) {
-    console.error("Error menyimpan ke Supabase:", err.message);
-    alert("❌ Gagal menyimpan data: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
- const handleManualPakan = async () => {
-  setLoading(true);
-
-  try {
-    // Mengupdate status menjadi 'ON' di tabel 'kontrol_manual'
-    // Asumsi: Kita memiliki tabel bernama 'kontrol_manual' dengan ID 1
-    const { error } = await supabase
-      .from('kontrol_manual')
-      .update({ status: 'ON' })
-      .eq('id', 1);
-
-    if (error) throw error;
-
-    alert("✅ Perintah Manual Dikirim!");
-
-    // Opsional: Jika ingin status kembali ke 'OFF' otomatis setelah 2 detik
-    // setTimeout(() => {
-    //   supabase.from('kontrol_manual').update({ status: 'OFF' }).eq('id', 1);
-    // }, 2000);
-
-  } catch (err) {
-    console.error("Error mengirim perintah:", err.message);
-    alert("❌ Gagal mengirim perintah: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  // 2. FUNGSI HANDLE DI SINI
+  const handleUpdatePakan = async () => { /* ... */ };
+  const handleSimpanTakaranPakan = async () => { /* ... */ };
 // 1. Definisikan style di luar fungsi komponen agar bersih
 const styles = {
   detailContainer: {
@@ -295,6 +45,7 @@ const styles = {
     borderRadius: '12px',
     boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
   }
+}
 };
 
   
