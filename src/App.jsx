@@ -86,7 +86,6 @@ function App() {
     <div style={menuCardStyle} onClick={() => setActivePage('pengaturan')}>
       <div style={{ fontSize: '30px' }}>🐟</div>
       <div style={{ fontWeight: 'bold', marginTop: '10px' }}>PENGATURAN PAKAN</div>
-      <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Atur jadwal & durasi</div>
     </div>
   </div>
 ) : (
