@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { useEffect } from 'react';
 
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
@@ -13,8 +14,20 @@ function App() {
     durasi: 5
   });
   const [loading, setLoading] = useState(true);
-  const [catatan, setCatatan] = useState([]); // Menyimpan daftar catatan
+  const [catatan, setCatatan] = useState(() => {
+  const saved = localStorage.getItem("jurnalData");
+  return saved ? JSON.parse(saved) : [];
+});// Menyimpan daftar catatan
+
 const [inputTeks, setInputTeks] = useState(""); // Menyimpan teks input saat ini
+const hapusCatatan = (index) => {
+  const dataBaru = catatan.filter((_, i) => i !== index);
+  setCatatan(dataBaru);
+};
+
+useEffect(() => {
+    localStorage.setItem("jurnalData", JSON.stringify(catatan));
+  }, [catatan]);
 
 const tambahCatatan = () => {
   if (inputTeks.trim() !== "") {
@@ -168,52 +181,65 @@ const tambahCatatan = () => {
           ← Kembali ke Menu
         </button>
 
-    {/* AREA INPUT JURNAL */}
-    <div style={{ marginBottom: '25px', background: '#1E293B', padding: '15px', borderRadius: '12px' }}>
-      <textarea
-        placeholder="Tulis kegiatan hari ini..."
-    value={inputTeks}
-    onChange={(e) => setInputTeks(e.target.value)}
-    style={{ 
-      ...inputStyle, 
-      marginBottom: '10px',
-      minHeight: '100px',    // Menentukan tinggi minimum
-      resize: 'vertical',    // Memungkinkan pengguna mengubah tinggi secara manual
-      fontFamily: 'inherit'  // Mengikuti font aplikasi
-    }}
-  />
-      <button style={buttonStyle} onClick={tambahCatatan}>
-        Simpan Catatan
-      </button>
-    </div>
+        {/* Form Input */}
+    <textarea 
+      value={inputTeks}
+      onChange={(e) => setInputTeks(e.target.value)}
+      style={{ ...inputStyle, marginBottom: '10px', minHeight: '100px' }}
+      placeholder="Tulis kegiatan..."
+    />
+    <button style={buttonStyle} onClick={tambahCatatan}>Simpan</button>
+
+    
+
+    
 
     {/* AREA DAFTAR CATATAN (Dibalik agar yang terbaru di atas) */}
-    {[...catatan].reverse().map((item, index) => (
-      <div key={index} style={{ 
-        background: '#2c3e50', 
-        padding: '15px', 
-        marginBottom: '10px', 
-        borderRadius: '8px',
-        borderLeft: '4px solid #10b981' 
-      }}>
-        <small style={{ color: '#94a3b8' }}>{item.tanggal}</small>
-        {/* TAMBAHKAN white-space: 'pre-wrap' DI SINI */}
-    <p style={{ 
-      margin: '5px 0', 
-      color: '#E2E8F0',
-      whiteSpace: 'pre-wrap', 
-      wordWrap: 'break-word'
-      textAlign: 'left' // <--- TAMBAHKAN INI UNTUK RATA KIRI 
+    {[...catatan].reverse().map((item, index) => {
+  const indexAsli = catatan.length - 1 - index;
+  return (
+    <div key={indexAsli} style={{ 
+      background: '#2c3e50', 
+      padding: '15px', 
+      marginBottom: '10px', 
+      borderRadius: '8px',
+      borderLeft: '4px solid #10b981',
+      textAlign: 'left'
     }}>
-      {item.teks}
-    </p>
 
-      </div>
-      ))}
+       <small style={{ color: '#94a3b8' }}>{item.tanggal}</small>
+      <p style={{ 
+        margin: '5px 0', 
+        color: '#E2E8F0',
+        whiteSpace: 'pre-wrap', 
+        wordWrap: 'break-word'
+      }}>
+        {item.teks}
+      </p>
+
+    {/* Tombol Hapus dengan penutup yang benar */}
+      <button 
+        onClick={() => hapusCatatan(indexAsli)}
+        style={{ 
+          background: '#ef4444', 
+          color: 'white', 
+          border: 'none', 
+          padding: '5px 10px', 
+          borderRadius: '5px', 
+          cursor: 'pointer', 
+          fontSize: '0.7rem' 
+        }}
+      >
+        Hapus
+      </button>
     </div>
-      )}
-  </div>
-    )
-    }
+  );
+})}
+
+</div>
+)}
+</div>
+);
+}
 
 export default App; 
