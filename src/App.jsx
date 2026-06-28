@@ -160,16 +160,19 @@ const tambahCatatan = () => {
 
     {/* Tampilan JURNAL */}
 {activePage === 'jurnal' && (
-  <div style={{ marginTop: '20px', width: '90%', maxWidth: '400px' }}>
-    <button style={{ marginBottom: '20px' }} onClick={() => setActivePage('beranda')}>
-      ← Kembali
-    </button>
+   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+        <button 
+          style={{ ...buttonStyle, marginBottom: '20px', padding: '8px 20px' }} 
+          onClick={() => setActivePage('beranda')}
+        >
+          ← Kembali ke Menu
+        </button>
 
     {/* AREA INPUT JURNAL */}
     <div style={{ marginBottom: '25px', background: '#1E293B', padding: '15px', borderRadius: '12px' }}>
       <input 
         type="text" 
-        placeholder="Tulis kegiatan hari ini..."
+        placeholder="Tulis Catatan hari ini ..."
         value={inputTeks}
         onChange={(e) => setInputTeks(e.target.value)}
         style={{ ...inputStyle, marginBottom: '10px' }}
