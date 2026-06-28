@@ -197,8 +197,8 @@ const tambahCatatan = () => {
 
     
 
-    {/* AREA DAFTAR CATATAN (Dibalik agar yang terbaru di atas) */}
-    {[...catatan].reverse().map((item, index) => {
+    {/* AREA DAFTAR CATATAN */}
+{[...catatan].reverse().map((item, index) => {
   const indexAsli = catatan.length - 1 - index;
   return (
     <div key={indexAsli} style={{ 
@@ -207,30 +207,37 @@ const tambahCatatan = () => {
       marginBottom: '10px', 
       borderRadius: '8px',
       borderLeft: '4px solid #10b981',
-      textAlign: 'left'
+      textAlign: 'left',
+      display: 'flex',            // Membuat kontainer menjadi fleksibel
+      justifyContent: 'space-between', // Memisahkan konten (teks di kiri, tombol di kanan)
+      alignItems: 'flex-start'    // Menyejajarkan posisi atas
     }}>
+      
+      {/* BAGIAN TEKS (Kiri) */}
+      <div style={{ flex: 1, marginRight: '10px' }}>
+        <small style={{ color: '#94a3b8' }}>{item.tanggal}</small>
+        <p style={{ 
+          margin: '5px 0 0 0', 
+          color: '#E2E8F0',
+          whiteSpace: 'pre-wrap', 
+          wordWrap: 'break-word'
+        }}>
+          {item.teks}
+        </p>
+      </div>
 
-       <small style={{ color: '#94a3b8' }}>{item.tanggal}</small>
-      <p style={{ 
-        margin: '5px 0', 
-        color: '#E2E8F0',
-        whiteSpace: 'pre-wrap', 
-        wordWrap: 'break-word'
-      }}>
-        {item.teks}
-      </p>
-
-    {/* Tombol Hapus dengan penutup yang benar */}
+      {/* TOMBOL HAPUS (Kanan) */}
       <button 
         onClick={() => hapusCatatan(indexAsli)}
         style={{ 
           background: '#ef4444', 
           color: 'white', 
           border: 'none', 
-          padding: '5px 10px', 
+          padding: '5px 8px', 
           borderRadius: '5px', 
           cursor: 'pointer', 
-          fontSize: '0.7rem' 
+          fontSize: '0.7rem',
+          flexShrink: 0          // Mencegah tombol mengecil jika teks panjang
         }}
       >
         Hapus
