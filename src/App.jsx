@@ -7,46 +7,41 @@ const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_pu
 
 function App() {
   const [data, setData] = useState({
-    tglMulai: 1, tglSelesai: 30, 
-    jamPagi: 8, menitPagi: 0, 
-    jamSore: 17, menitSore: 0, 
+    tglMulai: 1, tglSelesai: 30,
+    jamPagi: 8, menitPagi: 0,
+    jamSore: 17, menitSore: 0,
     durasi: 5
   });
 
   const [loading, setLoading] = useState(true);
-
   const [catatan, setCatatan] = useState(() => {
-  const saved = localStorage.getItem("jurnalData");
-  return saved ? JSON.parse(saved) : [];
-});// Menyimpan daftar catatan
+    const saved = localStorage.getItem("jurnalData");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [inputTeks, setInputTeks] = useState("");
+  const [activePage, setActivePage] = useState('beranda');
 
-const [inputTeks, setInputTeks] = useState(""); // Menyimpan teks input saat ini
-const [activePage, setActivePage] = useState('beranda');
-
-  // --- BAGIAN EFEK (Taruh tepat di bawah state) ---
+  // --- EFEK ---
+  // Sinkronisasi warna background
   useEffect(() => {
-    localStorage.setItem("jurnalData", JSON.stringify(catatan));
-  }, [catatan])
+    document.body.style.backgroundColor = '#0f172a';
+    document.body.style.margin = '0';
+    document.body.style.padding = '20px';
+    document.body.style.minHeight = '100vh';
+    fetchData();
+  }, []);
 
-useEffect(() => {
-    localStorage.setItem("jurnalData", JSON.stringify(catatan));
-  }, [catatan]);
-
-const tambahCatatan = () => {
+  // --- FUNGSI ---
+  const tambahCatatan = () => {
     if (inputTeks.trim() !== "") {
       setCatatan([...catatan, { teks: inputTeks, tanggal: new Date().toLocaleDateString() }]);
       setInputTeks("");
     }
   };
 
-  // Efek untuk mengubah warna latar belakang seluruh halaman
-  useEffect(() => {
-  document.body.style.backgroundColor = '#0f172a';
-  document.body.style.margin = '0';
-  document.body.style.padding = '20px';
-  document.body.style.minHeight = '100vh';
-  fetchData();
-}, []);
+  const hapusCatatan = (index) => {
+    setCatatan(catatan.filter((_, i) => i !== index));
+  };
 
   const fetchData = async () => {
     const { data: dbData } = await supabase
@@ -67,34 +62,34 @@ const tambahCatatan = () => {
   };
 
   const handleUpdate = async () => {
-  setLoading(true);
-  // Kita update langsung ke baris dengan pengenal: 1
-  const { error } = await supabase
-    .from('jadwal_pakan')
-    .update({
-      jam_pagi: parseInt(data.jamPagi),
-      menit_pagi: parseInt(data.menitPagi),
-      jam_sore: parseInt(data.jamSore),
-      menit_sore: parseInt(data.menitSore),
-      durasi_detik: parseInt(data.durasi)
-    })
-    .eq('pengenal', 1); // <--- KUNCI: Harus sama dengan di Arduino
+    setLoading(true);
+    const { error } = await supabase
+      .from('jadwal_pakan')
+      .update({
+        jam_pagi: parseInt(data.jamPagi),
+        menit_pagi: parseInt(data.menitPagi),
+        jam_sore: parseInt(data.jamSore),
+        menit_sore: parseInt(data.menitSore),
+        durasi_detik: parseInt(data.durasi)
+      })
+      .eq('pengenal', 1);
 
-  if (error) {
-    alert("Gagal update: " + error.message);
-  } else {
-    alert("Data berhasil dikirim ke alat!");
-  }
-  setLoading(false);
-};
+    if (error) {
+      alert("Gagal update: " + error.message);
+    } else {
+      alert("Data berhasil dikirim ke alat!");
+    }
+    setLoading(false);
+  };
 
+  // --- STYLING ---
   const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '0 auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
   const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', backgroundColor: '#0f172a', color: '#fff', boxSizing: 'border-box' };
   const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
   const menuCardStyle = { padding: '20px', backgroundColor: '#334155', borderRadius: '15px', cursor: 'pointer', textAlign: 'center', transition: '0.3s' };
-  
-  if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
 
+  if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;
+  
   return (
 <div style={containerStyle}>
       {/* 1. HEADER UTAMA */}
@@ -174,64 +169,53 @@ const tambahCatatan = () => {
     )}
 
 
-    {/* Tampilan JURNAL */}
-{activePage === 'jurnal' && (
+   {activePage === 'jurnal' && (
   <div style={{ marginTop: '20px', width: '90%', maxWidth: '400px', marginInline: 'auto' }}>
     <button style={{ ...buttonStyle, marginBottom: '20px' }} onClick={() => setActivePage('beranda')}>
       ← Kembali ke Menu
     </button>
 
-  
-
-    {/* AREA DAFTAR CATATAN */}
-{[...catatan].reverse().map((item, index) => {
-  const indexAsli = catatan.length - 1 - index;
-  return (
-    <div key={indexAsli} style={{ 
-      background: '#2c3e50', 
-      padding: '15px', 
-      marginBottom: '10px', 
-      borderRadius: '8px',
-      borderLeft: '4px solid #10b981',
-      textAlign: 'left',
-      display: 'flex',            // Membuat kontainer menjadi fleksibel
-      justifyContent: 'space-between', // Memisahkan konten (teks di kiri, tombol di kanan)
-      alignItems: 'flex-start'    // Menyejajarkan posisi atas
-    }}>
-      
-      {/* BAGIAN TEKS (Kiri) */}
-      <div style={{ flex: 1, marginRight: '10px' }}>
-        <small style={{ color: '#94a3b8' }}>{item.tanggal}</small>
-        <p style={{ 
-          margin: '5px 0 0 0', 
-          color: '#E2E8F0',
-          whiteSpace: 'pre-wrap', 
-          wordWrap: 'break-word'
-        }}>
-          {item.teks}
-        </p>
-      </div>
-
-      {/* TOMBOL HAPUS (Kanan) */}
-      <button 
-        onClick={() => hapusCatatan(indexAsli)}
-        style={{ 
-          background: '#ef4444', 
-          color: 'white', 
-          border: 'none', 
-          padding: '5px 8px', 
-          borderRadius: '5px', 
-          cursor: 'pointer', 
-          fontSize: '0.7rem',
-          flexShrink: 0          // Mencegah tombol mengecil jika teks panjang
-        }}
-      >
-        Hapus
+    {/* BAGIAN INPUT (Harus ada supaya bisa nulis catatan baru) */}
+    <div style={{ marginBottom: '25px', background: '#1E293B', padding: '15px', borderRadius: '12px' }}>
+      <textarea 
+        placeholder="Tulis kegiatan hari ini..."
+        value={inputTeks}
+        onChange={(e) => setInputTeks(e.target.value)}
+        style={{ width: '100%', minHeight: '100px', marginBottom: '10px', background: '#0f172a', color: 'white', borderRadius: '8px', padding: '10px' }}
+      />
+      <button style={{ ...buttonStyle, width: '100%' }} onClick={tambahCatatan}>
+        Simpan Catatan
       </button>
     </div>
-  );
-})}
 
+    {/* BAGIAN DAFTAR CATATAN */}
+    {[...catatan].reverse().map((item, index) => {
+      const indexAsli = catatan.length - 1 - index;
+      return (
+        <div key={indexAsli} style={{ 
+          background: '#2c3e50', padding: '15px', marginBottom: '10px', 
+          borderRadius: '8px', borderLeft: '4px solid #10b981',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'
+        }}>
+          <div style={{ flex: 1, marginRight: '10px', textAlign: 'left' }}>
+            <small style={{ color: '#94a3b8', fontSize: '0.75rem' }}>{item.tanggal}</small>
+            <p style={{ margin: '5px 0 0 0', color: '#E2E8F0', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+              {item.teks}
+            </p>
+          </div>
+          
+          <button 
+            onClick={() => hapusCatatan(indexAsli)}
+            style={{ 
+              background: '#ef4444', color: 'white', border: 'none', 
+              padding: '5px 8px', borderRadius: '5px', cursor: 'pointer', fontSize: '0.7rem', flexShrink: 0 
+            }}
+          >
+            Hapus
+          </button>
+        </div>
+      );
+    })}
 </div>
 )}
 </div>
