@@ -197,7 +197,16 @@ const tambahCatatan = () => {
         borderLeft: '4px solid #10b981' 
       }}>
         <small style={{ color: '#94a3b8' }}>{item.tanggal}</small>
-        <p style={{ margin: '5px 0', color: '#E2E8F0' }}>{item.teks}</p>
+        {/* TAMBAHKAN white-space: 'pre-wrap' DI SINI */}
+    <p style={{ 
+      margin: '5px 0', 
+      color: '#E2E8F0',
+      whiteSpace: 'pre-wrap', 
+      wordWrap: 'break-word' 
+    }}>
+      {item.teks}
+    </p>
+    
       </div>
       ))}
     </div>
