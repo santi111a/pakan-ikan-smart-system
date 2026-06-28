@@ -81,53 +81,39 @@ const tambahCatatan = () => {
 
   return (
 <div style={containerStyle}>
-  {/* 1. HEADER UTAMA (Selalu muncul di semua halaman) */}
+      {/* 1. HEADER UTAMA */}
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
         <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
       </div>
 
- {/* KONDISI HALAMAN */}
-{activePage === 'beranda' ? (
-  /* HALAMAN BERANDA */
-  <div style={{ textAlign: 'center' }}>
-    {/* INI MENU YANG MENUJU KE PENGATURAN */}
-    <div style={menuCardStyle} onClick={() => setActivePage('pengaturan')}>
-      <div style={{ fontSize: '30px' }}>🐟</div>
-      <div style={{ fontWeight: 'bold', marginTop: '10px' }}>PENGATURAN PAKAN</div>
-    </div>
+{/* Tampilan BERANDA */}
+      {activePage === 'beranda' && (
+        <div>
+          <div style={menuCardStyle} onClick={() => setActivePage('pengaturan')}>
+            <div style={{ fontSize: '30px' }}>🐟</div>
+            <div style={{ fontWeight: 'bold' }}>PENGATURAN PAKAN</div>
+          </div>
+          <div style={menuCardStyle} onClick={() => setActivePage('jurnal')}>
+            <div style={{ fontSize: '30px' }}>📝</div>
+            <div style={{ fontWeight: 'bold' }}>JURNAL HARIAN</div>
+          </div>
+        </div>
+      )}
   
-  {/* Tambahkan ini di bawah menu PENGATURAN PAKAN */}
-<div style={menuCardStyle} onClick={() => setActivePage('jurnal')}>
-  <div style={{ fontSize: '30px' }}>📝</div>
-  <div style={{ fontWeight: 'bold', marginTop: '10px' }}>JURNAL HARIAN</div>
-</div>
-</div>
-) : (
-  
-  
-  /* HALAMAN PENGATURAN (DI DALAM KOTAK) */
- <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-  
-  {/* Tombol Kembali di atas kotak */}
-  <button 
-    style={{ ...buttonStyle, marginBottom: '20px', width: 'auto', padding: '8px 20px' }} 
-    onClick={() => setActivePage('beranda')}
-  >
-    ← Kembali ke Menu
-  </button>
-
-  {/* KOTAK UTAMA */}
-  <div style={{ 
-    backgroundColor: '#1E293B', 
-    padding: '30px', 
-    borderRadius: '16px', 
-    width: '90%', 
-    maxWidth: '400px',
-    textAlign: 'center',
-    color: '#38BDF8' // Warna biru muda sesuai gambar
-  }}>
-     
+ {/* Tampilan PENGATURAN */}
+    {activePage === 'pengaturan' && (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+        <button 
+          style={{ ...buttonStyle, marginBottom: '20px', padding: '8px 20px' }} 
+          onClick={() => setActivePage('beranda')}
+        >
+          ← Kembali ke Menu
+        </button>
+        
+        <div style={{ backgroundColor: '#1E293B', padding: '30px', borderRadius: '16px', width: '90%', maxWidth: '400px', textAlign: 'center', color: '#38BDF8' }}>
+          <h3>Pengaturan Pakan</h3>
+          
       {/* Rentang Tanggal */}
       <div style={{ marginBottom: '20px' }}>
         <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>RENTANG TANGGAL</label>
@@ -167,11 +153,25 @@ const tambahCatatan = () => {
 
       <button style={buttonStyle} onClick={handleUpdate}>PERBARUI DATA & AKTIFKAN</button>
     </div>
+    </div>
+    )}
 
-    
-      </div>
-)}
-</div>
-  )
-}
-export default App;
+
+    {/* Tampilan JURNAL */}
+      {activePage === 'jurnal' && (
+        <div style={{ marginTop: '20px', width: '100%' }}>
+          <button style={{ marginBottom: '20px' }} onClick={() => setActivePage('beranda')}>← Kembali</button>
+          {catatan.map((item, index) => (
+            <div key={index} style={{ background: '#2c3e50', padding: '10px', marginBottom: '10px', borderRadius: '8px' }}>
+              <small style={{ color: '#94a3b8' }}>{item.tanggal}</small>
+              <p style={{ margin: '5px 0' }}>{item.teks}</p>
+            </div>
+      ))}
+      <button onClick={() => setActivePage('beranda')}>Kembali</button>
+    </div>
+      )}
+  </div>
+    )
+    }
+
+export default App; 
