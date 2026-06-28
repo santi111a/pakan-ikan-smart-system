@@ -89,7 +89,8 @@ const tambahCatatan = () => {
 
 {/* Tampilan BERANDA */}
       {activePage === 'beranda' && (
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
           <div style={menuCardStyle} onClick={() => setActivePage('pengaturan')}>
             <div style={{ fontSize: '30px' }}>🐟</div>
             <div style={{ fontWeight: 'bold' }}>PENGATURAN PAKAN</div>
@@ -167,7 +168,6 @@ const tambahCatatan = () => {
               <p style={{ margin: '5px 0' }}>{item.teks}</p>
             </div>
       ))}
-      <button onClick={() => setActivePage('beranda')}>Kembali</button>
     </div>
       )}
   </div>
