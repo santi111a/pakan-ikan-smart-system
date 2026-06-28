@@ -33,11 +33,12 @@ function App() {
 
   // --- FUNGSI ---
   const tambahCatatan = () => {
-    if (inputTeks.trim() !== "") {
-      setCatatan([...catatan, { teks: inputTeks, tanggal: new Date().toLocaleDateString() }]);
-      setInputTeks("");
-    }
-  };
+  if (inputTeks.trim() !== "") {
+    const catatanBaru = [...catatan, { teks: inputTeks, tanggal: new Date().toLocaleDateString() }];
+    setCatatan(catatanBaru); // <-- Harus memanggil ini
+    setInputTeks("");
+  }
+};
 
   const hapusCatatan = (index) => {
     setCatatan(catatan.filter((_, i) => i !== index));
@@ -81,6 +82,8 @@ function App() {
     }
     setLoading(false);
   };
+
+  console.log("Isi catatan di state:", catatan);
 
   // --- STYLING ---
   const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '0 auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
