@@ -170,13 +170,18 @@ const tambahCatatan = () => {
 
     {/* AREA INPUT JURNAL */}
     <div style={{ marginBottom: '25px', background: '#1E293B', padding: '15px', borderRadius: '12px' }}>
-      <input 
-        type="text" 
-        placeholder="Tulis Catatan hari ini ..."
-        value={inputTeks}
-        onChange={(e) => setInputTeks(e.target.value)}
-        style={{ ...inputStyle, marginBottom: '10px' }}
-      />
+      <textarea
+        placeholder="Tulis kegiatan hari ini..."
+    value={inputTeks}
+    onChange={(e) => setInputTeks(e.target.value)}
+    style={{ 
+      ...inputStyle, 
+      marginBottom: '10px',
+      minHeight: '100px',    // Menentukan tinggi minimum
+      resize: 'vertical',    // Memungkinkan pengguna mengubah tinggi secara manual
+      fontFamily: 'inherit'  // Mengikuti font aplikasi
+    }}
+  />
       <button style={buttonStyle} onClick={tambahCatatan}>
         Simpan Catatan
       </button>
