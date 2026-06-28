@@ -176,26 +176,12 @@ const tambahCatatan = () => {
 
     {/* Tampilan JURNAL */}
 {activePage === 'jurnal' && (
-   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-        <button 
-          style={{ ...buttonStyle, marginBottom: '20px', padding: '8px 20px' }} 
-          onClick={() => setActivePage('beranda')}
-        >
-          ← Kembali ke Menu
-        </button>
+  <div style={{ marginTop: '20px', width: '90%', maxWidth: '400px', marginInline: 'auto' }}>
+    <button style={{ ...buttonStyle, marginBottom: '20px' }} onClick={() => setActivePage('beranda')}>
+      ← Kembali ke Menu
+    </button>
 
-        {/* Form Input */}
-    <textarea 
-      value={inputTeks}
-      onChange={(e) => setInputTeks(e.target.value)}
-      style={{ ...inputStyle, marginBottom: '10px', minHeight: '100px' }}
-      placeholder="Tulis kegiatan..."
-    />
-    <button style={buttonStyle} onClick={tambahCatatan}>Simpan</button>
-
-    
-
-    
+  
 
     {/* AREA DAFTAR CATATAN */}
 {[...catatan].reverse().map((item, index) => {
