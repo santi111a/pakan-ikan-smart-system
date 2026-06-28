@@ -72,6 +72,7 @@ function App() {
 
   return (
 <div style={containerStyle}>
+  {/* 1. HEADER UTAMA (Selalu muncul di semua halaman) */}
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
         <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>KSTM AL IHYA</p>
@@ -100,8 +101,7 @@ function App() {
   >
     ← Kembali ke Menu
   </button>
-    <h2 style={{ color: '#38BDF8', textAlign: 'center' }}>Pengaturan Pakan</h2>
-          
+
   {/* KOTAK UTAMA */}
   <div style={{ 
     backgroundColor: '#1E293B', 
@@ -112,7 +112,6 @@ function App() {
     textAlign: 'center',
     color: '#38BDF8' // Warna biru muda sesuai gambar
   }}>
-    <h2 style={{ marginBottom: '25px' }}>Pengaturan Pakan</h2>
      
       {/* Rentang Tanggal */}
       <div style={{ marginBottom: '20px' }}>
@@ -154,7 +153,7 @@ function App() {
       <button style={buttonStyle} onClick={handleUpdate}>PERBARUI DATA & AKTIFKAN</button>
     </div>
       </div>
-)};
+)}
 </div>
   )
 }
