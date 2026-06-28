@@ -202,11 +202,12 @@ const tambahCatatan = () => {
       margin: '5px 0', 
       color: '#E2E8F0',
       whiteSpace: 'pre-wrap', 
-      wordWrap: 'break-word' 
+      wordWrap: 'break-word'
+      textAlign: 'left' // <--- TAMBAHKAN INI UNTUK RATA KIRI 
     }}>
       {item.teks}
     </p>
-    
+
       </div>
       ))}
     </div>
