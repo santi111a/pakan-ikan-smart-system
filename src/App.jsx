@@ -13,6 +13,15 @@ function App() {
     durasi: 5
   });
   const [loading, setLoading] = useState(true);
+  const [catatan, setCatatan] = useState([]); // Menyimpan daftar catatan
+const [inputTeks, setInputTeks] = useState(""); // Menyimpan teks input saat ini
+
+const tambahCatatan = () => {
+  if (inputTeks.trim() !== "") {
+    setCatatan([...catatan, { teks: inputTeks, tanggal: new Date().toLocaleDateString() }]);
+    setInputTeks(""); // Reset input setelah disimpan
+  }
+};
 
   // Efek untuk mengubah warna latar belakang seluruh halaman
   useEffect(() => {
@@ -87,8 +96,15 @@ function App() {
       <div style={{ fontSize: '30px' }}>🐟</div>
       <div style={{ fontWeight: 'bold', marginTop: '10px' }}>PENGATURAN PAKAN</div>
     </div>
-  </div>
+  
+  {/* Tambahkan ini di bawah menu PENGATURAN PAKAN */}
+<div style={menuCardStyle} onClick={() => setActivePage('jurnal')}>
+  <div style={{ fontSize: '30px' }}>📝</div>
+  <div style={{ fontWeight: 'bold', marginTop: '10px' }}>JURNAL HARIAN</div>
+</div>
+</div>
 ) : (
+  
   
   /* HALAMAN PENGATURAN (DI DALAM KOTAK) */
  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
@@ -151,6 +167,8 @@ function App() {
 
       <button style={buttonStyle} onClick={handleUpdate}>PERBARUI DATA & AKTIFKAN</button>
     </div>
+
+    
       </div>
 )}
 </div>
