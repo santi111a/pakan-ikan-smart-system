@@ -1,40 +1,43 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
 
 function App() {
-  const [activePage, setActivePage] = useState('beranda');
   const [data, setData] = useState({
     tglMulai: 1, tglSelesai: 30, 
     jamPagi: 8, menitPagi: 0, 
     jamSore: 17, menitSore: 0, 
     durasi: 5
   });
+
   const [loading, setLoading] = useState(true);
+
   const [catatan, setCatatan] = useState(() => {
   const saved = localStorage.getItem("jurnalData");
   return saved ? JSON.parse(saved) : [];
 });// Menyimpan daftar catatan
 
 const [inputTeks, setInputTeks] = useState(""); // Menyimpan teks input saat ini
-const hapusCatatan = (index) => {
-  const dataBaru = catatan.filter((_, i) => i !== index);
-  setCatatan(dataBaru);
-};
+const [activePage, setActivePage] = useState('beranda');
+
+  // --- BAGIAN EFEK (Taruh tepat di bawah state) ---
+  useEffect(() => {
+    localStorage.setItem("jurnalData", JSON.stringify(catatan));
+  }, [catatan])
 
 useEffect(() => {
     localStorage.setItem("jurnalData", JSON.stringify(catatan));
   }, [catatan]);
 
 const tambahCatatan = () => {
-  if (inputTeks.trim() !== "") {
-    setCatatan([...catatan, { teks: inputTeks, tanggal: new Date().toLocaleDateString() }]);
-    setInputTeks(""); // Reset input setelah disimpan
-  }
-};
+    if (inputTeks.trim() !== "") {
+      setCatatan([...catatan, { teks: inputTeks, tanggal: new Date().toLocaleDateString() }]);
+      setInputTeks("");
+    }
+  };
 
   // Efek untuk mengubah warna latar belakang seluruh halaman
   useEffect(() => {
