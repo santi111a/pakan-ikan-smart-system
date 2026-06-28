@@ -159,14 +159,38 @@ const tambahCatatan = () => {
 
 
     {/* Tampilan JURNAL */}
-      {activePage === 'jurnal' && (
-        <div style={{ marginTop: '20px', width: '100%' }}>
-          <button style={{ marginBottom: '20px' }} onClick={() => setActivePage('beranda')}>← Kembali</button>
-          {catatan.map((item, index) => (
-            <div key={index} style={{ background: '#2c3e50', padding: '10px', marginBottom: '10px', borderRadius: '8px' }}>
-              <small style={{ color: '#94a3b8' }}>{item.tanggal}</small>
-              <p style={{ margin: '5px 0' }}>{item.teks}</p>
-            </div>
+{activePage === 'jurnal' && (
+  <div style={{ marginTop: '20px', width: '90%', maxWidth: '400px' }}>
+    <button style={{ marginBottom: '20px' }} onClick={() => setActivePage('beranda')}>
+      ← Kembali
+    </button>
+
+    {/* AREA INPUT JURNAL */}
+    <div style={{ marginBottom: '25px', background: '#1E293B', padding: '15px', borderRadius: '12px' }}>
+      <input 
+        type="text" 
+        placeholder="Tulis kegiatan hari ini..."
+        value={inputTeks}
+        onChange={(e) => setInputTeks(e.target.value)}
+        style={{ ...inputStyle, marginBottom: '10px' }}
+      />
+      <button style={buttonStyle} onClick={tambahCatatan}>
+        Simpan Catatan
+      </button>
+    </div>
+
+    {/* AREA DAFTAR CATATAN (Dibalik agar yang terbaru di atas) */}
+    {[...catatan].reverse().map((item, index) => (
+      <div key={index} style={{ 
+        background: '#2c3e50', 
+        padding: '15px', 
+        marginBottom: '10px', 
+        borderRadius: '8px',
+        borderLeft: '4px solid #10b981' 
+      }}>
+        <small style={{ color: '#94a3b8' }}>{item.tanggal}</small>
+        <p style={{ margin: '5px 0', color: '#E2E8F0' }}>{item.teks}</p>
+      </div>
       ))}
     </div>
       )}
