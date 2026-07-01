@@ -200,7 +200,7 @@ return (
           </div>
 
         {/* MENU BARU: Pengaturan Wi-Fi */}
-          <div style={{ ...menuCardStyle, backgroundColor: '#1e293b', border: '2px dashed #475569' }} onClick={() => setActivePage('wifi')}>
+          <div style={{ ...menuCardStyle, backgroundColor: '#334155' }} onClick={() => setActivePage('wifi')}>
             <div style={{ fontSize: '30px', marginBottom: '5px' }}>📶</div>
             <div style={{ fontWeight: 'bold', color: '#38bdf8' }}>PENGATURAN WI-FI</div>
             <small style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Ganti Koneksi Internet Alat</small>
