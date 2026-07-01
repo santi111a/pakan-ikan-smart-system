@@ -17,6 +17,11 @@ function App() {
     durasi: 5
   });
 
+  // Data Wi-Fi (Bebas karakter & spasi)
+  const [wifi, setWifi] = useState({
+    ssid: '',
+    password: ''
+  });
 
   // State Catatan (Mengambil data awal dari localStorage jika ada)
   const [catatan, setCatatan] = useState(() => {
@@ -55,7 +60,7 @@ function App() {
         .eq('pengenal', 1)
         .single();
 
-      if (error) throw error;
+      if (errorPakan) console.error("Error pakan:", errorPakan.message);
 
       if (dbData) {
         setData({
@@ -65,8 +70,24 @@ function App() {
           durasi: dbData.durasi_detik
         });
       }
+
+      // 2. Fetch Data Wi-Fi dari tabel 'setting_wifi'
+      const { data: dbWifi, error: errorWifi } = await supabase
+        .from('setting_wifi')
+        .select('*')
+        .eq('id', 1)
+        .single();
+
+    if (errorWifi) console.error("Error wifi:", errorWifi.message);
+      if (dbWifi) {
+        setWifi({
+          ssid: dbWifi.ssid || '',
+          password: dbWifi.password || ''
+        });
+      }
+
     } catch (error) {
-      console.error("Error fetching data:", error.message);
+      console.error("Gagal memuat data:", error.message);
     } finally {
       setLoading(false);
     }
@@ -95,6 +116,28 @@ function App() {
       setLoading(false);
     }
   };
+
+    // Update Wi-Fi ke Supabase
+  const handleUpdateWifi = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('setting_wifi')
+        .update({
+          ssid: wifi.ssid,          // Mengirim string murni (mendukung spasi & karakter unik)
+          password: wifi.password   // Mengirim string murni
+        })
+        .eq('id', 1);
+
+      if (error) throw error;
+      alert("Konfigurasi Wi-Fi berhasil dikirim ke alat!");
+    } catch (error) {
+      alert("Gagal memperbarui Wi-Fi: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   // Tambah Catatan Jurnal Jokal
   const tambahCatatan = () => {
@@ -154,6 +197,13 @@ return (
             <small style={{ color: '#10b981', fontSize: '0.85rem', fontWeight: '500' }}>
               {catatan.length} Catatan Tersimpan
             </small>
+          </div>
+
+        {/* MENU BARU: Pengaturan Wi-Fi */}
+          <div style={{ ...menuCardStyle, backgroundColor: '#1e293b', border: '2px dashed #475569' }} onClick={() => setActivePage('wifi')}>
+            <div style={{ fontSize: '30px', marginBottom: '5px' }}>📶</div>
+            <div style={{ fontWeight: 'bold', color: '#38bdf8' }}>PENGATURAN WI-FI</div>
+            <small style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Ganti Koneksi Internet Alat</small>
           </div>
 
         </div>
@@ -313,6 +363,53 @@ return (
           </div>
         </div>
       )}
+
+{/* ========================================== */}
+      {/* 4. TAMPILAN HALAMAN PENGATURAN WI-FI (BARU)*/}
+      {/* ========================================== */}
+      {activePage === 'wifi' && (
+        <div style={{ width: '100%' }}>
+          <button style={backButtonStyle} onClick={() => setActivePage('beranda')}>
+            ← Kembali ke Menu
+          </button>
+          
+          <div style={{ backgroundColor: '#1e293b', textAlign: 'left' }}>
+            <h3 style={{ color: '#38bdf8', marginTop: '0', marginBottom: '20px', textAlign: 'center' }}>Pengaturan Wi-Fi Alat</h3>
+            
+            {/* Input Nama Wi-Fi (SSID) */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>NAMA WI-FI (SSID)</label>
+              <input 
+                type="text" 
+                style={inputStyle} 
+                placeholder="Masukkan nama Wi-Fi Anda (Bebas Spasi)" 
+                value={wifi.ssid} 
+                onChange={(e) => setWifi({...wifi, ssid: e.target.value})} 
+              />
+            </div>
+
+            {/* Input Password Wi-Fi */}
+            <div style={{ marginBottom: '25px' }}>
+              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>KATA SANDI (PASSWORD)</label>
+              <input 
+                type="text" 
+                style={inputStyle} 
+                placeholder="Masukkan kata sandi Wi-Fi" 
+                value={wifi.password} 
+                onChange={(e) => setWifi({...wifi, password: e.target.value})} 
+              />
+              <small style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '5px', display: 'block' }}>
+                * Kosongkan jika jaringan bersifat publik/open.
+              </small>
+            </div>
+
+            <button style={{ ...buttonStyle, backgroundColor: '#38bdf8', color: '#0f172a' }} onClick={handleUpdateWifi}>
+              📡 SINKRONISASI WI-FI KE ALAT
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
