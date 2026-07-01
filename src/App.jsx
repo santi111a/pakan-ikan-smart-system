@@ -15,9 +15,13 @@ function App() {
 
   const [loading, setLoading] = useState(true);
   const [catatan, setCatatan] = useState(() => {
-    const saved = localStorage.getItem("jurnalData");
+  try {
+    const saved = localStorage.getItem("jurnalDataV2");
     return saved ? JSON.parse(saved) : [];
-  });
+  } catch (e) {
+    return [];
+  }
+});
   const [inputTeks, setInputTeks] = useState("");
   const [activePage, setActivePage] = useState('beranda');
 
