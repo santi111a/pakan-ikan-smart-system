@@ -1,15 +1,21 @@
 {
   "name": "Pakan Ikan Pintar",
-  "short_name": "PakanIkan",
-  "start_url": "./",
+  "short_name": "Pakan Ikan",
+  "description": "Aplikasi Pertanian Cerdas KSTM Al Ihya",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#0d1b2a",
+  "theme_color": "#0d1b2a",
   "icons": [
     {
-      "src": "/icons.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "src": "/icons/icon-192.jpg",
+      "sizes": "192x192",
+      "type": "image/jpg"
+    },
+    {
+      "src": "/icons/icon-512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpg"
     }
   ]
 }
