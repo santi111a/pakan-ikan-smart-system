@@ -487,14 +487,7 @@ export default function App() {
 
         </div>
 
-        {/* Quick Jump Bar untuk testing di development */}
-        <nav style={styles.jumpNav}>
-          {['welcome', 'daftar', 'masuk', 'menu', 'rab', 'pakan', 'harian', 'wifi', 'akun'].map((scr) => (
-            <button key={scr} style={{...styles.jumpBtn, ...(currentScreen === scr ? styles.jumpBtnActive : {})}} onClick={() => setCurrentScreen(scr)} type="button">
-              {scr.toUpperCase()}
-            </button>
-          ))}
-        </nav>
+    
       </main>
 
       {/* Toast Notification */}
@@ -559,9 +552,6 @@ const styles = {
   authInput: { border: '2px solid #4f86b3', borderRadius: '12px', padding: '11px 12px', background: 'transparent', color: '#e8eefb', width: '100%', fontSize: '14px' },
   eyeBtn: { position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 0, cursor: 'pointer', fontSize: '16px' },
   err: { margin: 0, minHeight: '18px', textAlign: 'center', color: '#ff8a8a', fontSize: '12.5px' },
-  jumpNav: { display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '6px', marginTop: '10px' },
-  jumpBtn: { background: 'transparent', color: '#8d9bb8', border: '1px solid #2a3957', borderRadius: '999px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' },
-  jumpBtnActive: { background: '#3b9dff', color: '#04111f', borderColor: '#3b9dff' },
   toast: { position: 'fixed', left: '50%', bottom: '20px', background: '#e8eefb', color: '#0b1220', padding: '10px 16px', borderRadius: '999px', fontWeight: 700, fontSize: '13px', transition: 'opacity .2s, transform .2s', zIndex: 10, pointerEvents: 'none' },
   hint: { textAlign: 'center', color: '#8d9bb8', fontSize: '12px', margin: '4px 0' }
 };
