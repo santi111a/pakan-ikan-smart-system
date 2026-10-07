@@ -549,8 +549,8 @@ const styles = {
   alt: { margin: '4px 0 0', textAlign: 'center', fontSize: '13.5px', color: '#e8eefb' },
   linkBtn: { background: 'none', border: 0, padding: 0, fontWeight: 600, color: '#7fb8e6', cursor: 'pointer', textDecoration: 'underline' },
   field: { display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'left', fontSize: '12.5px' },
-  authInput: { border: '2px solid #4f86b3', borderRadius: '12px', padding: '11px 12px', background: 'transparent', color: '#e8eefb', width: '100%', fontSize: '14px' },
-  eyeBtn: { position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 0, cursor: 'pointer', fontSize: '16px' },
+ authInput: { border: '2px solid #4f86b3', borderRadius: '12px', padding: '11px 40px 11px 12px', background: 'transparent', color: '#e8eefb', width: '100%', fontSize: '14px' },
+  eyeBtn: { position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 0, cursor: 'pointer', fontSize: '16px', color: '#8d9bb8', zIndex: 2 },
   err: { margin: 0, minHeight: '18px', textAlign: 'center', color: '#ff8a8a', fontSize: '12.5px' },
   toast: { position: 'fixed', left: '50%', bottom: '20px', background: '#e8eefb', color: '#0b1220', padding: '10px 16px', borderRadius: '999px', fontWeight: 700, fontSize: '13px', transition: 'opacity .2s, transform .2s', zIndex: 10, pointerEvents: 'none' },
   hint: { textAlign: 'center', color: '#8d9bb8', fontSize: '12px', margin: '4px 0' }
