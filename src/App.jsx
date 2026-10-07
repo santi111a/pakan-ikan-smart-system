@@ -1,417 +1,567 @@
- 
-import { createClient } from '@supabase/supabase-js';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import './App.css'; // Opsional, styling utama sudah di-handle via CSS inline / global di bawah
 
-const supabase = createClient('https://tqfspwtaexpxlmflaskd.supabase.co', 'sb_publishable_QTf6sd3BIoxhRf7u67-1JA_lPiLm_EB');
+export default function App() {
+  // State Navigasi & Akun
+  const [currentScreen, setCurrentScreen] = useState('welcome');
+  const [user, setUser] = useState({ name: 'Ahmad Fauzi', email: 'ahmad.fauzi@email.com', phone: '' });
+  const [registeredUsers, setRegisteredUsers] = useState({});
+  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
+  const [devStatus, setDevStatus] = useState('Terhubung');
 
-function App() {
-// --- STATE MANAGEMENT ---
-  const [activePage, setActivePage] = useState('beranda');
-  const [loading, setLoading] = useState(true);
-  const [inputTeks, setInputTeks] = useState("");
-  
-  const [data, setData] = useState({
-    tglMulai: 1, tglSelesai: 30,
-    jamPagi: 8, menitPagi: 0,
-    jamSore: 17, menitSore: 0,
-    durasi: 5
-  });
+  // State Fitur RAB
+  const [rabList, setRabList] = useState([
+    { d: '3 Okt 2026', s: 'Pakan Normal', f: '1.28' },
+    { d: '3 Okt 2026', s: 'Pakan Normal', f: '1.28' },
+  ]);
+  const [fPakan, setFPakan] = useState(3.5);
+  const [fBerat, setFBerat] = useState(450);
+  const [fSuhu, setFSuhu] = useState(29);
+  const [fPh, setFPh] = useState(7.5);
+  const [fMati, setFMati] = useState(15);
+  const [fTotal, setFTotal] = useState(150);
+  const [fBiaya, setFBiaya] = useState(150000);
+  const [fDesk, setFDesk] = useState('Pembelian obat');
 
-  // Data Wi-Fi (Bebas karakter & spasi)
-  const [wifi, setWifi] = useState({
-    ssid: '',
-    password: ''
-  });
+  // State Pakan & Wi-Fi & Harian
+  const [tglA, setTglA] = useState(1);
+  const [tglB, setTglB] = useState(30);
+  const [pagiH, setPagiH] = useState(8);
+  const [pagiM, setPagiM] = useState(0);
+  const [soreH, setSoreH] = useState(17);
+  const [soreM, setSoreM] = useState(0);
+  const [durasi, setDurasi] = useState(5);
+  const [pakanInfo, setPakanInfo] = useState('');
 
-  // State Catatan (Mengambil data awal dari localStorage jika ada)
-  const [catatan, setCatatan] = useState(() => {
-    try {
-      const saved = localStorage.getItem("jurnalDataV2");
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  });
+  const [logs, setLogs] = useState([{ d: '3 Oktober 2026', t: 'ada ikan mati' }]);
+  const [logText, setLogText] = useState('');
 
-  // --- EFEK (SIDE EFFECTS) ---
-  
-  // 1. Inisialisasi awal & Fetch Data Supabase
-  useEffect(() => {
-    document.body.style.backgroundColor = '#0f172a';
-    document.body.style.margin = '0';
-    document.body.style.padding = '20px';
-    document.body.style.minHeight = '100vh';
-    fetchData();
-  }, []);
+  const [ssid, setSsid] = useState('');
+  const [wifiPass, setWifiPass] = useState('');
+  const [wifiInfo, setWifiInfo] = useState('');
+  const [logoutConfirm, setLogoutConfirm] = useState(false);
 
- // 2. Otomatis simpan data catatan ke localStorage setiap ada perubahan state
-  useEffect(() => {
-    localStorage.setItem("jurnalDataV2", JSON.stringify(catatan));
-  }, [catatan]);
-  
-  // --- FUNGSI-FUNGSI ---
-  
-  // Ambil Data dari Supabase
-  const fetchData = async () => {
-    try {
-      const { data: dbData, error } = await supabase
-        .from('jadwal_pakan')
-        .select('*')
-        .eq('pengenal', 1)
-        .single();
+  // Form Auth State
+  const [rNama, setRNama] = useState('');
+  const [rMail, setRMail] = useState('');
+  const [rHp, setRHp] = useState('');
+  const [rPass, setRPass] = useState('');
+  const [rPass2, setRPass2] = useState('');
+  const [regErr, setRegErr] = useState('');
 
-      if (errorPakan) console.error("Error pakan:", errorPakan.message);
+  const [lMail, setLMail] = useState('');
+  const [lPass, setLPass] = useState('');
+  const [loginErr, setLoginErr] = useState('');
 
-      if (dbData) {
-        setData({
-          tglMulai: dbData.tgl_mulai, tglSelesai: dbData.tgl_selesai,
-          jamPagi: dbData.jam_pagi, menitPagi: dbData.menit_pagi,
-          jamSore: dbData.jam_sore, menitSore: dbData.menit_sore,
-          durasi: dbData.durasi_detik
-        });
-      }
+  const [showRPass, setShowRPass] = useState(false);
+  const [showLPass, setShowLPass] = useState(false);
 
-      // 2. Fetch Data Wi-Fi dari tabel 'setting_wifi'
-      const { data: dbWifi, error: errorWifi } = await supabase
-        .from('setting_wifi')
-        .select('*')
-        .eq('id', 1)
-        .single();
-
-    if (errorWifi) console.error("Error wifi:", errorWifi.message);
-      if (dbWifi) {
-        setWifi({
-          ssid: dbWifi.ssid || '',
-          password: dbWifi.password || ''
-        });
-      }
-
-    } catch (error) {
-      console.error("Gagal memuat data:", error.message);
-    } finally {
-      setLoading(false);
-    }
+  // Fungsi Toast Notifikasi
+  const triggerToast = (msg) => {
+    setToastMessage(msg);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2200);
   };
 
-  // Update Data ke Supabase
-  const handleUpdate = async () => {
-    setLoading(true);
-    try {
-      const { error } = await supabase
-        .from('jadwal_pakan')
-        .update({
-          jam_pagi: parseInt(data.jamPagi),
-          menit_pagi: parseInt(data.menitPagi),
-          jam_sore: parseInt(data.jamSore),
-          menit_sore: parseInt(data.menitSore),
-          durasi_detik: parseInt(data.durasi)
-        })
-        .eq('pengenal', 1);
+  // Kalkulasi FCR & Kondisi Air
+  const fcrVal = fBerat > 0 ? (fPakan / (fBerat / 1000 * 2.2)).toFixed(2) : '0.00';
+  const isWaterNormal = fPh >= 6.5 && fPh <= 8.5 && fSuhu >= 26 && fSuhu <= 32;
 
-      if (error) throw error;
-      alert("Data berhasil dikirim ke alat!");
-    } catch (error) {
-      alert("Gagal update: " + error.message);
-    } finally {
-      setLoading(false);
+  // Handler Simpan RAB
+  const handleSaveRab = () => {
+    const todayStr = '7 Okt 2026';
+    const newEntry = {
+      d: todayStr,
+      s: isWaterNormal ? 'Pakan Normal' : 'Kualitas Air Perlu Dicek',
+      f: fcrVal,
+    };
+    setRabList([newEntry, ...rabList]);
+    triggerToast('Jurnal RAB tersimpan');
+  };
+
+  const deleteRab = (idx) => {
+    setRabList(rabList.filter((_, i) => i !== idx));
+    triggerToast('Jurnal dihapus');
+  };
+
+  // Handler Log Harian
+  const handleSaveLog = () => {
+    if (!logText.trim()) {
+      triggerToast('Tulis catatan dulu');
+      return;
     }
+    const newLog = { d: '7 Oktober 2026', t: logText.trim() };
+    setLogs([newLog, ...logs]);
+    setLogText('');
+    triggerToast('Catatan disimpan ke riwayat');
   };
 
-    // Update Wi-Fi ke Supabase
-  const handleUpdateWifi = async () => {
-    setLoading(true);
-    try {
-      const { error } = await supabase
-        .from('setting_wifi')
-        .update({
-          ssid: wifi.ssid,          // Mengirim string murni (mendukung spasi & karakter unik)
-          password: wifi.password   // Mengirim string murni
-        })
-        .eq('id', 1);
+  const deleteLog = (idx) => {
+    setLogs(logs.filter((_, i) => i !== idx));
+    triggerToast('Catatan dihapus');
+  };
 
-      if (error) throw error;
-      alert("Konfigurasi Wi-Fi berhasil dikirim ke alat!");
-    } catch (error) {
-      alert("Gagal memperbarui Wi-Fi: " + error.message);
-    } finally {
-      setLoading(false);
+  // Handler Pakan
+  const handleSavePakan = () => {
+    if (tglA < 1 || tglB > 31 || tglA > tglB) {
+      triggerToast('Rentang tanggal tidak valid');
+      return;
     }
+    const pad = (n) => (n < 10 ? '0' : '') + n;
+    setPakanInfo(`Aktif tanggal ${tglA}–${tglB} · pagi ${pad(pagiH)}:${pad(pagiM)} · sore ${pad(soreH)}:${pad(soreM)} · ${durasi} detik`);
+    triggerToast('Jadwal dikirim ke alat');
   };
 
-
-  // Tambah Catatan Jurnal Jokal
-  const tambahCatatan = () => {
-    if (inputTeks.trim() !== "") {
-      const catatanBaru = [
-        ...catatan, 
-        { teks: inputTeks, tanggal: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) }
-      ];
-      setCatatan(catatanBaru);
-      setInputTeks("");
+  // Handler WiFi
+  const handleSyncWifi = () => {
+    if (!ssid.trim()) {
+      triggerToast('Isi nama Wi-Fi dulu');
+      return;
     }
+    setDevStatus('Menyambungkan…');
+    setWifiInfo('Mengirim pengaturan ke alat…');
+    setTimeout(() => {
+      setDevStatus('Terhubung');
+      setWifiInfo(`Alat terhubung ke "${ssid}".`);
+      triggerToast('Wi-Fi alat diperbarui');
+    }, 1400);
   };
 
-  // Hapus Catatan Jurnal Lokal
-  const hapusCatatan = (index) => {
-    const sisaCatatan = catatan.filter((_, i) => i !== index);
-    setCatatan(sisaCatatan);
+  // Handler Register & Login
+  const handleRegister = (e) => {
+    e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!rNama) { setRegErr('Isi nama lengkap Anda.'); return; }
+    if (!emailRegex.test(rMail)) { setRegErr('Alamat email belum benar.'); return; }
+    if (rPass.length < 8) { setRegErr('Kata sandi minimal 8 karakter.'); return; }
+    if (rPass !== rPass2) { setRegErr('Konfirmasi kata sandi tidak sama.'); return; }
+
+    const userData = { name: rNama, email: rMail.toLowerCase(), phone: rHp, pass: rPass };
+    setRegisteredUsers({ ...registeredUsers, [rMail.toLowerCase()]: userData });
+    setUser({ name: rNama, email: rMail.toLowerCase(), phone: rHp });
+    setCurrentScreen('menu');
+    triggerToast(`Pendaftaran berhasil, selamat datang ${rNama.split(' ')[0]}`);
   };
 
-  // --- STYLING (OBJECT) ---
-  const containerStyle = { fontFamily: "'Segoe UI', sans-serif", maxWidth: '400px', margin: '0 auto', padding: '30px', backgroundColor: '#1e293b', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', color: '#f1f5f9' };
-  const inputStyle = { width: '100%', padding: '12px', border: '1px solid #334155', borderRadius: '10px', fontSize: '1.1rem', backgroundColor: '#0f172a', color: '#fff', boxSizing: 'border-box' };
-  const buttonStyle = { width: '100%', padding: '15px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px' };
-  const menuCardStyle = { padding: '20px', backgroundColor: '#334155', borderRadius: '15px', cursor: 'pointer', textAlign: 'center', transition: '0.3s' };
-  const backButtonStyle = { ...buttonStyle, backgroundColor: '#475569', marginBottom: '20px' };
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(lMail)) { setLoginErr('Alamat email belum benar.'); return; }
+    if (lPass.length < 8) { setLoginErr('Kata sandi minimal 8 karakter.'); return; }
 
-  if (loading) return <div style={{ color: 'white', textAlign: 'center', marginTop: '50px' }}>Memuat...</div>;  
+    const found = registeredUsers[lMail.toLowerCase()];
+    if (found && found.pass !== lPass) {
+      setLoginErr('Kata sandi salah.');
+      return;
+    }
 
+    if (found) {
+      setUser(found);
+    } else {
+      setUser({ ...user, email: lMail.toLowerCase() });
+    }
+    setCurrentScreen('menu');
+    triggerToast('Berhasil masuk');
+  };
 
-return (
-    <div style={containerStyle}>
-      
-      {/* HEADER UTAMA */}
-      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h2 style={{ margin: '0', color: '#10b981' }}>🌱 SMART FARMING</h2>
-        <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: '5px 0 0 0' }}>KSTM AL IHYA</p>
-      </div>
+  const isAuthScreen = ['welcome', 'daftar', 'masuk'].includes(currentScreen);
 
-      {/* ========================================== */}
-      {/* 1. TAMPILAN BERANDA                        */}
-      {/* ========================================== */}
-      {activePage === 'beranda' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+  return (
+    <div style={styles.body}>
+      <main className="stage" style={styles.stage}>
+        <div className={`phone ${isAuthScreen ? 'auth' : ''}`} style={{ ...styles.phone, ...(isAuthScreen ? styles.phoneAuth : {}) }}>
           
-          {/* Menu Pengaturan Pakan */}
-          <div style={menuCardStyle} onClick={() => setActivePage('pengaturan')}>
-            <div style={{ fontSize: '30px', marginBottom: '5px' }}>🐟</div>
-            <div style={{ fontWeight: 'bold' }}>PENGATURAN PAKAN</div>
-            <small style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Sinkronisasi Alat Otomatis</small>
-          </div>
-          
-          {/* Menu Jurnal Harian */}
-          <div style={menuCardStyle} onClick={() => setActivePage('jurnal')}>
-            <div style={{ fontSize: '30px', marginBottom: '5px' }}>📝</div>
-            <div style={{ fontWeight: 'bold' }}>JURNAL HARIAN</div>
-            {/* RIWAYAT JUMLAH CATATAN AKTIF */}
-            <small style={{ color: '#10b981', fontSize: '0.85rem', fontWeight: '500' }}>
-              {catatan.length} Catatan Tersimpan
-            </small>
-          </div>
-
-        {/* MENU BARU: Pengaturan Wi-Fi */}
-          <div style={{ ...menuCardStyle, backgroundColor: '#334155' }} onClick={() => setActivePage('wifi')}>
-            <div style={{ fontSize: '30px', marginBottom: '5px' }}>📶</div>
-            <div style={{ fontWeight: 'bold', color: '#38bdf8' }}>PENGATURAN WI-FI</div>
-            <small style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Ganti Koneksi Internet Alat</small>
-          </div>
-
-        </div>
-      )}
-
-      {/* ========================================== */}
-      {/* 2. TAMPILAN PENGATURAN PAKAN              */}
-      {/* ========================================== */}
-      {activePage === 'pengaturan' && (
-        <div style={{ width: '100%' }}>
-          <button style={backButtonStyle} onClick={() => setActivePage('beranda')}>
-            ← Kembali ke Menu
-          </button>
-          
-          <div style={{ backgroundColor: '#1e293b', textAlign: 'center' }}>
-            <h3 style={{ color: '#38bdf8', marginTop: '0', marginBottom: '20px' }}>Pengaturan Jadwal Pakan</h3>
-            
-            {/* Rentang Tanggal */}
-            <div style={{ marginBottom: '20px', textAlign: 'left' }}>
-              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>RENTANG TANGGAL</label>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <input type="number" style={inputStyle} value={data.tglMulai} onChange={(e) => setData({...data, tglMulai: e.target.value})} />
-                <input type="number" style={inputStyle} value={data.tglSelesai} onChange={(e) => setData({...data, tglSelesai: e.target.value})} />
-              </div>
-            </div>
-
-            {/* Jadwal Pagi */}
-            <div style={{ marginBottom: '20px', textAlign: 'left' }}>
-              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>JADWAL PAGI</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <input type="number" style={inputStyle} value={data.jamPagi} onChange={(e) => setData({...data, jamPagi: e.target.value})} />
-                <span>:</span>
-                <input type="number" style={inputStyle} value={data.menitPagi} onChange={(e) => setData({...data, menitPagi: e.target.value})} />
-              </div>
-            </div>
-
-            {/* Jadwal Sore */}
-            <div style={{ marginBottom: '20px', textAlign: 'left' }}>
-              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>JADWAL SORE</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <input type="number" style={inputStyle} value={data.jamSore} onChange={(e) => setData({...data, jamSore: e.target.value})} />
-                <span>:</span>
-                <input type="number" style={inputStyle} value={data.menitSore} onChange={(e) => setData({...data, menitSore: e.target.value})} />
-              </div>
-            </div>
-
-            {/* Durasi */}
-            <div style={{ marginBottom: '25px', textAlign: 'left' }}>
-              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>DURASI (DETIK)</label>
-              <input type="number" style={inputStyle} value={data.durasi} onChange={(e) => setData({...data, durasi: e.target.value})} />
-            </div>
-
-            <button style={buttonStyle} onClick={handleUpdate}>PERBARUI DATA & AKTIFKAN</button>
-          </div>
-        </div>
-      )}
-
-{/* ========================================== */}
-{/* 3. TAMPILAN JURNAL HARIAN                 */}
-{/* ========================================== */}
-{activePage === 'jurnal' && (
-  <div style={{ width: '100%' }}>
-    {/* Tombol Kembali */}
-    <button style={backButtonStyle} onClick={() => setActivePage('beranda')}>
-      ← Kembali ke Menu
-    </button>
-
-    <h3 style={{ color: '#38bdf8', marginTop: '0', marginBottom: '15px' }}>Log Catatan Harian</h3>
-
-    {/* Form Input Catatan Baru */}
-    <div style={{ marginBottom: '25px', background: '#334155', padding: '15px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-      <textarea 
-        placeholder="Tulis kegiatan farming hari ini (misal: pemberian suplemen, kondisi air, atau cek bobot ikan)..."
-        value={inputTeks}
-        onChange={(e) => setInputTeks(e.target.value)}
-        style={{ width: '100%', minHeight: '90px', marginBottom: '12px', background: '#0f172a', color: 'white', borderRadius: '8px', padding: '12px', border: '1px solid #475569', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical' }}
-      />
-      <button style={{ ...buttonStyle, marginTop: '0', backgroundColor: '#10b981' }} onClick={tambahCatatan}>
-        💾 Simpan Ke Riwayat
-      </button>
-    </div>
-
-    {/* ========================================== */}
-    {/* BAGIAN DAFTAR RIWAYAT CATATAN YANG TERSIMPAN */}
-    {/* ========================================== */}
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h4 style={{ color: '#94a3b8', margin: 0, fontSize: '0.9rem', letterSpacing: '0.05em' }}>RIWAYAT AKTIVITAS</h4>
-        <span style={{ fontSize: '0.8rem', backgroundColor: '#0f172a', padding: '2px 8px', borderRadius: '12px', color: '#34d399', fontWeight: 'bold' }}>
-          {catatan.length} Total
-        </span>
-      </div>
-      
-      {catatan.length === 0 ? (
-        /* Tampilan Jika Riwayat Masih Kosong */
-        <div style={{ textAlign: 'center', color: '#64748b', padding: '30px 20px', background: '#1e293b', borderRadius: '12px', border: '2px dashed #334155', fontSize: '0.9rem' }}>
-          <div style={{ fontSize: '24px', marginBottom: '5px' }}>📭</div>
-          Belum ada catatan yang tersimpan.
-        </div>
-      ) : (
-        /* Menampilkan Catatan Terbaru di Posisi Paling Atas (Reverse) */
-        [...catatan].reverse().map((item, index) => {
-          // Menghitung indeks asli array agar fungsi hapus tidak salah target
-          const indexAsli = catatan.length - 1 - index; 
-          
-          return (
-            <div key={indexAsli} style={{ 
-              background: '#334155', 
-              padding: '16px', 
-              marginBottom: '12px', 
-              borderRadius: '12px', 
-              borderLeft: '4px solid #10b981', // Garis aksen hijau vertikal
-              boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'flex-start'
-            }}>
-              {/* Konten Teks Catatan */}
-              <div style={{ flex: 1, marginRight: '15px', textAlign: 'left' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '0.75rem' }}>📅</span>
-                  <small style={{ color: '#34d399', fontSize: '0.75rem', fontWeight: 'bold' }}>{item.tanggal}</small>
-                </div>
-                <p style={{ margin: '0', color: '#f1f5f9', whiteSpace: 'pre-wrap', wordWrap: 'break-word', fontSize: '0.95rem', lineHeight: '1.5' }}>
-                  {item.teks}
-                </p>
-              </div>
-              
-              {/* Tombol Hapus Catatan */}
-              <button 
-                onClick={() => {
-                  if(window.confirm("Apakah Anda yakin ingin menghapus catatan ini?")) {
-                    hapusCatatan(indexAsli);
-                  }
-                }}
-                style={{ 
-                  background: '#ef4444', 
-                  color: 'white', 
-                  border: 'none', 
-                  padding: '6px 10px', 
-                  borderRadius: '6px', 
-                  cursor: 'pointer', 
-                  fontSize: '0.75rem', 
-                  flexShrink: 0, 
-                  fontWeight: 'bold',
-                  transition: '0.2s'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#dc2626'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#ef4444'}
-              >
-                Hapus
+          {/* Brand & Header */}
+          {!isAuthScreen && (
+            <>
+              <header style={styles.brand}>
+                <h1 style={styles.brandH1}>SMART PAKAN IKAN</h1>
+                <p style={styles.brandP}>KSTM AL IHYA</p>
+              </header>
+              <button style={styles.acctBtn} onClick={() => setCurrentScreen('akun')} type="button">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="2" style={{width: '34px', height: '34px'}}>
+                  <circle cx="20" cy="20" r="17"/><circle cx="20" cy="16" r="5.5"/><path d="M8.5 31c2.5-5 6-7 11.5-7s9 2 11.5 7"/>
+                </svg>
+                <small style={{color: '#8d9bb8'}}>Account</small>
               </button>
-            </div>
-                );
-              })
-            )}
-          </div>
+            </>
+          )}
+
+          {/* 1. MENU UTAMA */}
+          {currentScreen === 'menu' && (
+            <section className="screen" style={styles.screen}>
+              <button style={styles.menuItemPrimary} onClick={() => setCurrentScreen('rab')} type="button">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" style={styles.menuSvg}>
+                  <rect x="6" y="5" width="26" height="36" rx="3"/><rect x="10" y="9" width="18" height="7" rx="1"/>
+                  <path d="M11 22h2M17 22h2M23 22h2M11 28h2M17 28h2M23 28h2M11 34h2M17 34h2M23 34h2"/>
+                  <path d="M36 38c0-8 3-12 9-13-1 8-4 12-9 13z"/>
+                </svg>
+                <div style={{minWidth: 0, textAlign: 'left'}}>
+                  <b style={{fontSize: '18px', display: 'block'}}>Jurnal RAB Petani</b>
+                  <span style={{fontSize: '12.5px', color: '#8d9bb8'}}>Rencana Anggaran Biaya &amp; Jurnal Keuangan</span>
+                </div>
+              </button>
+
+              <button style={styles.menuItem} onClick={() => setCurrentScreen('pakan')} type="button">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" style={styles.menuSvg}>
+                  <path d="M4 22c6-9 18-9 24 0-6 9-18 9-24 0z"/><circle cx="12" cy="21" r="1.3" fill="currentColor"/><path d="M28 22l7-6v12z"/><circle cx="38" cy="36" r="4"/><path d="M38 29v3M38 40v3M31 36h3M42 36h3"/>
+                </svg>
+                <div style={{minWidth: 0, textAlign: 'left'}}>
+                  <b style={{fontSize: '16px', display: 'block'}}>Pengaturan Pakan</b>
+                  <span style={{fontSize: '12.5px', color: '#8d9bb8'}}>Sinkronisasi Alat Otomatis</span>
+                </div>
+              </button>
+
+              <button style={styles.menuItem} onClick={() => setCurrentScreen('harian')} type="button">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2" style={styles.menuSvg}>
+                  <rect x="8" y="5" width="28" height="36" rx="3"/><path d="M14 14h16M14 21h16M14 28h9"/><path d="M33 36l10-14 3 2-10 14-4 1z"/>
+                </svg>
+                <div style={{minWidth: 0, textAlign: 'left'}}>
+                  <b style={{fontSize: '16px', display: 'block'}}>Jurnal Harian</b>
+                  <span style={{fontSize: '12.5px', color: '#8d9bb8'}}>{logs.length} Catatan Tersimpan</span>
+                </div>
+              </button>
+
+              <button style={styles.menuItem} onClick={() => setCurrentScreen('wifi')} type="button">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.4" style={styles.menuSvg}>
+                  <path d="M6 19c10-9 26-9 36 0"/><path d="M12 26c7-6 17-6 24 0"/><path d="M18 33c4-3 8-3 12 0"/><circle cx="24" cy="39" r="1.8" fill="currentColor"/>
+                </svg>
+                <div style={{minWidth: 0, textAlign: 'left'}}>
+                  <b style={{fontSize: '16px', display: 'block'}}>Pengaturan Wi-Fi</b>
+                  <span style={{fontSize: '12.5px', color: '#8d9bb8'}}>Ganti Koneksi Internet Alat</span>
+                </div>
+              </button>
+
+              <div style={styles.statusBox}>Status Alat: <em style={{color: devStatus === 'Terhubung' ? '#3ddc84' : '#ef4444', fontStyle: 'normal'}}>{devStatus}</em></div>
+            </section>
+          )}
+
+          {/* 2. JURNAL RAB */}
+          {currentScreen === 'rab' && (
+            <section className="screen" style={styles.screen}>
+              <h2 style={styles.title}>Integrasi Data Harian: Jurnal RAB Petani</h2>
+              <p style={styles.sub}>Ikan Berumur 3 Bulan</p>
+              
+              <div style={styles.tblWrap}>
+                <table style={styles.tableRab}>
+                  <caption>Tabel Integrasi Data Harian</caption>
+                  <thead>
+                    <tr><th style={styles.thTd}>Aktivitas/Parameter</th><th style={styles.thTd}>Data Harian</th><th style={styles.thTd}>Satuan/Ket.</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row" style={styles.thRow}>Pakan Harian</th>
+                      <td style={styles.thTd}>
+                        <div style={styles.cell}><label>Input pakan hari ini:</label><input style={styles.inputSm} type="number" step="0.1" value={fPakan} onChange={e=>setFPakan(parseFloat(e.target.value)||0)} /></div>
+                      </td>
+                      <td style={styles.unit}>kg</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" style={styles.thRow}>Sampling Ikan</th>
+                      <td style={styles.thTd}>
+                        <div style={styles.cell}><label>Berat Rata-Rata:</label><input style={styles.inputSm} type="number" value={fBerat} onChange={e=>setFBerat(parseFloat(e.target.value)||0)} /></div>
+                        <div style={styles.cell}><label>FCR Aktual:</label><b className="num" style={{color:'#3ddc84'}}>{fcrVal}</b></div>
+                      </td>
+                      <td style={styles.unit}>gram/ekor</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" style={styles.thRow}>Kualitas Air</th>
+                      <td style={styles.thTd}>
+                        <div style={styles.cell}><label>Suhu:</label><input style={styles.inputSm} type="number" value={fSuhu} onChange={e=>setFSuhu(parseFloat(e.target.value)||0)} /></div>
+                        <div style={styles.cell}><label>pH:</label><input style={styles.inputSm} type="number" step="0.1" value={fPh} onChange={e=>setFPh(parseFloat(e.target.value)||0)} /></div>
+                        <div style={styles.cell}><label>Kondisi:</label><b style={{color: isWaterNormal ? '#3ddc84' : '#ef4444'}}>{isWaterNormal ? 'Normal' : 'Perlu dicek'}</b></div>
+                      </td>
+                      <td style={styles.unit}>°C / pH</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" style={styles.thRow}>Mortalitas</th>
+                      <td style={styles.thTd}>
+                        <div style={styles.cell}><label>Jumlah Hari Ini:</label><input style={styles.inputSm} type="number" value={fMati} onChange={e=>setFMati(e.target.value)} /></div>
+                        <div style={styles.cell}><label>Total Siklus:</label><input style={styles.inputSm} type="number" value={fTotal} onChange={e=>setFTotal(e.target.value)} /></div>
+                      </td>
+                      <td style={styles.unit}>ekor</td>
+                    </tr>
+                    <tr>
+                      <th scope="row" style={styles.thRow}>Biaya Insidental</th>
+                      <td style={styles.thTd}>
+                        <div style={styles.cell}><label>Rp</label><input style={styles.inputSm} type="number" value={fBiaya} onChange={e=>setFBiaya(e.target.value)} /></div>
+                        <div style={styles.cell}><input style={{...styles.inputSm, width:'100%'}} type="text" value={fDesk} onChange={e=>setFDesk(e.target.value)} /></div>
+                      </td>
+                      <td style={styles.unit}>Rupiah</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div style={styles.actionsGrid}>
+                <button style={styles.backBtn} onClick={() => setCurrentScreen('menu')} type="button">← Kembali</button>
+                <button style={styles.btnPrimary} onClick={handleSaveRab} type="button">Simpan</button>
+              </div>
+
+              <h3 style={{fontSize:'16px', fontWeight:700, margin:'8px 0 0'}}>Jurnal RAB Tersimpan</h3>
+              <ul style={styles.list}>
+                {rabList.length === 0 ? <div style={styles.empty}>Belum ada jurnal tersimpan.</div> : rabList.map((r, i) => (
+                  <li key={i} style={styles.listItem}>
+                    <span>{r.d} - {r.s}, FCR {r.f}</span>
+                    <button style={styles.delBtn} onClick={() => deleteRab(i)} type="button">Hapus</button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* 3. PENGATURAN PAKAN */}
+          {currentScreen === 'pakan' && (
+            <section className="screen" style={styles.screen}>
+              <button style={styles.backBtn} onClick={() => setCurrentScreen('menu')} type="button">← Kembali ke Menu</button>
+              <h2 style={styles.title}>Pengaturan Jadwal Pakan</h2>
+              
+              <div>
+                <label style={styles.cap}>Rentang Tanggal</label>
+                <div style={styles.row2}>
+                  <input style={styles.input} type="number" min="1" max="31" value={tglA} onChange={e=>setTglA(parseInt(e.target.value)||1)} />
+                  <input style={styles.input} type="number" min="1" max="31" value={tglB} onChange={e=>setTglB(parseInt(e.target.value)||30)} />
+                </div>
+              </div>
+
+              <div>
+                <label style={styles.cap}>Jadwal Pagi</label>
+                <div style={styles.rowTime}>
+                  <input style={styles.input} type="number" min="0" max="23" value={pagiH} onChange={e=>setPagiH(parseInt(e.target.value)||0)} />
+                  <span>:</span>
+                  <input style={styles.input} type="number" min="0" max="59" value={pagiM} onChange={e=>setPagiM(parseInt(e.target.value)||0)} />
+                </div>
+              </div>
+
+              <div>
+                <label style={styles.cap}>Jadwal Sore</label>
+                <div style={styles.rowTime}>
+                  <input style={styles.input} type="number" min="0" max="23" value={soreH} onChange={e=>setSoreH(parseInt(e.target.value)||0)} />
+                  <span>:</span>
+                  <input style={styles.input} type="number" min="0" max="59" value={soreM} onChange={e=>setSoreM(parseInt(e.target.value)||0)} />
+                </div>
+              </div>
+
+              <div>
+                <label style={styles.cap}>Durasi (Detik)</label>
+                <input style={styles.input} type="number" min="1" max="120" value={durasi} onChange={e=>setDurasi(parseInt(e.target.value)||1)} />
+              </div>
+
+              <button style={styles.btnPrimary} onClick={handleSavePakan} type="button">PERBARUI DATA &amp; AKTIFKAN</button>
+              <p style={styles.hint}>{pakanInfo}</p>
+            </section>
+          )}
+
+          {/* 4. JURNAL HARIAN */}
+          {currentScreen === 'harian' && (
+            <section className="screen" style={styles.screen}>
+              <button style={styles.backBtn} onClick={() => setCurrentScreen('menu')} type="button">← Kembali ke Menu</button>
+              <h2 style={styles.title}>Log Catatan Harian</h2>
+              
+              <div style={styles.logBox}>
+                <label style={styles.cap}>Catatan hari ini</label>
+                <textarea style={styles.textarea} placeholder="Contoh: pakan habis lebih cepat, air agak keruh" value={logText} onChange={e=>setLogText(e.target.value)} />
+                <button style={styles.btnPrimary} onClick={handleSaveLog} type="button">Simpan Ke Riwayat</button>
+              </div>
+
+              <div style={styles.histHead}>
+                <h3 style={{fontSize:'12.5px', textTransform:'uppercase', color:'#8d9bb8'}}>Riwayat Aktivitas</h3>
+                <span style={styles.pill}>{logs.length} Total</span>
+              </div>
+
+              <div style={styles.list}>
+                {logs.length === 0 ? <div style={styles.empty}>Belum ada catatan.</div> : logs.map((l, i) => (
+                  <div key={i} style={styles.entry}>
+                    <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                      <time style={{color:'#3ddc84', fontWeight:700, fontSize:'12.5px'}}>{l.d}</time>
+                      <button style={styles.delBtn} onClick={() => deleteLog(i)} type="button">Hapus</button>
+                    </div>
+                    <p style={{margin:0}}>{l.t}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* 5. PENGATURAN WI-FI */}
+          {currentScreen === 'wifi' && (
+            <section className="screen" style={styles.screen}>
+              <button style={styles.backBtn} onClick={() => setCurrentScreen('menu')} type="button">← Kembali ke Menu</button>
+              <h2 style={styles.title}>Pengaturan Wi-Fi Alat</h2>
+              
+              <div>
+                <label style={styles.cap}>Nama Wi-Fi (SSID)</label>
+                <input style={styles.input} type="text" placeholder="Masukkan nama Wi-Fi Anda" value={ssid} onChange={e=>setSsid(e.target.value)} />
+              </div>
+              <div>
+                <label style={styles.cap}>Kata Sandi (Password)</label>
+                <input style={styles.input} type="password" placeholder="Masukkan kata sandi Wi-Fi" value={wifiPass} onChange={e=>setWifiPass(e.target.value)} />
+                <p style={{...styles.hint, textAlign:'left'}}>* Kosongkan jika jaringan bersifat publik/open.</p>
+              </div>
+
+              <button style={styles.btnPrimary} onClick={handleSyncWifi} type="button">SINKRONISASI WI-FI KE ALAT</button>
+              <p style={styles.hint}>{wifiInfo}</p>
+            </section>
+          )}
+
+          {/* 6. AKUN */}
+          {currentScreen === 'akun' && (
+            <section className="screen" style={styles.screen}>
+              <h2 style={styles.title}>Akun Saya</h2>
+              <div style={styles.profile}>
+                <div style={styles.avatar}>
+                  <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.6" width="84" height="84"><circle cx="20" cy="20" r="18"/><circle cx="20" cy="16" r="5.5"/><path d="M8 32c2.5-5 6-7 12-7s9.5 2 12 7"/></svg>
+                </div>
+                <b style={{fontSize:'17px'}}>{user.name}</b>
+                <span style={{color:'#8d9bb8', fontSize:'13px'}}>{user.email}</span>
+                <span style={{fontSize:'12.5px', color:'#8d9bb8'}}>Lokasi: KSTM Al Ihya</span>
+              </div>
+              <button style={styles.backBtn} onClick={() => setCurrentScreen('menu')} type="button">← Kembali ke Menu</button>
+              <button style={styles.btnGhost} onClick={() => setLogoutConfirm(true)} type="button">Keluar Akun</button>
+
+              {logoutConfirm && (
+                <div style={styles.confirm}>
+                  <span>Yakin ingin keluar dari akun ini?</span>
+                  <div style={styles.actionsGrid}>
+                    <button style={styles.backBtn} onClick={() => setLogoutConfirm(false)} type="button">Batal</button>
+                    <button style={{...styles.btnPrimary, background:'#ef4444', color:'#fff'}} onClick={() => { setLogoutConfirm(false); setCurrentScreen('masuk'); triggerToast('Anda sudah keluar'); }} type="button">Keluar</button>
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* 7. SELAMAT DATANG (WELCOME) */}
+          {currentScreen === 'welcome' && (
+            <section className="screen auth-screen center" style={{...styles.screen, textAlign:'center', justifyContent:'center', minHeight:'420px'}}>
+              <h1 style={styles.authName}>SMART PAKAN IKAN</h1>
+              <p style={styles.tagline}>Kelola Pakan Ikanmu Dengan Cerdas!</p>
+              <button style={styles.pillBtn} onClick={() => setCurrentScreen('daftar')} type="button">Daftar</button>
+              <p style={styles.alt}>Sudah punya akun? <button style={styles.linkBtn} onClick={() => setCurrentScreen('masuk')} type="button">Masuk di sini</button></p>
+            </section>
+          )}
+
+          {/* 8. DAFTAR */}
+          {currentScreen === 'daftar' && (
+            <section className="screen auth-screen" style={styles.screen}>
+              <h1 style={styles.authName}>SMART PAKAN IKAN</h1>
+              <p style={styles.authLead}>Silakan isi data untuk mendaftar:</p>
+              <form onSubmit={handleRegister} style={{display:'flex', flexDirection:'column', gap:'10px'}}>
+                <div style={styles.field}><label>Nama Lengkap</label><input style={styles.authInput} type="text" placeholder="Masukkan Nama" value={rNama} onChange={e=>setRNama(e.target.value)} /></div>
+                <div style={styles.field}><label>Email</label><input style={styles.authInput} type="email" placeholder="nama@email.com" value={rMail} onChange={e=>setRMail(e.target.value)} /></div>
+                <div style={styles.field}><label>Nomor Telepon</label><input style={styles.authInput} type="tel" placeholder="0812..." value={rHp} onChange={e=>setRHp(e.target.value)} /></div>
+                <div style={styles.field}><label>Buat Kata Sandi</label>
+                  <div style={{position:'relative'}}>
+                    <input style={styles.authInput} type={showRPass ? 'text' : 'password'} placeholder="Min. 8 karakter" value={rPass} onChange={e=>setRPass(e.target.value)} />
+                    <button type="button" style={styles.eyeBtn} onClick={()=>setShowRPass(!showRPass)}>👁</button>
+                  </div>
+                </div>
+                <div style={styles.field}><label>Konfirmasi Kata Sandi</label><input style={styles.authInput} type="password" placeholder="Ulangi Kata Sandi" value={rPass2} onChange={e=>setRPass2(e.target.value)} /></div>
+                {regErr && <p style={styles.err}>{regErr}</p>}
+                <button style={{...styles.pillBtn, width:'100%', marginTop:'10px'}} type="submit">Daftar Sekarang</button>
+              </form>
+              <p style={styles.alt}>Sudah punya akun? <button style={styles.linkBtn} onClick={() => setCurrentScreen('masuk')} type="button">Masuk di sini</button></p>
+            </section>
+          )}
+
+          {/* 9. MASUK */}
+          {currentScreen === 'masuk' && (
+            <section className="screen auth-screen" style={styles.screen}>
+              <h1 style={styles.authName}>SMART PAKAN IKAN</h1>
+              <p style={styles.authLead}>Silakan masuk ke akun Anda:</p>
+              <form onSubmit={handleLogin} style={{display:'flex', flexDirection:'column', gap:'10px'}}>
+                <div style={styles.field}><label>Email</label><input style={styles.authInput} type="email" placeholder="nama@email.com" value={lMail} onChange={e=>setLMail(e.target.value)} /></div>
+                <div style={styles.field}><label>Kata Sandi</label>
+                  <div style={{position:'relative'}}>
+                    <input style={styles.authInput} type={showLPass ? 'text' : 'password'} placeholder="Min. 8 karakter" value={lPass} onChange={e=>setLPass(e.target.value)} />
+                    <button type="button" style={styles.eyeBtn} onClick={()=>setShowLPass(!showLPass)}>👁</button>
+                  </div>
+                </div>
+                {loginErr && <p style={styles.err}>{loginErr}</p>}
+                <button style={{...styles.pillBtn, width:'100%', marginTop:'10px'}} type="submit">Masuk</button>
+              </form>
+              <p style={{...styles.alt, marginTop:'20px'}}>Belum punya akun? <button style={styles.linkBtn} onClick={() => setCurrentScreen('daftar')} type="button">Daftar di sini</button></p>
+            </section>
+          )}
+
         </div>
-      )}
 
-{/* ========================================== */}
-      {/* 4. TAMPILAN HALAMAN PENGATURAN WI-FI (BARU)*/}
-      {/* ========================================== */}
-      {activePage === 'wifi' && (
-        <div style={{ width: '100%' }}>
-          <button style={backButtonStyle} onClick={() => setActivePage('beranda')}>
-            ← Kembali ke Menu
-          </button>
-          
-          <div style={{ backgroundColor: '#1e293b', textAlign: 'left' }}>
-            <h3 style={{ color: '#38bdf8', marginTop: '0', marginBottom: '20px', textAlign: 'center' }}>Pengaturan Wi-Fi Alat</h3>
-            
-            {/* Input Nama Wi-Fi (SSID) */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>NAMA WI-FI (SSID)</label>
-              <input 
-                type="text" 
-                style={inputStyle} 
-                placeholder="Masukkan nama Wi-Fi Anda (Bebas Spasi)" 
-                value={wifi.ssid} 
-                onChange={(e) => setWifi({...wifi, ssid: e.target.value})} 
-              />
-            </div>
-
-            {/* Input Password Wi-Fi */}
-            <div style={{ marginBottom: '25px' }}>
-              <label style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>KATA SANDI (PASSWORD)</label>
-              <input 
-                type="text" 
-                style={inputStyle} 
-                placeholder="Masukkan kata sandi Wi-Fi" 
-                value={wifi.password} 
-                onChange={(e) => setWifi({...wifi, password: e.target.value})} 
-              />
-              <small style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '5px', display: 'block' }}>
-                * Kosongkan jika jaringan bersifat publik/open.
-              </small>
-            </div>
-
-            <button style={{ ...buttonStyle, backgroundColor: '#38bdf8', color: '#0f172a' }} onClick={handleUpdateWifi}>
-              📡 SINKRONISASI WI-FI KE ALAT
+        {/* Quick Jump Bar untuk testing di development */}
+        <nav style={styles.jumpNav}>
+          {['welcome', 'daftar', 'masuk', 'menu', 'rab', 'pakan', 'harian', 'wifi', 'akun'].map((scr) => (
+            <button key={scr} style={{...styles.jumpBtn, ...(currentScreen === scr ? styles.jumpBtnActive : {})}} onClick={() => setCurrentScreen(scr)} type="button">
+              {scr.toUpperCase()}
             </button>
-          </div>
-        </div>
-      )}
+          ))}
+        </nav>
+      </main>
 
+      {/* Toast Notification */}
+      <div style={{...styles.toast, opacity: showToast ? 1 : 0, transform: showToast ? 'translate(-50%, 0)' : 'translate(-50%, 20px)'}}>
+        {toastMessage}
+      </div>
     </div>
   );
 }
 
-export default App;
+// Styling Terstruktur Ala Desain Terbaru
+const styles = {
+  body: { background: '#0b1220', color: '#e8eefb', fontFamily: '"Plus Jakarta Sans", sans-serif', minHeight: '100vh', padding: '20px 16px' },
+  stage: { maxWidth: '420px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '14px' },
+  phone: { background: '#131c2e', border: '1px solid #2a3957', borderRadius: '22px', padding: '20px 16px 22px', minHeight: '560px', position: 'relative' },
+  phoneAuth: { paddingBlock: '28px' },
+  brand: { textAlign: 'center', paddingInline: '56px' },
+  brandH1: { margin: 0, fontSize: '21px', fontWeight: 800, color: '#3b9dff' },
+  brandP: { margin: '2px 0 0', fontSize: '12px', letterSpacing: '.08em', color: '#8d9bb8' },
+  acctBtn: { position: 'absolute', top: '14px', right: '14px', background: 'none', border: 0, color: '#e8eefb', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  screen: { display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '18px' },
+  menuItem: { display: 'flex', alignItems: 'center', gap: '14px', width: '100%', textAlign: 'left', background: '#1c2740', border: '1px solid transparent', borderRadius: '14px', padding: '16px 14px', color: '#e8eefb', cursor: 'pointer' },
+  menuItemPrimary: { display: 'flex', alignItems: 'center', gap: '14px', width: '100%', textAlign: 'left', background: '#1c2740', border: '1px solid #3b9dff', borderRadius: '14px', padding: '16px 14px', color: '#e8eefb', cursor: 'pointer' },
+  menuSvg: { width: '44px', height: '44px', flex: 'none', color: '#3b9dff' },
+  statusBox: { textAlign: 'center', fontSize: '12px', color: '#8d9bb8', marginTop: '6px' },
+  title: { margin: '4px 0 0', textAlign: 'center', color: '#3b9dff', fontSize: '17px', fontWeight: 700 },
+  sub: { textAlign: 'center', color: '#8d9bb8', fontSize: '12.5px', margin: '-6px 0 0' },
+  cap: { display: 'block', fontSize: '11.5px', fontWeight: 700, letterSpacing: '.07em', color: '#8d9bb8', textTransform: 'uppercase', marginBottom: '6px' },
+  input: { width: '100%', background: '#0a101c', color: '#e8eefb', border: '1px solid #2a3957', borderRadius: '10px', padding: '12px', fontSize: '15px' },
+  inputSm: { width: '76px', padding: '6px 8px', fontSize: '13px', borderRadius: '7px', background: '#0a101c', color: '#e8eefb', border: '1px solid #2a3957' },
+  row2: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' },
+  rowTime: { display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '8px', alignItems: 'center' },
+  btnPrimary: { background: '#3b9dff', color: '#04111f', border: 0, borderRadius: '12px', padding: '14px', fontWeight: 800, fontSize: '14px', cursor: 'pointer', width: '100%', textAlign: 'center' },
+  backBtn: { background: '#243252', color: '#e8eefb', border: 0, borderRadius: '12px', padding: '13px', fontWeight: 700, fontSize: '14px', cursor: 'pointer', width: '100%' },
+  btnGhost: { background: 'transparent', color: '#ef4444', border: '1.5px solid #ef4444', borderRadius: '12px', padding: '14px', fontWeight: 800, width: '100%', cursor: 'pointer' },
+  delBtn: { background: '#ef4444', color: '#fff', border: 0, borderRadius: '8px', padding: '6px 10px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' },
+  tblWrap: { overflowX: 'auto', borderRadius: '10px', border: '1px solid #2a3957' },
+  tableRab: { width: '100%', borderCollapse: 'collapse', fontSize: '12.5px' },
+  thTd: { border: '1px solid #2a3957', padding: '7px 8px', verticalAlign: 'middle' },
+  thRow: { background: '#1c2740', border: '1px solid #2a3957', textAlign: 'center', width: '27%', padding: '7px' },
+  unit: { color: '#8d9bb8', textAlign: 'center', width: '17%', border: '1px solid #2a3957' },
+  cell: { display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' },
+  actionsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' },
+  list: { display: 'flex', flexDirection: 'column', gap: '8px', margin: 0, padding: 0, listStyle: 'none' },
+  listItem: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', background: '#1c2740', borderRadius: '10px', padding: '10px 12px', fontSize: '13px' },
+  empty: { color: '#8d9bb8', textAlign: 'center', padding: '14px', background: '#1c2740', borderRadius: '10px', fontSize: '13px' },
+  logBox: { background: '#1c2740', borderRadius: '14px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' },
+  textarea: { minHeight: '110px', resize: 'vertical', background: '#0a101c', color: '#e8eefb', border: '1px solid #2a3957', borderRadius: '10px', padding: '12px' },
+  histHead: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px' },
+  pill: { background: '#0a101c', color: '#3ddc84', fontWeight: 700, fontSize: '12.5px', padding: '5px 11px', borderRadius: '999px' },
+  entry: { background: '#1c2740', borderRadius: '10px', borderLeft: '3px solid #3ddc84', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: '6px' },
+  profile: { background: '#1c2740', borderRadius: '16px', padding: '22px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', textAlign: 'center' },
+  avatar: { width: '84px', height: '84px', color: '#3b9dff', marginBottom: '8px' },
+  confirm: { background: '#1c2740', border: '1px solid #ef4444', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'center' },
+  authName: { margin: '6px 0 0', textAlign: 'center', fontSize: '21px', fontWeight: 800, color: '#e8eefb' },
+  tagline: { margin: '6px 0 4px', color: '#7fb8e6', fontWeight: 600, fontSize: '15px' },
+  authLead: { margin: '2px 0 0', textAlign: 'center', color: '#7fb8e6', fontWeight: 600, fontSize: '14.5px' },
+  pillBtn: { background: '#eef6ff', color: '#1f3050', border: 0, borderRadius: '999px', padding: '13px 28px', fontWeight: 700, fontSize: '14.5px', cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,.35)' },
+  alt: { margin: '4px 0 0', textAlign: 'center', fontSize: '13.5px', color: '#e8eefb' },
+  linkBtn: { background: 'none', border: 0, padding: 0, fontWeight: 600, color: '#7fb8e6', cursor: 'pointer', textDecoration: 'underline' },
+  field: { display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'left', fontSize: '12.5px' },
+  authInput: { border: '2px solid #4f86b3', borderRadius: '12px', padding: '11px 12px', background: 'transparent', color: '#e8eefb', width: '100%', fontSize: '14px' },
+  eyeBtn: { position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 0, cursor: 'pointer', fontSize: '16px' },
+  err: { margin: 0, minHeight: '18px', textAlign: 'center', color: '#ff8a8a', fontSize: '12.5px' },
+  jumpNav: { display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '6px', marginTop: '10px' },
+  jumpBtn: { background: 'transparent', color: '#8d9bb8', border: '1px solid #2a3957', borderRadius: '999px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' },
+  jumpBtnActive: { background: '#3b9dff', color: '#04111f', borderColor: '#3b9dff' },
+  toast: { position: 'fixed', left: '50%', bottom: '20px', background: '#e8eefb', color: '#0b1220', padding: '10px 16px', borderRadius: '999px', fontWeight: 700, fontSize: '13px', transition: 'opacity .2s, transform .2s', zIndex: 10, pointerEvents: 'none' },
+  hint: { textAlign: 'center', color: '#8d9bb8', fontSize: '12px', margin: '4px 0' }
+};
