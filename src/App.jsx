@@ -452,11 +452,33 @@ export default function App() {
                 <div style={styles.field}><label>Email</label><input style={styles.authInput} type="email" placeholder="nama@email.com" value={rMail} onChange={e=>setRMail(e.target.value)} /></div>
                 <div style={styles.field}><label>Nomor Telepon</label><input style={styles.authInput} type="tel" placeholder="0812..." value={rHp} onChange={e=>setRHp(e.target.value)} /></div>
                 <div style={styles.field}><label>Buat Kata Sandi</label>
-                  <div style={{position:'relative'}}>
-                    <input style={styles.authInput} type={showRPass ? 'text' : 'password'} placeholder="Min. 8 karakter" value={rPass} onChange={e=>setRPass(e.target.value)} />
-                    <button type="button" style={styles.eyeBtn} onClick={()=>setShowRPass(!showRPass)}>👁</button>
+                  <div style={{position:'relative',display: 'flex', alignItems: 'center' }}>
+                    <input 
+                    style={{ ...styles.authInput, paddingRight: '45px' }} 
+                    type={showRPass ? 'text' : 'password'} 
+                    placeholder="Min. 8 karakter" 
+                    value={rPass} 
+                    onChange={e => setRPass(e.target.value)}/>
+                    <button
+                     type="button" 
+                    onClick={()=>setShowRPass(!showRPass)}
+                    style={{
+                    position: 'absolute',
+                    right: '12px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    color: '#8d9bb8',
+                    zIndex: 5,
+                    padding: '4px'
+                  }}
+                >
+                  {showRPass ? '🙈' : '👁'}
+                </button>
                   </div>
                 </div>
+
                 <div style={styles.field}><label>Konfirmasi Kata Sandi</label><input style={styles.authInput} type="password" placeholder="Ulangi Kata Sandi" value={rPass2} onChange={e=>setRPass2(e.target.value)} /></div>
                 {regErr && <p style={styles.err}>{regErr}</p>}
                 <button style={{...styles.pillBtn, width:'100%', marginTop:'10px'}} type="submit">Daftar Sekarang</button>
