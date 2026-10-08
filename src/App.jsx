@@ -452,16 +452,14 @@ export default function App() {
               <div style={styles.field}><label>Email</label><input style={styles.authInput} type="email" placeholder="nama@email.com" value={rMail} onChange={e=>setRMail(e.target.value)} /></div>
               <div style={styles.field}><label>Nomor Telepon</label><input style={styles.authInput} type="tel" placeholder="0812..." value={rHp} onChange={e=>setRHp(e.target.value)} /></div>
               <div style={styles.field}><label>Buat Kata Sandi</label>
-                <div style={{position:'relative', display: 'flex', alignItems: 'center' }}>
-                  <input style={styles.authInput} type={showRPass ? 'text' : 'password'} placeholder="Min. 8 karakter" value={rPass} onChange={e=>setRPass(e.target.value)} /> 
-                  <button type="button" style={styles.eyeBtn} onClick={()=>setShowRPass(!showRPass)}>{showRPass ? '🙈' : '👁'}</button>
-                </div>
+                <input style={styles.authInput} type="password" placeholder="Min. 8 karakter" value={rPass} onChange={e=>setRPass(e.target.value)} />
               </div>
 
               <div style={styles.field}>
                 <label>Konfirmasi Kata Sandi</label>
                 <input style={styles.authInput} type="password" placeholder="Ulangi Kata Sandi" value={rPass2} onChange={e=>setRPass2(e.target.value)} />
               </div>
+
               {regErr && <p style={styles.err}>{regErr}</p>}
               <button style={{...styles.pillBtn, width:'100%', marginTop:'10px'}} type="submit">Daftar Sekarang</button>
             </form>
@@ -475,12 +473,10 @@ export default function App() {
               <p style={styles.authLead}>Silakan masuk ke akun Anda:</p>
               <form onSubmit={handleLogin} style={{display:'flex', flexDirection:'column', gap:'10px'}}>
                 <div style={styles.field}><label>Email</label><input style={styles.authInput} type="email" placeholder="nama@email.com" value={lMail} onChange={e=>setLMail(e.target.value)} /></div>
-                <div style={styles.field}><label>Kata Sandi</label>
-                  <div style={{position:'relative'}}>
-                    <input style={styles.authInput} type={showLPass ? 'text' : 'password'} placeholder="Min. 8 karakter" value={lPass} onChange={e=>setLPass(e.target.value)} />
-                    <button type="button" style={styles.eyeBtn} onClick={()=>setShowLPass(!showLPass)}>👁</button>
-                  </div>
-                </div>
+                <div style={styles.field}>
+                <label>Kata Sandi</label>
+                <input style={styles.authInput} type="password" placeholder="Min. 8 karakter" value={lPass} onChange={e=>setLPass(e.target.value)} />
+              </div>
                 {loginErr && <p style={styles.err}>{loginErr}</p>}
                 <button style={{...styles.pillBtn, width:'100%', marginTop:'10px'}} type="submit">Masuk</button>
               </form>
