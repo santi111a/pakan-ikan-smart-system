@@ -443,50 +443,31 @@ export default function App() {
           )}
 
           {/* 8. DAFTAR */}
-          {currentScreen === 'daftar' && (
-            <section className="screen auth-screen" style={styles.screen}>
-              <h1 style={styles.authName}>SMART PAKAN IKAN</h1>
-              <p style={styles.authLead}>Silakan isi data untuk mendaftar:</p>
-              <form onSubmit={handleRegister} style={{display:'flex', flexDirection:'column', gap:'10px'}}>
-                <div style={styles.field}><label>Nama Lengkap</label><input style={styles.authInput} type="text" placeholder="Masukkan Nama" value={rNama} onChange={e=>setRNama(e.target.value)} /></div>
-                <div style={styles.field}><label>Email</label><input style={styles.authInput} type="email" placeholder="nama@email.com" value={rMail} onChange={e=>setRMail(e.target.value)} /></div>
-                <div style={styles.field}><label>Nomor Telepon</label><input style={styles.authInput} type="tel" placeholder="0812..." value={rHp} onChange={e=>setRHp(e.target.value)} /></div>
-                <div style={styles.field}><label>Buat Kata Sandi</label>
-                  <div style={{position:'relative',display: 'flex', alignItems: 'center' }}>
-                    <input 
-                    style={{ ...styles.authInput, paddingRight: '45px' }} 
-                    type={showRPass ? 'text' : 'password'} 
-                    placeholder="Min. 8 karakter" 
-                    value={rPass} 
-                    onChange={e => setRPass(e.target.value)}/>
-                    <button
-                     type="button" 
-                    onClick={()=>setShowRPass(!showRPass)}
-                    style={{
-                    position: 'absolute',
-                    right: '12px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    color: '#8d9bb8',
-                    zIndex: 5,
-                    padding: '4px'
-                  }}
-                >
-                  {showRPass ? '🙈' : '👁'}
-                </button>
-                  </div>
+        {currentScreen === 'daftar' && (
+          <section className="screen auth-screen" style={styles.screen}>
+            <h1 style={styles.authName}>SMART PAKAN IKAN</h1>
+            <p style={styles.authLead}>Silakan isi data untuk mendaftar:</p>
+            <form onSubmit={handleRegister} style={{display:'flex', flexDirection:'column', gap:'10px'}}>
+              <div style={styles.field}><label>Nama Lengkap</label><input style={styles.authInput} type="text" placeholder="Masukkan Nama" value={rNama} onChange={e=>setRNama(e.target.value)} /></div>
+              <div style={styles.field}><label>Email</label><input style={styles.authInput} type="email" placeholder="nama@email.com" value={rMail} onChange={e=>setRMail(e.target.value)} /></div>
+              <div style={styles.field}><label>Nomor Telepon</label><input style={styles.authInput} type="tel" placeholder="0812..." value={rHp} onChange={e=>setRHp(e.target.value)} /></div>
+              <div style={styles.field}><label>Buat Kata Sandi</label>
+                <div style={{position:'relative', display: 'flex', alignItems: 'center' }}>
+                  <input style={styles.authInput} type={showRPass ? 'text' : 'password'} placeholder="Min. 8 karakter" value={rPass} onChange={e=>setRPass(e.target.value)} /> 
+                  <button type="button" style={styles.eyeBtn} onClick={()=>setShowRPass(!showRPass)}>{showRPass ? '🙈' : '👁'}</button>
                 </div>
+              </div>
 
-                <div style={styles.field}><label>Konfirmasi Kata Sandi</label><input style={styles.authInput} type="password" placeholder="Ulangi Kata Sandi" value={rPass2} onChange={e=>setRPass2(e.target.value)} /></div>
-                {regErr && <p style={styles.err}>{regErr}</p>}
-                <button style={{...styles.pillBtn, width:'100%', marginTop:'10px'}} type="submit">Daftar Sekarang</button>
-              </form>
-              <p style={styles.alt}>Sudah punya akun? <button style={styles.linkBtn} onClick={() => setCurrentScreen('masuk')} type="button">Masuk di sini</button></p>
-            </section>
-          )}
-
+              <div style={styles.field}>
+                <label>Konfirmasi Kata Sandi</label>
+                <input style={styles.authInput} type="password" placeholder="Ulangi Kata Sandi" value={rPass2} onChange={e=>setRPass2(e.target.value)} />
+              </div>
+              {regErr && <p style={styles.err}>{regErr}</p>}
+              <button style={{...styles.pillBtn, width:'100%', marginTop:'10px'}} type="submit">Daftar Sekarang</button>
+            </form>
+            <p style={styles.alt}>Sudah punya akun? <button style={styles.linkBtn} onClick={() => setCurrentScreen('masuk')} type="button">Masuk di sini</button></p>
+          </section>
+        )}
           {/* 9. MASUK */}
           {currentScreen === 'masuk' && (
             <section className="screen auth-screen" style={styles.screen}>
