@@ -174,15 +174,24 @@ export default function App() {
           
           {/* Brand & Header */}
           {!isAuthScreen && (
-           <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0 16px', position: 'relative' }}>
-              <div>
-                <h1 style={styles.brandH1}>SMART PAKAN IKAN</h1>
-                <p style={styles.brandP}>KSTM AL IHYA</p>
-              </div>
+            <header style={{ position: 'relative', textAlign: 'center', padding: '8px 0 16px', marginBottom: '8px' }}>
+              {/* Judul Teks Berada di Tengah Presisi */}
+              <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#3b9dff', letterSpacing: '0.02em' }}>
+                SMART PAKAN IKAN
+              </h1>
+              <p style={{ margin: '3px 0 0', fontSize: '11.5px', letterSpacing: '0.08em', color: '#8d9bb8', fontWeight: 600 }}>
+                KSTM AL IHYA
+              </p>
+
+              {/* Tombol Akun / Profil di Pojok Kanan Atas */}
               <button 
                 onClick={() => setCurrentScreen('akun')} 
                 type="button"
+                title="Akun Saya"
                 style={{ 
+                  position: 'absolute',
+                  top: '4px',
+                  right: '0',
                   background: '#1c2740', 
                   border: '1px solid #2a3957', 
                   borderRadius: '50%', 
@@ -193,11 +202,14 @@ export default function App() {
                   justifyContent: 'center', 
                   color: '#3b9dff', 
                   cursor: 'pointer',
-                  flexShrink: 0
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                  transition: 'all 0.2s ease'
                 }}
               >
-                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="2" style={{width: '22px', height: '22px'}}>
-                  <circle cx="20" cy="20" r="17"/><circle cx="20" cy="16" r="5.5"/><path d="M8.5 31c2.5-5 6-7 11.5-7s9 2 11.5 7"/>
+                {/* Ikon Profil / Gambar Orang Rapi */}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '22px', height: '22px' }}>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
                 </svg>
               </button>
             </header>
