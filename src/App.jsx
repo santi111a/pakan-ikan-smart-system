@@ -206,14 +206,16 @@ export default function App() {
                   transition: 'all 0.2s ease'
                 }}
               >
-                {/* Ikon Profil / Gambar Orang Rapi */}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '22px', height: '22px' }}>
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              </button>
-            </header>
-          )}
+                {/* Ikon Profil SVG (Dari image_14.png) - PERBAIKAN DI SINI */}
+                <svg viewBox="0 0 40 40" fill="none" stroke="#3b9dff" strokeWidth="2" style={{width: '34px', height: '34px'}}>
+                 <circle cx="20" cy="20" r="17"/>
+                   <circle cx="20" cy="16" r="5.5"/>
+                   <path d="M8.5 31c2.5-5 6-7 11.5-7s9 2 11.5 7"/>
+                  </svg>
+                 <small style={{color: '#8d9bb8', marginTop: '4px'}}>Account</small>
+             </button>
+        </header>
+    )}
 
           {/* 1. MENU UTAMA */}
           {currentScreen === 'menu' && (
