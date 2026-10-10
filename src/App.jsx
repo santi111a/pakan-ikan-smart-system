@@ -174,18 +174,33 @@ export default function App() {
           
           {/* Brand & Header */}
           {!isAuthScreen && (
-            <>
-              <header style={styles.brand}>
+           <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0 16px', position: 'relative' }}>
+              <div>
                 <h1 style={styles.brandH1}>SMART PAKAN IKAN</h1>
                 <p style={styles.brandP}>KSTM AL IHYA</p>
-              </header>
-              <button style={styles.acctBtn} onClick={() => setCurrentScreen('akun')} type="button">
-                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="2" style={{width: '34px', height: '34px'}}>
+              </div>
+              <button 
+                onClick={() => setCurrentScreen('akun')} 
+                type="button"
+                style={{ 
+                  background: '#1c2740', 
+                  border: '1px solid #2a3957', 
+                  borderRadius: '50%', 
+                  width: '42px', 
+                  height: '42px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  color: '#3b9dff', 
+                  cursor: 'pointer',
+                  flexShrink: 0
+                }}
+              >
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="2" style={{width: '22px', height: '22px'}}>
                   <circle cx="20" cy="20" r="17"/><circle cx="20" cy="16" r="5.5"/><path d="M8.5 31c2.5-5 6-7 11.5-7s9 2 11.5 7"/>
                 </svg>
-                <small style={{color: '#8d9bb8'}}>Account</small>
               </button>
-            </>
+            </header>
           )}
 
           {/* 1. MENU UTAMA */}
@@ -232,8 +247,6 @@ export default function App() {
                   <span style={{fontSize: '12.5px', color: '#8d9bb8'}}>Ganti Koneksi Internet Alat</span>
                 </div>
               </button>
-
-              <div style={styles.statusBox}>Status Alat: <em style={{color: devStatus === 'Terhubung' ? '#3ddc84' : '#ef4444', fontStyle: 'normal'}}>{devStatus}</em></div>
             </section>
           )}
 
