@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Smart Pakan Ikan</string>
+    <string name="title_activity_main">Smart Pakan Ikan</string>
+    <string name="package_name">com.pakanikan.app</string>
+    <string name="custom_url_scheme">com.pakanikan.app</string>
+</resources>
